@@ -1,0 +1,117 @@
+/* ==========================================================================
+   Footer Translated Typography & Layout Adjustments
+   STRICTLY scoped to html:not([lang="en"]) .site-footer
+   NEVER applies when English (lang="en") is active, preserving 100% Figma design
+   ========================================================================== */
+
+/* Universal font tag reset within translated Footer */
+html:not([lang="en"]) .site-footer font {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  vertical-align: baseline !important;
+}
+
+/* Disable hardcoded English line breaks in translated mode */
+html:not([lang="en"]) .site-footer br {
+  display: none !important;
+}
+
+/* Column titles (EXPLORE, ABOUT US, CUSTOMER SERVICE) */
+html:not([lang="en"]) .site-footer h4 {
+  font-size: clamp(15px, 1.2vw, 18px) !important;
+  line-height: 1.25 !important;
+  word-break: break-word !important;
+}
+
+/* Nav links */
+html:not([lang="en"]) .site-footer a {
+  word-break: break-word !important;
+}
+
+/* Mailing list headline */
+html:not([lang="en"]) .site-footer form span,
+html:not([lang="en"]) .site-footer form h3 {
+  white-space: normal !important;
+  word-break: break-word !important;
+  font-size: clamp(16px, 1.5vw, 22px) !important;
+  line-height: 1.2 !important;
+}
+
+/* Mailing list button */
+html:not([lang="en"]) .site-footer form button {
+  white-space: normal !important;
+  word-break: break-word !important;
+  font-size: clamp(13px, 1.1vw, 15px) !important;
+  line-height: 1.2 !important;
+}
+
+/* Universal Social Footer Bar (FooterBottom) */
+html:not([lang="en"]) .footer-bottom-bar font {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+}
+
+html:not([lang="en"]) .footer-bottom-bar br {
+  display: none !important;
+}
+
+html:not([lang="en"]) .footer-bottom-bar h2 {
+  font-size: clamp(1.4rem, 2.2vw, 2rem) !important;
+  line-height: 1.2 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .footer-bottom-bar p {
+  line-height: 1.4 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .footer-bottom-bar a[href*="#shop"] {
+  white-space: normal !important;
+  text-align: center !important;
+  font-size: clamp(13px, 1.1vw, 16px) !important;
+  line-height: 1.2 !important;
+}
+
+/* RTL / Arabic Support */
+html[lang="ar"] .site-footer {
+  direction: rtl;
+  text-align: right;
+}
+
+html[lang="ar"] .site-footer input {
+  text-align: right;
+}
+
+/* Fix Tailwind space-x / margin issues in RTL for social icons */
+html[lang="ar"] .site-footer a[aria-label] {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Ensure copyright bar is centered and wraps gracefully in all languages without truncation */
+html:not([lang="en"]) .site-footer .border-t,
+html[lang="ar"] .site-footer .border-t {
+  text-align: center !important;
+}
+
+html:not([lang="en"]) .site-footer .border-t p,
+html[lang="ar"] .site-footer .border-t p {
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  line-height: 1.5 !important;
+  text-align: center !important;
+  max-width: 100% !important;
+}
+
+html[lang="ar"] .footer-bottom-bar {
+  direction: rtl;
+  text-align: right;
+}
+
+

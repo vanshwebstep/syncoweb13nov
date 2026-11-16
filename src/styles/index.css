@@ -1,0 +1,454 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Gasoek+One&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gasoek+One&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: Recline;
+  src: url(https://cdn.shopify.com/s/files/1/0536/8145/5277/files/font.woff2?v=1703078530) format("woff2"), url(https://cdn.shopify.com/s/files/1/0536/8145/5277/files/font.woff?v=1703078529) format("woff")
+}
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+.gasoek{
+  font-family: "Gasoek One", sans-serif;
+}
+.recline {
+  font-family: 'Recline', sans-serif;
+}
+.poppins{
+  font-family: "Poppins", sans-serif;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+/* Custom Utilities */
+.glass-header {
+  background: rgba(6, 24, 56, 0.95);
+  backdrop-filter: blur(12px);
+}
+
+.text-gradient-green {
+  background: linear-gradient(135deg, #0DD180 0%, #a7ffeb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-yellow {
+  background: linear-gradient(135deg, #ffc107 0%, #fff59d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.yellowvector {
+    position: relative;
+    display: inline-block;
+}
+
+.yellowvector::before {
+    background-image: url(https://webstepdev.com/demo/syncoWebsiteImages/yellowvector.png);
+    background-repeat: no-repeat;
+    background-size: contain;
+    content: '';
+    position: absolute;
+    left: 7px;
+    right: 0;
+    bottom: -15px;
+    height: 14px;
+    width: 100%;
+}
+
+@keyframes badgeFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.92);
+  }
+  60% {
+    opacity: 0.9;
+    transform: translateY(-2px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-badge-fade-in {
+  animation: badgeFadeIn 380ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.rio-combine-section {
+  background-image: none;
+  background-size: contain;
+  background-position: top center;
+  background-repeat: no-repeat;
+  background-color: transparent;
+}
+@media (min-width: 768px) {
+  .rio-combine-section {
+    background-image: var(--rio-combine-bg, url('https://webstepdev.com/demo/syncoWebsiteImages/programs/riocombine.jpg'));
+    background-size: 100% auto;
+    background-position: top center;
+    background-repeat: no-repeat;
+  }
+}
+
+@media(min-width:1800px) and (max-width:2000px){
+  .image1 {
+    width: 68.3%;
+}
+  .image2{
+    width: 34%;
+}
+.rio-map-image{
+  max-width: 91.6%;
+  left: -26.5%;
+}
+.layerContact{
+  width: 42%;
+}
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .sambalayer {
+    height: 78% !important;
+    max-height: 400px !important;
+    width: auto !important;
+    max-width: 46% !important;
+    bottom: 0 !important;
+    right: 10px !important;
+    object-fit: contain !important;
+    object-position: bottom right !important;
+  }
+  .layerContact {
+    width: 48% !important;
+  }
+}
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .sambalayer {
+    height: 82% !important;
+    max-height: 440px !important;
+    width: auto !important;
+    max-width: 48% !important;
+    bottom: 0 !important;
+    right: 14px !important;
+    object-fit: contain !important;
+    object-position: bottom right !important;
+  }
+  .layerContact {
+    width: 48% !important;
+  }
+}
+@media (min-width: 1200px) {
+  .sambalayer {
+    height: 84% !important;
+    max-height: 470px !important;
+    width: auto !important;
+    max-width: 50% !important;
+    bottom: 0 !important;
+    right: 18px !important;
+    object-fit: contain !important;
+    object-position: bottom right !important;
+  }
+  .layerContact {
+    width: 48% !important;
+  }
+
+}
+
+@media (min-width: 1200px) and (max-width: 1240px) {
+    .mainContainer{
+    padding-top: 120px !important;
+  }
+  .bottomBoxMain{
+    margin-top: 120px;
+  }
+  .rightsidebox{
+  margin-top: 80px !important;
+}
+
+}
+@media (min-width: 1240px) and (max-width: 1290px) {
+    .mainContainer{
+    padding-top: 120px !important;
+  }
+  .bottomBoxMain{
+    margin-top: 120px;
+  }
+ 
+  .rightsidebox{
+  margin-top: 0px !important;
+}
+  .bottomBoxMain{
+    margin-top: 10px;
+  }
+  .bottomMain {
+    padding-top: 10px !important;
+    margin-bottom: 10px !important;
+  }
+
+}
+
+@media (min-width: 1500px) and (max-width: 1860px) {
+    .mainContainer{
+    padding-top: 160px !important;
+  }
+}
+@media (min-width: 1500px) and (max-width: 1560px) {
+    .mainContainer{
+    padding-top: 160px !important;
+  }
+  .bottomBoxMain{
+    margin-top: 180px;
+  }
+  .rightsidebox{
+  margin-top: 170px !important;
+}
+}
+@media(min-width:1400px) and (max-width:1640px){
+  .widthacc {
+    max-width: 800px !important;
+}
+}
+@media(min-width:1200px) and (max-width:1440px){
+  .image1 {
+    width: 53.5%;
+}
+
+
+.coach-image{
+  max-width: 500px !important;
+}
+  .image2{
+    width: 50.5%;
+}
+.layerContact{
+  width: 48%;
+}
+.rio-map-image{
+  max-width: 91.6%;
+  left: -26.5%;
+}
+.bannerImage {
+  max-width: 726px !important;
+}
+}
+@media(min-width:1300px) and (max-width:1380px){
+.bottomMain{
+  padding-top: 0px !important;
+  margin-bottom: 70px !important;
+}
+}
+@media(min-width:1440px) and (max-width:1540px){
+  .image1 {
+    width: 60.5%;
+}
+  .image2{
+    width: 42.5%;
+}
+.layerContact{
+  width: 50%;
+}
+.bannerImage {
+  max-width: 726px !important;
+}
+.rio-map-image{
+  max-width: 91.6%;
+  left: -26.5%;
+}
+}
+@media(min-width:1540px) and (max-width:1640px){
+  .image1 {
+    width: 58.3%;
+}
+  .image2{
+    width: 44.8%;
+}
+.rio-map-image{
+  max-width: 91.6%;
+  left: -26.5%;
+}
+.layerContact{
+  width: 50%;
+}
+.bannerImage {
+  max-width: 726px !important;
+}
+}
+@media(min-width:1640px) and (max-width:1700px){
+  .image1 {
+    width: 64.6%;
+}
+  .image2{
+    width: 38%;
+}
+.rio-map-image{
+  max-width: 91.6%;
+  left: -26.5%;
+}
+.layerContact{
+  width: 50%;
+}
+.bannerImage {
+  max-width: 726px !important;
+}
+}
+@media(min-width:1700px) and (max-width:1800px){
+  .image1 {
+    width: 64.2%;
+}
+  .image2{
+    width: 38.4%;
+}
+.rio-map-image{
+  max-width: 77%;
+  left: -10%;
+}
+.layerContact{
+  width: 50%;
+}
+.bannerImage {
+  max-width: 726px !important;
+}
+.bannerLayer{
+  width: 80% !important;
+}
+}
+.py-16.sm\:py-24.md\:px-0.md\:pt-\[200px\].relative {
+    position: relative;
+    overflow: hidden;
+}
+
+.py-16.sm\:py-24.md\:px-0.md\:pt-\[200px\].relative::after {
+    content: "";
+    position: absolute;
+    background: url("https://webstepdev.com/demo/syncoWebsiteImages/bluetexturedbg.png") no-repeat;
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    min-height:200px;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 0;
+    pointer-events: none;
+}
+
+.py-16.sm\:py-24.md\:px-0.md\:pt-\[200px\].relative > * {
+    position: relative;
+    z-index: 1;
+}
+.accelerate-banner {
+  background-image: url("https://webstepdev.com/demo/syncoWebsiteImages/holiday-camps/accelerate_banner.png");
+}
+.bannerFooter {
+  background-image: url("https://webstepdev.com/demo/syncoWebsiteImages/letsbefriendsbg.png");
+}
+@media (max-width: 767px) {
+  .accelerate-banner {
+    background-image: url("https://webstepdev.com/demo/syncoWebsiteImages/holiday-camps/final_cta.png");
+  }
+  .bgImageNone{
+    background-position: bottom !important;
+    background-image: url('https://webstepdev.com/demo/syncoWebsiteImages/home/founderMobile.png') !important;
+  }
+  .bannerFooter {
+    background-image: url("https://webstepdev.com/demo/syncoWebsiteImages/contact/Banner-footer.png");
+    padding:80px 0px;
+  }
+}
+
+/* Google Translate Widget & Top Banner Cleanup */
+.goog-te-banner-frame.skiptranslate,
+.goog-te-banner-frame {
+  display: none !important;
+}
+body {
+  top: 0px !important;
+}
+#goog-gt-tt,
+.goog-te-balloon-frame {
+  display: none !important;
+}
+.goog-text-highlight {
+  background: none !important;
+  box-shadow: none !important;
+}
+.skiptranslate > iframe {
+  display: none !important;
+}
+#google_translate_element {
+  display: none !important;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE/Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari, Opera */
+}
+
+
+/* Google Translate & Multi-language Typography Fixes */
+font {
+  vertical-align: baseline !important;
+}
+
+/* Ensure translated headings never collapse into themselves (NON-ENGLISH ONLY) */
+html[lang]:not([lang="en"]) h1,
+html[lang]:not([lang="en"]) h2,
+html[lang]:not([lang="en"]) h3,
+html[lang]:not([lang="en"]) h4,
+html[lang]:not([lang="en"]) h5,
+html[lang]:not([lang="en"]) h6 {
+  line-height: 1.25 !important;
+}
+
+/* Fix tight line-heights globally when page is translated (NON-ENGLISH ONLY) */
+html[lang]:not([lang="en"]) .leading-none {
+  line-height: 1.25 !important;
+}
+
+/* Arabic & Bengali text rendering fixes (prevent broken cursive connections & overlapping diacritics) */
+html[lang="ar"],
+html[lang="ar"] * {
+  letter-spacing: normal !important;
+  word-spacing: normal !important;
+}
+
+html[lang="bn"],
+html[lang="bn"] * {
+  letter-spacing: normal !important;
+}
+
+/* Ensure long translated buttons in navbar and footer stay nicely contained without overflowing (NON-ENGLISH ONLY) */
+html[lang]:not([lang="en"]) nav a[href*="book-trial"] {
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
+  font-size: 12px !important;
+}
+
+html[lang]:not([lang="en"]) form button[type="submit"] {
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+
+/* ==========================================================================
+   Global Multilingual Line Break Suppression
+   STRICTLY scoped to non-English languages (html[lang]:not([lang="en"])).
+   NEVER applies when English (lang="en") is active, preserving 100% of English Figma multi-line design.
+   ========================================================================== */
+html[lang]:not([lang="en"]) br {
+  display: none !important;
+}
+
+

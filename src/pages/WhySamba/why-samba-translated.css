@@ -1,0 +1,182 @@
+/* ==========================================================================
+   Why Samba Page Translated Typography & Layout Adjustments
+   STRICTLY scoped to html:not([lang="en"]) .why-samba-page-container
+   NEVER applies when English (lang="en") is active, preserving 100% Figma design
+   ========================================================================== */
+
+/* Universal font tag reset within translated Why Samba Page */
+html:not([lang="en"]) .why-samba-page-container font {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  vertical-align: baseline !important;
+}
+
+/* Disable hardcoded English line breaks in translated mode so text wraps naturally */
+html:not([lang="en"]) .why-samba-page-container br {
+  display: none !important;
+}
+
+/* ==========================================================================
+   1. Headings & Hero Elements
+   ========================================================================== */
+html:not([lang="en"]) .why-samba-page-container h1 {
+  font-size: clamp(2rem, 4vw, 3.5rem) !important;
+  line-height: 1.15 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .why-samba-page-container h2 {
+  font-size: clamp(1.85rem, 3.5vw, 3rem) !important;
+  line-height: 1.15 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .why-samba-page-container h3 {
+  font-size: clamp(1.25rem, 2vw, 1.85rem) !important;
+  line-height: 1.2 !important;
+  word-break: break-word !important;
+}
+
+/* Inner spans inside headings inherit clamped parent sizes */
+html:not([lang="en"]) .why-samba-page-container h1 span,
+html:not([lang="en"]) .why-samba-page-container h2 span,
+html:not([lang="en"]) .why-samba-page-container h3 span {
+  font-size: inherit !important;
+  line-height: inherit !important;
+}
+
+/* Yellow underline graphic in Hero */
+html:not([lang="en"]) .why-samba-page-container img[src*="yellow"] {
+  max-width: 220px !important;
+  height: auto !important;
+}
+
+/* Pill badges (Skill, Flair, Creativity, Freedom, Fun) */
+html:not([lang="en"]) .why-samba-page-container span.bg-\[\#FFDE14\] {
+  font-size: clamp(11px, 1vw, 15px) !important;
+  padding: 0.35rem 0.85rem !important;
+  white-space: normal !important;
+  text-align: center !important;
+}
+
+/* ==========================================================================
+   2. Story Sections & Cards
+   ========================================================================== */
+html:not([lang="en"]) .why-samba-page-container div[class*="rounded-"] h4 {
+  font-size: clamp(15px, 1.3vw, 19px) !important;
+  line-height: 1.25 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .why-samba-page-container p {
+  font-size: clamp(13px, 1.1vw, 16px) !important;
+  line-height: 1.45 !important;
+  word-break: break-word !important;
+}
+
+/* ==========================================================================
+   3. Buttons & Action Links
+   ========================================================================== */
+html:not([lang="en"]) .why-samba-page-container a[href*="book"],
+html:not([lang="en"]) .why-samba-page-container a[href*="find"],
+html:not([lang="en"]) .why-samba-page-container button {
+  white-space: normal !important;
+  text-align: center !important;
+  font-size: clamp(13px, 1.1vw, 16px) !important;
+  line-height: 1.2 !important;
+  word-break: break-word !important;
+}
+
+/* ==========================================================================
+   4. RTL / Arabic Support
+   ========================================================================== */
+html[lang="ar"] .why-samba-page-container {
+  direction: rtl;
+  text-align: right;
+}
+
+html[lang="ar"] .why-samba-page-container .text-left {
+  text-align: right !important;
+}
+
+/* Why Samba Hero: Keep text container pinned to the LEFT on desktop over the green
+   circular pattern, completely clearing the coach + kid photo on the RIGHT (Screenshot 9 fix) */
+@media (min-width: 768px) {
+  html[lang="ar"] .why-samba-page-container .why-samba-hero-text {
+    max-width: 440px !important;
+    margin-right: auto !important;
+    margin-left: 0 !important;
+    text-align: right !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  html[lang="ar"] .why-samba-page-container .why-samba-hero-text {
+    max-width: 540px !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  html[lang="ar"] .why-samba-page-container .why-samba-hero-text {
+    max-width: 480px !important;
+  }
+}
+
+html[lang="ar"] .why-samba-page-container .why-samba-hero-photo {
+  right: 0 !important;
+  left: auto !important;
+}
+
+/* DiffrentWay (Coach Nilio Story): Maintain LTR grid orientation so the 3 kids photo
+   stays on the LEFT and the story copy stays on the RIGHT (Screenshot 8 fix) */
+html[lang="ar"] .why-samba-page-container .diff-way-grid {
+  direction: ltr !important;
+}
+
+html[lang="ar"] .why-samba-page-container .diff-way-text {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+/* CopeDeSamba (Bottom Final CTA): Mirror the card layout in Arabic
+   Photo on the RIGHT, white card and text pushed to the LEFT ("image thodi choti honi") */
+@media (min-width: 768px) {
+  html[lang="ar"] .why-samba-page-container .why-samba-cta-card {
+    margin-right: auto !important;
+    margin-left: 0 !important;
+    padding-right: 1.5rem !important;
+    padding-left: 1.5rem !important;
+  }
+
+  html[lang="ar"] .why-samba-page-container .why-samba-cta-photo {
+    left: auto !important;
+    right: -4% !important;
+    width: 250px !important;
+    max-width: 250px !important;
+  }
+
+  html[lang="ar"] .why-samba-page-container .why-samba-cta-content {
+    margin-right: auto !important;
+    margin-left: 0 !important;
+    text-align: center !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  html[lang="ar"] .why-samba-page-container .why-samba-cta-photo {
+    right: -5% !important;
+    width: 290px !important;
+    max-width: 290px !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  html[lang="ar"] .why-samba-page-container .why-samba-cta-photo {
+    right: -6% !important;
+    width: 330px !important;
+    max-width: 260px !important;
+  }
+}
+

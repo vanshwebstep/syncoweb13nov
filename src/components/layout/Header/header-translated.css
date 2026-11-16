@@ -1,0 +1,158 @@
+/* ==========================================================================
+   Header & Navbar Translated Typography & Layout Adjustments
+   STRICTLY scoped to html:not([lang="en"]) header
+   NEVER applies when English (lang="en") is active, preserving 100% Figma design
+   ========================================================================== */
+
+/* Universal font tag reset within translated Header */
+html:not([lang="en"]) header font {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  vertical-align: baseline !important;
+}
+
+/* Disable hardcoded English line breaks in translated mode */
+html:not([lang="en"]) header br {
+  display: none !important;
+}
+
+/* ==========================================================================
+   1. Desktop Navigation Links (Middle Bar)
+   Comfortable, bold, legible sizes matching the visual weight of English
+   ========================================================================== */
+html:not([lang="en"]) header .main-nav-links {
+  gap: 0.35rem !important;
+}
+
+html:not([lang="en"]) header .main-nav-link {
+  font-size: 13px !important;
+  padding-left: 0.35rem !important;
+  padding-right: 0.35rem !important;
+  letter-spacing: normal !important;
+}
+
+html:not([lang="en"]) header .main-nav-link span {
+  font-size: inherit !important;
+  letter-spacing: normal !important;
+}
+
+@media (min-width: 1280px) {
+  html:not([lang="en"]) header .main-nav-link {
+    font-size: 14.5px !important;
+    padding-left: 0.45rem !important;
+    padding-right: 0.45rem !important;
+  }
+}
+
+@media (min-width: 1536px) {
+  html:not([lang="en"]) header .main-nav-link {
+    font-size: 16px !important;
+    padding-left: 0.6rem !important;
+    padding-right: 0.6rem !important;
+  }
+}
+
+/* Green dot separators */
+html:not([lang="en"]) header .main-nav-separator {
+  font-size: 10px !important;
+  margin-left: 0.15rem !important;
+  margin-right: 0.15rem !important;
+}
+
+/* ==========================================================================
+   2. Right Action Buttons
+   ========================================================================== */
+html:not([lang="en"]) header .nav-outline-btn {
+  font-size: 12.5px !important;
+  padding: 0.4rem 0.85rem !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+  line-height: 1.2 !important;
+}
+
+html:not([lang="en"]) header .nav-solid-btn {
+  font-size: 12.5px !important;
+  padding: 0.45rem 1rem !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+  line-height: 1.2 !important;
+}
+
+@media (min-width: 1280px) {
+  html:not([lang="en"]) header .nav-outline-btn {
+    font-size: 13px !important;
+    padding: 0.45rem 0.95rem !important;
+  }
+  html:not([lang="en"]) header .nav-solid-btn {
+    font-size: 13px !important;
+    padding: 0.5rem 1.15rem !important;
+  }
+}
+
+@media (min-width: 1536px) {
+  html:not([lang="en"]) header .nav-outline-btn {
+    font-size: 14px !important;
+    padding: 0.5rem 1.1rem !important;
+  }
+  html:not([lang="en"]) header .nav-solid-btn {
+    font-size: 14px !important;
+    padding: 0.55rem 1.25rem !important;
+  }
+}
+
+/* On screens under 1400px in translated mode, hide the duplicate outline "Find a Class"
+   button because "Find a Class" is already present in the nav links right next to it,
+   leaving plenty of room for all nav links and the primary green CTA with zero overlap */
+@media (max-width: 1399px) {
+  html:not([lang="en"]) header .nav-outline-btn {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   3. Top Bar Adjustments
+   ========================================================================== */
+html:not([lang="en"]) header .topbar-tagline {
+  font-size: 11.5px !important;
+  max-width: 320px !important;
+}
+
+html:not([lang="en"]) header .topbar-parent-btn {
+  font-size: 11px !important;
+  padding: 0.4rem 0.85rem !important;
+}
+
+html:not([lang="en"]) header button[data-testid="language-selector"] {
+  font-size: 11px !important;
+  padding: 0.3rem 0.75rem !important;
+}
+
+/* ==========================================================================
+   4. RTL / Arabic Support
+   ========================================================================== */
+html[lang="ar"] header {
+  direction: rtl;
+  text-align: right;
+}
+
+html[lang="ar"] header .main-nav-links {
+  direction: rtl;
+}
+
+/* TopBar Arabic RTL refinements */
+html[lang="ar"] header .topbar-right-group {
+  direction: rtl;
+  gap: 0.75rem !important;
+}
+
+html[lang="ar"] header .topbar-right-group a[href^="tel:"] {
+  direction: ltr !important;
+}
+
+html[lang="ar"] header [data-testid="language-dropdown"] {
+  right: auto !important;
+  left: 0 !important;
+}
+

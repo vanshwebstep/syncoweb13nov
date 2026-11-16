@@ -1,0 +1,184 @@
+/* ==========================================================================
+   Contact Page Translated Typography & Layout Adjustments
+   STRICTLY scoped to html:not([lang="en"]) .contact-page-container
+   NEVER applies when English (lang="en") is active, preserving 100% Figma design
+   ========================================================================== */
+
+/* Universal font tag reset within translated Contact Page */
+html:not([lang="en"]) .contact-page-container font {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  vertical-align: baseline !important;
+}
+
+/* Disable hardcoded English line breaks in translated mode so text wraps naturally */
+html:not([lang="en"]) .contact-page-container br {
+  display: none !important;
+}
+
+/* ==========================================================================
+   1. Headings & Hero Elements
+   ========================================================================== */
+html:not([lang="en"]) .contact-page-container h1 {
+  font-size: clamp(2rem, 4vw, 3.5rem) !important;
+  line-height: 1.15 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .contact-page-container h2 {
+  font-size: clamp(1.85rem, 3.5vw, 3rem) !important;
+  line-height: 1.15 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .contact-page-container h3 {
+  font-size: clamp(1.25rem, 2vw, 1.85rem) !important;
+  line-height: 1.2 !important;
+  word-break: break-word !important;
+}
+
+/* Inner spans inside headings inherit clamped parent sizes */
+html:not([lang="en"]) .contact-page-container h1 span,
+html:not([lang="en"]) .contact-page-container h2 span,
+html:not([lang="en"]) .contact-page-container h3 span {
+  font-size: inherit !important;
+  line-height: inherit !important;
+}
+
+/* ==========================================================================
+   2. Form & Location Cards
+   ========================================================================== */
+html:not([lang="en"]) .contact-page-container label {
+  font-size: clamp(12px, 1.05vw, 14.5px) !important;
+  line-height: 1.35 !important;
+}
+
+html:not([lang="en"]) .contact-page-container p {
+  font-size: clamp(13px, 1.1vw, 16px) !important;
+  line-height: 1.45 !important;
+  word-break: break-word !important;
+}
+
+/* ==========================================================================
+   3. Buttons & Submit
+   ========================================================================== */
+html:not([lang="en"]) .contact-page-container button {
+  white-space: normal !important;
+  text-align: center !important;
+  font-size: clamp(13px, 1.1vw, 16px) !important;
+  line-height: 1.2 !important;
+  word-break: break-word !important;
+}
+
+/* ==========================================================================
+   4. RTL / Arabic Support
+   ========================================================================== */
+html[lang="ar"] .contact-page-container {
+  direction: rtl;
+  text-align: right;
+}
+
+html[lang="ar"] .contact-page-container .text-left {
+  text-align: right !important;
+}
+
+/* Mirror the Hero Desktop background in Arabic:
+   The blue wave flips to the LEFT,
+   and the green patterned background is on the RIGHT (behind the Arabic text) */
+html[lang="ar"] .contact-page-container .contact-hero-bg-desktop {
+  transform: scaleX(-1);
+  transform-origin: center center;
+}
+
+/* Reposition top blue waves in Arabic */
+html[lang="ar"] .contact-page-container .contact-hero-wave-large {
+  right: auto !important;
+  left: 0 !important;
+  transform: scaleX(-1);
+  transform-origin: left top;
+}
+
+html[lang="ar"] .contact-page-container .contact-hero-wave-mobile {
+  transform: scaleX(-1);
+}
+
+html[lang="ar"] .contact-page-container .contact-hero-wave-small {
+  left: auto !important;
+  right: 0 !important;
+  transform: scaleX(-1);
+  transform-origin: right top;
+}
+
+/* Move the Kids photo from the right to the LEFT in Arabic,
+   and mirror them so they face toward the text/center,
+   completely clearing the Arabic text and contact card on the right */
+html[lang="ar"] .contact-page-container .contact-hero-kids {
+  right: auto !important;
+  left: 0 !important;
+  transform: scaleX(-1);
+  transform-origin: center bottom;
+}
+
+@media (min-width: 1280px) {
+  html[lang="ar"] .contact-page-container .contact-hero-kids {
+    left: -2% !important;
+    right: auto !important;
+  }
+}
+
+/* Constrain text container so it stays cleanly on the right half on desktop */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  html[lang="ar"] .contact-page-container .contact-hero-text {
+    max-width: 480px !important;
+    margin-right: 0 !important;
+    margin-left: auto !important;
+    text-align: right !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  html[lang="ar"] .contact-page-container .contact-hero-text {
+    max-width: 600px !important;
+    margin-right: 0 !important;
+    margin-left: auto !important;
+    text-align: right !important;
+  }
+}
+
+/* Callout card text alignment in Arabic */
+html[lang="ar"] .contact-page-container .contact-hero-callout {
+  text-align: right !important;
+  margin-right: 0 !important;
+  margin-left: auto !important;
+}
+
+/* Form controls alignment in Arabic */
+html[lang="ar"] .contact-page-container input,
+html[lang="ar"] .contact-page-container textarea {
+  text-align: right !important;
+  direction: rtl;
+}
+
+html[lang="ar"] .contact-page-container input::placeholder,
+html[lang="ar"] .contact-page-container textarea::placeholder {
+  text-align: right !important;
+  direction: rtl;
+}
+
+/* Flip contact card social pill borders in RTL */
+html[lang="ar"] .contact-page-container #location-section .bg-\[\#00A6E3\] {
+  border-right-width: 0 !important;
+  border-left-width: 4px !important;
+}
+
+/* Ensure phone and email links remain readable in LTR direction */
+html[lang="ar"] .contact-page-container a[href^="tel:"],
+html[lang="ar"] .contact-page-container a[href^="mailto:"] {
+  direction: ltr !important;
+  text-align: right !important;
+  display: inline-block;
+  unicode-bidi: embed;
+}
+

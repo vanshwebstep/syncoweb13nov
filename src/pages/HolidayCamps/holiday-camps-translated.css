@@ -1,0 +1,130 @@
+/* ==========================================================================
+   Holiday Camps Page Translated Typography & Layout Adjustments
+   STRICTLY scoped to html:not([lang="en"]) .holiday-camps-page-container
+   NEVER applies when English (lang="en") is active, preserving 100% Figma design
+   ========================================================================== */
+
+/* Universal font tag reset within translated Holiday Camps Page */
+html:not([lang="en"]) .holiday-camps-page-container font {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  vertical-align: baseline !important;
+}
+
+/* Disable hardcoded English line breaks in translated mode so text wraps naturally */
+html:not([lang="en"]) .holiday-camps-page-container br {
+  display: none !important;
+}
+
+/* ==========================================================================
+   1. Headings & Hero Elements
+   ========================================================================== */
+html:not([lang="en"]) .holiday-camps-page-container h1 {
+  font-size: clamp(2rem, 4vw, 3.5rem) !important;
+  line-height: 1.15 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .holiday-camps-page-container h2 {
+  font-size: clamp(1.85rem, 3.5vw, 3rem) !important;
+  line-height: 1.15 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .holiday-camps-page-container h3 {
+  font-size: clamp(1.25rem, 2vw, 1.85rem) !important;
+  line-height: 1.2 !important;
+  word-break: break-word !important;
+}
+
+/* Inner spans inside headings inherit clamped parent sizes */
+html:not([lang="en"]) .holiday-camps-page-container h1 span,
+html:not([lang="en"]) .holiday-camps-page-container h2 span,
+html:not([lang="en"]) .holiday-camps-page-container h3 span {
+  font-size: inherit !important;
+  line-height: inherit !important;
+}
+
+/* Olive pill badges */
+html:not([lang="en"]) .holiday-camps-page-container span.bg-\[\#7F7C56\] {
+  font-size: clamp(12px, 1.05vw, 15px) !important;
+  padding: 0.4rem 0.9rem !important;
+  white-space: normal !important;
+  text-align: center !important;
+}
+
+/* ==========================================================================
+   2. Camp Cards, Schedule & Details
+   ========================================================================== */
+html:not([lang="en"]) .holiday-camps-page-container div[class*="rounded-"] h4 {
+  font-size: clamp(14px, 1.2vw, 18px) !important;
+  line-height: 1.25 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .holiday-camps-page-container p {
+  font-size: clamp(13px, 1.1vw, 16px) !important;
+  line-height: 1.45 !important;
+  word-break: break-word !important;
+}
+
+/* ==========================================================================
+   3. Buttons & Action Links
+   ========================================================================== */
+html:not([lang="en"]) .holiday-camps-page-container a[href*="book"],
+html:not([lang="en"]) .holiday-camps-page-container a[href*="find"],
+html:not([lang="en"]) .holiday-camps-page-container button {
+  white-space: normal !important;
+  text-align: center !important;
+  font-size: clamp(13px, 1.1vw, 16px) !important;
+  line-height: 1.2 !important;
+  word-break: break-word !important;
+}
+
+/* ==========================================================================
+   4. RTL / Arabic Support
+   ========================================================================== */
+html[lang="ar"] .holiday-camps-page-container {
+  direction: rtl;
+  text-align: right;
+}
+
+html[lang="ar"] .holiday-camps-page-container .text-left {
+  text-align: right !important;
+}
+
+/* Maintain hero copy on the LEFT on desktop so it never overlaps the kid on the right */
+@media (min-width: 768px) {
+  html[lang="ar"] .holiday-camps-page-container .holiday-camps-hero-content {
+    max-width: 520px !important;
+    margin-right: auto !important;
+    margin-left: 0 !important;
+    text-align: right !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  html[lang="ar"] .holiday-camps-page-container .holiday-camps-hero-content {
+    max-width: 580px !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  html[lang="ar"] .holiday-camps-page-container .holiday-camps-hero-content {
+    max-width: 640px !important;
+  }
+}
+
+/* Form and input text alignment in Arabic */
+html[lang="ar"] .holiday-camps-page-container input {
+  text-align: right !important;
+  direction: rtl;
+}
+
+html[lang="ar"] .holiday-camps-page-container input::placeholder {
+  text-align: right !important;
+  direction: rtl;
+}
+

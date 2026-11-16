@@ -1,0 +1,337 @@
+/* ==========================================================================
+   Birthday Party Page Translated Typography & Layout Adjustments
+   STRICTLY scoped to html:not([lang="en"]) .birthday-party-page-container
+   NEVER applies when English (lang="en") is active, preserving 100% Figma design
+   ========================================================================== */
+
+/* Universal font tag reset within translated Birthday Party Page */
+html:not([lang="en"]) .birthday-party-page-container font {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  vertical-align: baseline !important;
+}
+
+/* Disable hardcoded English line breaks in translated mode so text wraps naturally */
+html:not([lang="en"]) .birthday-party-page-container br {
+  display: none !important;
+}
+
+/* ==========================================================================
+   1. Headings & Hero Elements
+   ========================================================================== */
+html:not([lang="en"]) .birthday-party-page-container h1 {
+  font-size: clamp(2rem, 4vw, 3.5rem) !important;
+  line-height: 1.15 !important;
+  word-break: break-word !important;
+}
+
+/* Prevent hero text from colliding with desktop illustration */
+@media (min-width: 1024px) and (max-width: 1366px) {
+  html:not([lang="en"]) .birthday-party-page-container section:first-of-type .text-left {
+    max-width: 480px !important;
+  }
+}
+
+html:not([lang="en"]) .birthday-party-page-container h2 {
+  font-size: clamp(1.85rem, 3.5vw, 3rem) !important;
+  line-height: 1.15 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .birthday-party-page-container h3 {
+  font-size: clamp(1.25rem, 2vw, 1.85rem) !important;
+  line-height: 1.2 !important;
+  word-break: break-word !important;
+}
+
+/* Inner spans inside headings inherit clamped parent sizes */
+html:not([lang="en"]) .birthday-party-page-container h1 span,
+html:not([lang="en"]) .birthday-party-page-container h2 span,
+html:not([lang="en"]) .birthday-party-page-container h3 span {
+  font-size: inherit !important;
+  line-height: inherit !important;
+}
+
+/* Yellow Pill Badges */
+html:not([lang="en"]) .birthday-party-page-container span.bg-\[\#FFDE14\] {
+  font-size: clamp(11px, 1vw, 15px) !important;
+  padding: 0.35rem 0.85rem !important;
+  white-space: normal !important;
+  text-align: center !important;
+}
+
+/* ==========================================================================
+   2. Party Package Cards & FAQs
+   ========================================================================== */
+html:not([lang="en"]) .birthday-party-page-container div[class*="rounded-"] h4 {
+  font-size: clamp(14px, 1.2vw, 18px) !important;
+  line-height: 1.25 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .birthday-party-page-container p {
+  font-size: clamp(13px, 1.1vw, 16px) !important;
+  line-height: 1.45 !important;
+  word-break: break-word !important;
+}
+
+/* ==========================================================================
+   3. Buttons & Action Links
+   ========================================================================== */
+html:not([lang="en"]) .birthday-party-page-container a[href*="book"],
+html:not([lang="en"]) .birthday-party-page-container a[href*="find"],
+html:not([lang="en"]) .birthday-party-page-container button {
+  white-space: normal !important;
+  text-align: center !important;
+  font-size: clamp(13px, 1.1vw, 16px) !important;
+  line-height: 1.2 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .birthday-party-page-container .birthday-cta-content button {
+  white-space: nowrap !important;
+  width: auto !important;
+  max-width: 100% !important;
+}
+
+/* ==========================================================================
+   4. RTL / Arabic Support
+   ========================================================================== */
+html[lang="ar"] .birthday-party-page-container {
+  direction: rtl;
+  text-align: right;
+}
+
+html[lang="ar"] .birthday-party-page-container .text-left {
+  text-align: right !important;
+}
+
+/* 4.1 Hero Banner: Keep text pinned to the LEFT on desktop over the green pattern,
+   completely clearing the hugging kids and mascot on the right (Screenshot media_1793018473374.png fix) */
+@media (min-width: 768px) {
+  html[lang="ar"] .birthday-party-page-container .birthday-hero-copy {
+    margin-right: auto !important;
+    margin-left: 0 !important;
+    max-width: 460px !important;
+    text-align: right !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  html[lang="ar"] .birthday-party-page-container .birthday-hero-copy {
+    max-width: 520px !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  html[lang="ar"] .birthday-party-page-container .birthday-hero-copy {
+    max-width: 580px !important;
+  }
+}
+
+/* 4.2 Plenty of Samba (4 Feature Cards): Mirror top corner images to the LEFT,
+   allowing right-aligned Arabic text to occupy the right 65% cleanly (Screenshot media_1793018457091.png fix) */
+html[lang="ar"] .birthday-party-page-container .plenty-card-image {
+  right: auto !important;
+  left: 0 !important;
+  transform: scaleX(-1) !important;
+}
+
+html[lang="ar"] .birthday-party-page-container .plenty-card-text {
+  text-align: right !important;
+  margin-right: 0 !important;
+  margin-left: auto !important;
+}
+
+/* 4.3 Pick a Party: Maintain LTR grid orientation so the heading and mascot stay on the LEFT
+   without the mascot getting pushed off the screen on the right (Screenshot media_1793019898396.png fix) */
+@media (min-width: 1024px) {
+  html[lang="ar"] .birthday-party-page-container .pick-a-party-grid {
+    direction: ltr !important;
+  }
+
+  html[lang="ar"] .birthday-party-page-container .pick-a-party-title-col {
+    direction: rtl !important;
+    text-align: right !important;
+    padding-right: 3.5rem !important;
+  }
+
+  html[lang="ar"] .birthday-party-page-container .pick-rio-mascot {
+    right: 0rem !important;
+  }
+
+  html[lang="ar"] .birthday-party-page-container .pick-a-party-cards-col {
+    direction: rtl !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  html[lang="ar"] .birthday-party-page-container .pick-a-party-title-col {
+    padding-right: 5.5rem !important;
+  }
+
+  html[lang="ar"] .birthday-party-page-container .pick-rio-mascot {
+    right: 0.5rem !important;
+  }
+}
+
+@media (min-width: 1536px) {
+  html[lang="ar"] .birthday-party-page-container .pick-a-party-title-col {
+    padding-right: 7rem !important;
+  }
+
+  html[lang="ar"] .birthday-party-page-container .pick-rio-mascot {
+    right: 1rem !important;
+  }
+}
+
+html[lang="ar"] .birthday-party-page-container .pick-party-card {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+html[lang="ar"] .birthday-party-page-container .pick-party-card .text-left {
+  text-align: right !important;
+}
+
+/* 4.4 Ready to Start (Final CTA): Arabic (RTL)
+   Kids photo on the RIGHT inside the card, text centered with single-line button */
+@media (min-width: 768px) {
+  html[lang="ar"] .birthday-party-page-container .birthday-cta-card {
+    margin-right: auto !important;
+    margin-left: auto !important;
+    padding-right: 220px !important;
+    padding-left: 1.5rem !important;
+  }
+
+  html[lang="ar"] .birthday-party-page-container .birthday-cta-photo {
+    left: auto !important;
+    right: 0.75rem !important;
+    width: 200px !important;
+    max-width: 200px !important;
+  }
+
+  html[lang="ar"] .birthday-party-page-container .birthday-cta-content {
+    margin-right: auto !important;
+    margin-left: auto !important;
+    text-align: center !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  html[lang="ar"] .birthday-party-page-container .birthday-cta-content button {
+    white-space: nowrap !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  html[lang="ar"] .birthday-party-page-container .birthday-cta-card {
+    padding-right: 260px !important;
+    padding-left: 2rem !important;
+  }
+
+  html[lang="ar"] .birthday-party-page-container .birthday-cta-photo {
+    right: 1rem !important;
+    width: 235px !important;
+    max-width: 235px !important;
+  }
+}
+
+@media (min-width: 1150px) {
+  html[lang="ar"] .birthday-party-page-container .birthday-cta-card {
+    padding-right: 290px !important;
+  }
+
+  html[lang="ar"] .birthday-party-page-container .birthday-cta-photo {
+    right: 1.25rem !important;
+    width: 260px !important;
+    max-width: 260px !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  html[lang="ar"] .birthday-party-page-container .birthday-cta-card {
+    padding-right: 320px !important;
+    padding-left: 2.5rem !important;
+  }
+
+  html[lang="ar"] .birthday-party-page-container .birthday-cta-photo {
+    right: 1.25rem !important;
+    width: 285px !important;
+    max-width: 285px !important;
+  }
+}
+
+/* ==========================================================================
+   5. Ready to Start (Final CTA) - Other Languages (LTR)
+   Keeps kids photo strictly inside the white card, centers content, keeps text and button on single lines
+   ========================================================================== */
+@media (min-width: 768px) {
+  html:not([lang="en"]):not([lang="ar"]) .birthday-party-page-container .birthday-cta-photo {
+    left: 0.75rem !important;
+    right: auto !important;
+    width: 200px !important;
+    max-width: 200px !important;
+  }
+
+  html:not([lang="en"]):not([lang="ar"]) .birthday-party-page-container .birthday-cta-photo img {
+    max-height: 92% !important;
+    object-fit: contain !important;
+  }
+
+  html:not([lang="en"]):not([lang="ar"]) .birthday-party-page-container .birthday-cta-card {
+    padding-left: 220px !important;
+    padding-right: 1.5rem !important;
+  }
+
+  html:not([lang="en"]):not([lang="ar"]) .birthday-party-page-container .birthday-cta-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  html:not([lang="en"]):not([lang="ar"]) .birthday-party-page-container .birthday-cta-content button {
+    white-space: nowrap !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  html:not([lang="en"]):not([lang="ar"]) .birthday-party-page-container .birthday-cta-photo {
+    left: 1rem !important;
+    width: 235px !important;
+    max-width: 235px !important;
+  }
+
+  html:not([lang="en"]):not([lang="ar"]) .birthday-party-page-container .birthday-cta-card {
+    padding-left: 260px !important;
+    padding-right: 2rem !important;
+  }
+}
+
+@media (min-width: 1150px) {
+  html:not([lang="en"]):not([lang="ar"]) .birthday-party-page-container .birthday-cta-photo {
+    left: 1.25rem !important;
+    width: 260px !important;
+    max-width: 260px !important;
+  }
+
+  html:not([lang="en"]):not([lang="ar"]) .birthday-party-page-container .birthday-cta-card {
+    padding-left: 290px !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  html:not([lang="en"]):not([lang="ar"]) .birthday-party-page-container .birthday-cta-photo {
+    left: 1.25rem !important;
+    width: 285px !important;
+    max-width: 285px !important;
+  }
+
+  html:not([lang="en"]):not([lang="ar"]) .birthday-party-page-container .birthday-cta-card {
+    padding-left: 320px !important;
+    padding-right: 2.5rem !important;
+  }
+}

@@ -1,0 +1,82 @@
+/* ==========================================================================
+   Waitinglist Page Translated Typography & Layout Adjustments
+   STRICTLY scoped to html:not([lang="en"]) .waitinglist-page-container
+   NEVER applies when English (lang="en") is active, preserving 100% Figma design
+   ========================================================================== */
+
+/* Universal font tag reset within translated Waitinglist Page */
+html:not([lang="en"]) .waitinglist-page-container font {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  vertical-align: baseline !important;
+}
+
+/* Disable hardcoded English line breaks in translated mode */
+html:not([lang="en"]) .waitinglist-page-container br {
+  display: none !important;
+}
+
+/* ==========================================================================
+   1. Headings & Subheadings
+   ========================================================================== */
+html:not([lang="en"]) .waitinglist-page-container h1 {
+  font-size: clamp(1.85rem, 3.5vw, 2.75rem) !important;
+  line-height: 1.15 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .waitinglist-page-container h2 {
+  font-size: clamp(1.5rem, 2.8vw, 2.25rem) !important;
+  line-height: 1.2 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .waitinglist-page-container h3 {
+  font-size: clamp(1.15rem, 1.8vw, 1.55rem) !important;
+  line-height: 1.25 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .waitinglist-page-container h1 span,
+html:not([lang="en"]) .waitinglist-page-container h2 span,
+html:not([lang="en"]) .waitinglist-page-container h3 span {
+  font-size: inherit !important;
+  line-height: inherit !important;
+  word-break: break-word !important;
+}
+
+/* ==========================================================================
+   2. Form Elements & Buttons
+   ========================================================================== */
+html:not([lang="en"]) .waitinglist-page-container p {
+  line-height: 1.5 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .waitinglist-page-container button {
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .waitinglist-page-container form label {
+  font-size: clamp(12.5px, 1.05vw, 15px) !important;
+  line-height: 1.3 !important;
+}
+
+/* ==========================================================================
+   3. RTL / Arabic Support
+   ========================================================================== */
+html[lang="ar"] .waitinglist-page-container {
+  direction: rtl;
+  text-align: right;
+}
+
+html[lang="ar"] .waitinglist-page-container .text-left {
+  text-align: right !important;
+}
+
+html[lang="ar"] .waitinglist-page-container input {
+  text-align: right !important;
+}

@@ -1,0 +1,190 @@
+/* ==========================================================================
+   Programs / Road to Rio Page Translated Typography & Layout Adjustments
+   STRICTLY scoped to html:not([lang="en"]) .programs-page-container
+   NEVER applies when English (lang="en") is active, preserving 100% Figma design
+   ========================================================================== */
+
+/* Universal font tag reset within translated Programs Page */
+html:not([lang="en"]) .programs-page-container font {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  vertical-align: baseline !important;
+}
+
+/* Disable hardcoded English line breaks in translated mode so text wraps naturally */
+html:not([lang="en"]) .programs-page-container br {
+  display: none !important;
+}
+
+/* ==========================================================================
+   1. Headings & Typography
+   ========================================================================== */
+html:not([lang="en"]) .programs-page-container h1 {
+  font-size: clamp(2rem, 4vw, 3.75rem) !important;
+  line-height: 1.15 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .programs-page-container h2 {
+  font-size: clamp(1.85rem, 3.8vw, 3.25rem) !important;
+  line-height: 1.15 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .programs-page-container h3 {
+  font-size: clamp(1.25rem, 2.2vw, 2rem) !important;
+  line-height: 1.2 !important;
+  word-break: break-word !important;
+}
+
+/* Inner spans inside headings inherit clamped parent sizes */
+html:not([lang="en"]) .programs-page-container h1 span,
+html:not([lang="en"]) .programs-page-container h2 span,
+html:not([lang="en"]) .programs-page-container h3 span {
+  font-size: inherit !important;
+  line-height: inherit !important;
+}
+
+/* Standalone title divs with gasoek */
+html:not([lang="en"]) .programs-page-container div.gasoek {
+  font-size: clamp(1.5rem, 3vw, 2.5rem) !important;
+  line-height: 1.2 !important;
+  word-break: break-word !important;
+}
+
+/* Underline graphics inside headings stay closely attached */
+html:not([lang="en"]) .programs-page-container h1 img,
+html:not([lang="en"]) .programs-page-container h2 img,
+html:not([lang="en"]) .programs-page-container .gasoek img:not(.cope-de-samba-blue-underline) {
+  bottom: -0.22em !important;
+  max-height: 24px !important;
+}
+
+html:not([lang="en"]) .programs-page-container .cope-de-samba-blue-underline {
+  bottom: -0.55em !important;
+  max-height: 20px !important;
+}
+
+/* ==========================================================================
+   2. Level Selection Buttons & Tabs
+   ========================================================================== */
+html:not([lang="en"]) .programs-page-container .bottomBoxMain .shrink-0 {
+  flex-wrap: wrap !important;
+  gap: 0.5rem !important;
+}
+
+html:not([lang="en"]) .programs-page-container .bottomBoxMain button {
+  white-space: normal !important;
+  text-align: center !important;
+  font-size: clamp(11px, 1vw, 14px) !important;
+  padding: 0.5rem 0.75rem !important;
+  line-height: 1.2 !important;
+}
+
+/* ==========================================================================
+   3. Quadrants, Cards, and Feature Grids
+   ========================================================================== */
+html:not([lang="en"]) .programs-page-container div[class*="rounded-3xl"] h3 {
+  font-size: clamp(16px, 1.4vw, 22px) !important;
+  line-height: 1.25 !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .programs-page-container div[class*="min-h-"] p {
+  font-size: clamp(12px, 1.05vw, 15px) !important;
+  line-height: 1.4 !important;
+  word-break: break-word !important;
+}
+
+/* ==========================================================================
+   4. Buttons & Action Links
+   ========================================================================== */
+html:not([lang="en"]) .programs-page-container a[href*="book"],
+html:not([lang="en"]) .programs-page-container a[href*="find"],
+html:not([lang="en"]) .programs-page-container button {
+  white-space: normal !important;
+  text-align: center !important;
+  font-size: clamp(13px, 1.1vw, 17px) !important;
+  line-height: 1.2 !important;
+  word-break: break-word !important;
+}
+
+/* ==========================================================================
+   5. RTL / Arabic Support
+   ========================================================================== */
+html[lang="ar"] .programs-page-container {
+  direction: rtl;
+  text-align: right;
+}
+
+html[lang="ar"] .programs-page-container .text-left {
+  text-align: right !important;
+}
+
+/* Road to Rio Hero: Text stays on the LEFT over the green mountains,
+   leaving the running kids and trophy on the RIGHT 100% visible */
+@media (min-width: 768px) {
+  html[lang="ar"] .programs-page-container .rio-hero-text-content {
+    max-width: 360px !important;
+    margin-right: auto !important;
+    margin-left: 0 !important;
+    text-align: right !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  html[lang="ar"] .programs-page-container .rio-hero-text-content {
+    max-width: 440px !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  html[lang="ar"] .programs-page-container .rio-hero-text-content {
+    max-width: 480px !important;
+  }
+}
+
+/* Weekly Classes: Maintain LTR grid orientation so the Stadium Map stays on the LEFT
+   and the Arabic description text stays on the RIGHT (Screenshot 3 fix) */
+html[lang="ar"] .programs-page-container .rio-weekly-grid {
+  direction: ltr !important;
+}
+
+html[lang="ar"] .programs-page-container .rio-weekly-text-content {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+/* Showcase Week: Maintain LTR grid orientation so the text stays on the LEFT
+   and the 3D winding mountain path + mascot stays on the RIGHT (Screenshot 4 fix) */
+html[lang="ar"] .programs-page-container .showcase-week-grid {
+  direction: ltr !important;
+}
+
+html[lang="ar"] .programs-page-container .showcase-week-text {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+/* Starter Pack 4 Cards: Images move to the LEFT edge and text aligns to the RIGHT (Screenshot 5 fix) */
+html[lang="ar"] .programs-page-container .starter-pack-image {
+  right: auto !important;
+  left: -10px !important;
+}
+
+@media (min-width: 1024px) {
+  html[lang="ar"] .programs-page-container .starter-pack-image {
+    left: -18px !important;
+    right: auto !important;
+  }
+}
+
+html[lang="ar"] .programs-page-container .starter-pack-text {
+  margin-right: 0 !important;
+  margin-left: auto !important;
+  text-align: right !important;
+}
+

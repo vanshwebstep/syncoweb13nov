@@ -1,0 +1,148 @@
+/* ==========================================================================
+   Blog Page Translated Typography & Layout Adjustments
+   STRICTLY scoped to html:not([lang="en"]) .blog-page-container
+   NEVER applies when English (lang="en") is active, preserving 100% Figma design
+   ========================================================================== */
+
+/* Universal font tag reset within translated Blog Page */
+html:not([lang="en"]) .blog-page-container font {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  vertical-align: baseline !important;
+}
+
+/* Disable hardcoded English line breaks in translated mode */
+html:not([lang="en"]) .blog-page-container br {
+  display: none !important;
+}
+
+/* ==========================================================================
+   1. Headings & Subheadings
+   ========================================================================== */
+html:not([lang="en"]) .blog-page-container h1 {
+  font-size: clamp(2rem, 3.8vw, 3.25rem) !important;
+  line-height: 1.15 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .blog-page-container h2 {
+  font-size: clamp(1.65rem, 3vw, 2.5rem) !important;
+  line-height: 1.2 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .blog-page-container h3 {
+  font-size: clamp(1.15rem, 1.8vw, 1.55rem) !important;
+  line-height: 1.25 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .blog-page-container h1 span,
+html:not([lang="en"]) .blog-page-container h2 span,
+html:not([lang="en"]) .blog-page-container h3 span {
+  font-size: inherit !important;
+  line-height: inherit !important;
+  word-break: break-word !important;
+}
+
+/* ==========================================================================
+   2. Category Filter & Buttons
+   ========================================================================== */
+html:not([lang="en"]) .blog-page-container h2.whitespace-nowrap {
+  white-space: normal !important;
+  font-size: clamp(16px, 1.6vw, 24px) !important;
+  line-height: 1.2 !important;
+}
+
+html:not([lang="en"]) .blog-page-container .rounded-full button,
+html:not([lang="en"]) .blog-page-container button.rounded-full {
+  white-space: normal !important;
+  font-size: clamp(12px, 1vw, 14px) !important;
+  line-height: 1.2 !important;
+}
+
+/* ==========================================================================
+   3. Blog Cards & Post Titles
+   ========================================================================== */
+html:not([lang="en"]) .blog-page-container p {
+  line-height: 1.5 !important;
+  word-break: break-word !important;
+}
+
+/* ==========================================================================
+   4. RTL / Arabic Support
+   ========================================================================== */
+html[lang="ar"] .blog-page-container {
+  direction: rtl;
+  text-align: right;
+}
+
+html[lang="ar"] .blog-page-container .text-left {
+  text-align: right !important;
+}
+
+html[lang="ar"] .blog-page-container ul[role="listbox"] button {
+  text-align: right !important;
+}
+
+/* Maintain featured blog card copy on the LEFT on desktop so it sits over the green
+   leopard pattern and never overlaps the kids playing soccer on the right (Screenshot media_1793017494320.png fix) */
+@media (min-width: 768px) {
+  html[lang="ar"] .blog-page-container .featured-blog-card-flex {
+    direction: ltr !important;
+  }
+
+  html[lang="ar"] .blog-page-container .featured-blog-copy {
+    direction: rtl !important;
+    text-align: right !important;
+    width: 50% !important;
+    max-width: 500px !important;
+    margin-right: auto !important;
+    margin-left: 0 !important;
+    padding-right: 2.5rem !important;
+    padding-left: 1.5rem !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  html[lang="ar"] .blog-page-container .featured-blog-copy {
+    padding-right: 4.5rem !important;
+    max-width: 560px !important;
+  }
+}
+
+/* Instagram Section: Keep text pinned to the LEFT on desktop over the blue pattern,
+   completely clearing the 3 kids celebrating on the right (Screenshot media_1793020621216.png fix) */
+@media (min-width: 768px) {
+  html[lang="ar"] .blog-page-container .instagram-banner-card {
+    padding-right: 1.5rem !important;
+    padding-left: 2rem !important;
+  }
+
+  html[lang="ar"] .blog-page-container .instagram-banner-copy {
+    margin-right: auto !important;
+    margin-left: 0 !important;
+    text-align: right !important;
+    width: 48% !important;
+    max-width: 480px !important;
+  }
+
+  html[lang="ar"] .blog-page-container .instagram-banner-btn {
+    margin-right: 0 !important;
+    margin-left: auto !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  html[lang="ar"] .blog-page-container .instagram-banner-card {
+    padding-left: 5rem !important;
+    padding-right: 2rem !important;
+  }
+
+  html[lang="ar"] .blog-page-container .instagram-banner-copy {
+    max-width: 520px !important;
+  }
+}
+

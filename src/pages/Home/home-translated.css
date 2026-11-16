@@ -1,0 +1,348 @@
+/* ==========================================================================
+   Home Page Translated Typography & Layout Adjustments
+   STRICTLY scoped to html:not([lang="en"]) .home-page-container
+   NEVER applies when English (lang="en") is active, preserving 100% Figma design
+   ========================================================================== */
+
+/* Universal font tag reset within translated Home Page */
+html:not([lang="en"]) .home-page-container font {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  vertical-align: baseline !important;
+}
+
+/* Disable hardcoded English line breaks in translated mode so text wraps naturally */
+html:not([lang="en"]) .home-page-container br {
+  display: none !important;
+}
+
+/* ==========================================================================
+   1. Headings & Typography (When in non-English mode)
+   ========================================================================== */
+html:not([lang="en"]) .home-page-container h1 {
+  font-size: clamp(2rem, 4vw, 3.5rem) !important;
+  line-height: 1.15 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .home-page-container h2 {
+  font-size: clamp(1.85rem, 3.8vw, 3.25rem) !important;
+  line-height: 1.15 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .home-page-container h3 {
+  font-size: clamp(1.25rem, 2vw, 1.85rem) !important;
+  line-height: 1.2 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .home-page-container h4 {
+  font-size: clamp(14px, 1.2vw, 18px) !important;
+  line-height: 1.25 !important;
+  word-break: break-word !important;
+}
+
+/* Inner spans inside headings inherit clamped parent sizes */
+html:not([lang="en"]) .home-page-container h1 span,
+html:not([lang="en"]) .home-page-container h2 span,
+html:not([lang="en"]) .home-page-container h3 span {
+  font-size: inherit !important;
+  line-height: inherit !important;
+}
+
+/* AdventureSection: One big adventure Heading in Non-English */
+html:not([lang="en"]) .home-page-container .adventure-heading-top {
+  font-size: clamp(2.6rem, 4.6vw, 4.38rem) !important;
+  line-height: 1.05 !important;
+  word-break: normal !important;
+}
+
+html:not([lang="en"]) .home-page-container .adventure-heading-bottom {
+  font-size: clamp(2.6rem, 4.6vw, 4.38rem) !important;
+  line-height: 1.05 !important;
+  word-break: normal !important;
+}
+
+/* Road to Rio 38 Sessions Badge: nicely proportioned and prominent */
+html:not([lang="en"]) .home-page-container .road-to-rio-badge {
+  max-width: 175px !important;
+  min-width: 130px !important;
+  width: auto !important;
+  padding: 0.85rem 1.1rem !important;
+  align-self: flex-end !important;
+}
+
+html:not([lang="en"]) .home-page-container .road-to-rio-badge .road-to-rio-badge-top {
+  font-size: clamp(11px, 1.05vw, 16px) !important;
+  line-height: 1.15 !important;
+  white-space: normal !important;
+  word-break: normal !important;
+  text-align: center !important;
+}
+
+html:not([lang="en"]) .home-page-container .road-to-rio-badge .road-to-rio-badge-number {
+  font-size: clamp(42px, 4.4vw, 72px) !important;
+  line-height: 1 !important;
+  margin: 0.25rem 0 !important;
+}
+
+html:not([lang="en"]) .home-page-container .road-to-rio-badge .road-to-rio-badge-bottom {
+  font-size: clamp(15px, 1.4vw, 24px) !important;
+  line-height: 1.1 !important;
+  text-align: center !important;
+}
+
+/* ==========================================================================
+   2. Cards & Containers (Quadrants, Philosophy, Testimonials)
+   ========================================================================== */
+html:not([lang="en"]) .home-page-container .truncate {
+  white-space: normal !important;
+  text-overflow: clip !important;
+  overflow: visible !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .home-page-container .philosophy-card {
+  min-height: 230px !important;
+}
+
+/* ==========================================================================
+   Home Hero Section (Non-English / Translated Viewport Optimization)
+   Prevents excessive vertical height from pushing CTA buttons off-screen
+   ========================================================================== */
+html:not([lang="en"]) .home-page-container .home-hero-container {
+  padding-top: clamp(28px, 3.5vw, 48px) !important;
+  padding-bottom: clamp(60px, 6vw, 90px) !important;
+}
+
+html:not([lang="en"]) .home-page-container .home-hero-content {
+  padding-top: clamp(8px, 1.2vw, 16px) !important;
+  padding-bottom: clamp(60px, 6vw, 90px) !important;
+}
+
+html:not([lang="en"]) .home-page-container .home-hero-title-box {
+  min-height: 0 !important;
+  height: auto !important;
+  margin-bottom: 0.5rem !important;
+}
+
+html:not([lang="en"]) .home-page-container .home-hero-heading {
+  white-space: normal !important;
+  word-break: break-word !important;
+  line-height: 1.15 !important;
+  font-size: clamp(2rem, 3.8vw, 3.75rem) !important;
+}
+
+html:not([lang="en"]) .home-page-container .home-hero-title-prefix {
+  display: block !important;
+  font-size: clamp(2rem, 3.8vw, 3.75rem) !important;
+  line-height: 1.15 !important;
+  margin-right: 0 !important;
+  margin-bottom: 0.25rem !important;
+}
+
+html:not([lang="en"]) .home-page-container .home-hero-animated-word {
+  height: auto !important;
+  min-height: 1.15em !important;
+  display: flex !important;
+  align-items: center !important;
+  line-height: 1.05 !important;
+}
+
+html:not([lang="en"]) .home-page-container .home-hero-animated-word span {
+  font-size: clamp(3.2rem, 6.8vw, 5.8rem) !important;
+  line-height: 1.05 !important;
+  min-height: 1.15em !important;
+  display: inline-block !important;
+}
+
+html:not([lang="en"]) .home-page-container .home-hero-subtitle {
+  font-size: clamp(16px, 1.35vw, 20px) !important;
+  line-height: 1.5 !important;
+  max-width: 960px !important;
+  padding-top: 0.35rem !important;
+}
+
+html:not([lang="en"]) .home-page-container .home-hero-buttons {
+  padding-top: clamp(1rem, 1.6vw, 1.5rem) !important;
+  gap: 0.85rem !important;
+}
+
+html:not([lang="en"]) .home-page-container .home-hero-buttons a,
+html:not([lang="en"]) .home-page-container .home-hero-buttons a[href*="book"],
+html:not([lang="en"]) .home-page-container .home-hero-buttons a[href*="find"] {
+  font-size: clamp(16px, 1.3vw, 21px) !important;
+  padding: 0.85rem 1.85rem !important;
+  line-height: 1.25 !important;
+  width: auto !important;
+  white-space: nowrap !important;
+}
+
+html[lang="ar"] .home-page-container .home-hero-buttons {
+  justify-content: flex-start !important;
+}
+
+/* ==========================================================================
+   3. Buttons & Action Links
+   ========================================================================== */
+html:not([lang="en"]) .home-page-container a[href*="book"],
+html:not([lang="en"]) .home-page-container a[href*="find"],
+html:not([lang="en"]) .home-page-container button {
+  white-space: normal !important;
+  text-align: center !important;
+  font-size: clamp(13px, 1.1vw, 16.5px) !important;
+  line-height: 1.2 !important;
+  word-break: break-word !important;
+}
+
+/* ==========================================================================
+   4. RTL / Arabic Support
+   ========================================================================== */
+html[lang="ar"] .home-page-container {
+  direction: rtl;
+  text-align: right;
+}
+
+html[lang="ar"] .home-page-container .text-left {
+  text-align: right !important;
+}
+
+html[lang="ar"] .home-page-container .md\:text-left {
+  text-align: right !important;
+}
+
+/* 6 Persona Cards Typography in Non-English */
+html:not([lang="en"]) .home-page-container .persona-card-text {
+  max-width: 72% !important;
+}
+
+html:not([lang="en"]) .home-page-container .persona-card-text h3 {
+  font-size: clamp(18.5px, 1.55vw, 23px) !important;
+  line-height: 1.15 !important;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+}
+
+html:not([lang="en"]) .home-page-container .persona-card-text p {
+  font-size: clamp(13px, 1.05vw, 15px) !important;
+  line-height: 1.45 !important;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+}
+
+/* 6 Persona Cards RTL: Mirror background image to swap child photo & solid wave */
+html[lang="ar"] .home-page-container .persona-card-bg {
+  transform: scaleX(-1);
+}
+
+html[lang="ar"] .home-page-container .persona-card:hover .persona-card-bg {
+  transform: scaleX(-1) scale(1.03);
+}
+
+html[lang="ar"] .home-page-container .persona-card-text {
+  text-align: right !important;
+  margin-right: 0 !important;
+  margin-left: auto !important;
+}
+
+/* Flying Football Graphic in PathwaySection */
+html[lang="ar"] .home-page-container .pathway-flying-ball {
+  left: auto !important;
+  right: 4rem !important;
+  transform: scaleX(-1);
+}
+
+@media (min-width: 1280px) {
+  html[lang="ar"] .home-page-container .pathway-flying-ball {
+    right: 8rem !important;
+  }
+}
+
+/* AdventureSection Sticker Album & Text RTL positioning */
+@media (min-width: 768px) {
+  html[lang="ar"] .home-page-container .adventure-sticker-image {
+    left: auto !important;
+    right: 0 !important;
+  }
+
+  html[lang="ar"] .home-page-container .adventure-text-content {
+    margin-right: auto !important;
+    margin-left: 0 !important;
+    text-align: right !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  html[lang="ar"] .home-page-container .adventure-sticker-image {
+    right: -1rem !important;
+  }
+}
+
+@media (min-width: 1536px) {
+  html[lang="ar"] .home-page-container .adventure-sticker-image {
+    right: -2.5rem !important;
+  }
+}
+
+/* CoachingSection photo blob */
+@media (min-width: 1280px) {
+  html[lang="ar"] .home-page-container .coaching-photo-blob {
+    left: auto !important;
+    right: -1rem !important;
+  }
+}
+
+@media (min-width: 1536px) {
+  html[lang="ar"] .home-page-container .coaching-photo-blob {
+    left: auto !important;
+    right: -2.5rem !important;
+  }
+}
+
+html[lang="ar"] .home-page-container .coaching-text-content {
+  margin-right: auto !important;
+  margin-left: 0 !important;
+  text-align: right !important;
+}
+
+/* ==========================================================================
+   5. QuoteBanner Section (Screenshot media_1793027586091.png fix)
+   ========================================================================== */
+/* Force top statement into two clean centered lines so it never collides with background leaves */
+html:not([lang="en"]) .home-page-container .quote-banner-line {
+  display: block !important;
+  text-align: center !important;
+}
+
+html[lang="ar"] .home-page-container .quote-banner-top-text {
+  max-width: 650px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+}
+
+/* Keep the quote green arch on the LEFT edge on desktop */
+html[lang="ar"] .home-page-container .quote-banner-layer {
+  left: 0 !important;
+  right: auto !important;
+}
+
+/* Promise cards in RTL */
+html[lang="ar"] .home-page-container .quote-promise-card {
+  direction: rtl !important;
+  text-align: right !important;
+  padding: 1.25rem 1.5rem !important;
+}
+
+html[lang="ar"] .home-page-container .quote-promise-title {
+  font-size: clamp(17px, 1.4vw, 22px) !important;
+  line-height: 1.2 !important;
+}
+
+html[lang="ar"] .home-page-container .quote-promise-desc {
+  font-size: clamp(13px, 1.05vw, 16px) !important;
+  line-height: 1.3 !important;
+}

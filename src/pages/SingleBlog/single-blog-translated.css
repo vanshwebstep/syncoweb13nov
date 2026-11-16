@@ -1,0 +1,101 @@
+/* ==========================================================================
+   Single Blog Page Translated Typography & Layout Adjustments
+   STRICTLY scoped to html:not([lang="en"]) .single-blog-page-container
+   NEVER applies when English (lang="en") is active, preserving 100% Figma design
+   ========================================================================== */
+
+/* Universal font tag reset within translated Single Blog Page */
+html:not([lang="en"]) .single-blog-page-container font {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  vertical-align: baseline !important;
+}
+
+/* Disable hardcoded English line breaks in translated mode */
+html:not([lang="en"]) .single-blog-page-container br {
+  display: none !important;
+}
+
+/* ==========================================================================
+   1. Headings & Article Title
+   ========================================================================== */
+html:not([lang="en"]) .single-blog-page-container h1 {
+  font-size: clamp(1.85rem, 3.5vw, 2.85rem) !important;
+  line-height: 1.15 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .single-blog-page-container h2 {
+  font-size: clamp(1.5rem, 2.8vw, 2.25rem) !important;
+  line-height: 1.2 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .single-blog-page-container h3 {
+  font-size: clamp(1.15rem, 1.8vw, 1.55rem) !important;
+  line-height: 1.25 !important;
+  word-break: break-word !important;
+}
+
+html:not([lang="en"]) .single-blog-page-container h1 span,
+html:not([lang="en"]) .single-blog-page-container h2 span,
+html:not([lang="en"]) .single-blog-page-container h3 span {
+  font-size: inherit !important;
+  line-height: inherit !important;
+  word-break: break-word !important;
+}
+
+/* ==========================================================================
+   2. Article Body & Content
+   ========================================================================== */
+html:not([lang="en"]) .single-blog-page-container p {
+  line-height: 1.65 !important;
+  word-break: break-word !important;
+}
+
+/* ==========================================================================
+   3. RTL / Arabic Support
+   ========================================================================== */
+html[lang="ar"] .single-blog-page-container {
+  direction: rtl;
+  text-align: right;
+}
+
+html[lang="ar"] .single-blog-page-container .text-left {
+  text-align: right !important;
+}
+
+/* Instagram Section: Keep text pinned to the LEFT on desktop over the blue pattern,
+   completely clearing the 3 kids celebrating on the right (Screenshot media_1793020621216.png fix) */
+@media (min-width: 768px) {
+  html[lang="ar"] .single-blog-page-container .instagram-banner-card {
+    padding-right: 1.5rem !important;
+    padding-left: 2rem !important;
+  }
+
+  html[lang="ar"] .single-blog-page-container .instagram-banner-copy {
+    margin-right: auto !important;
+    margin-left: 0 !important;
+    text-align: right !important;
+    width: 48% !important;
+    max-width: 480px !important;
+  }
+
+  html[lang="ar"] .single-blog-page-container .instagram-banner-btn {
+    margin-right: 0 !important;
+    margin-left: auto !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  html[lang="ar"] .single-blog-page-container .instagram-banner-card {
+    padding-left: 4.5rem !important;
+    padding-right: 2rem !important;
+  }
+
+  html[lang="ar"] .single-blog-page-container .instagram-banner-copy {
+    max-width: 520px !important;
+  }
+}
