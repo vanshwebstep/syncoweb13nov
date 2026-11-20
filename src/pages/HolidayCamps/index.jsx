@@ -56,7 +56,7 @@ export function HolidayCamps() {
         <Section10 />
 
         {/* Section 11 */}
-        <Section11 />
+        {/* <Section11 /> */}
 
         {/* Section 12 */}
         <Section12 />
@@ -65,7 +65,7 @@ export function HolidayCamps() {
         <Section13 />
 
         {/* Section 14 */}
-        <Section14 />
+        {/* <Section14 /> */}
 
         {/* Section 15 */}
         <Section15 />

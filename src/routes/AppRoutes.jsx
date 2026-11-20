@@ -19,7 +19,10 @@ import Franchise  from "../pages/Franchise"
 import Waitinglist from '../pages/Waitinglist';
 import OfferPage from '../pages/Waitinglist/components/OfferPage';
 import OfferExpired from '../pages/Waitinglist/components/OfferExpired';
-
+import Terms from '../pages/Terms';
+import  PrivacyPolicy from '../pages/PrivacyPolicy';
+import SafeguardingPolicy from '../pages/Safeguarding';
+import AccessibilityStatement from '../pages/Accessibility';
 export function AppRoutes() {
   return (
     <Routes>
@@ -50,7 +53,10 @@ export function AppRoutes() {
       <Route path="/coaches" element={<CoachPage />} />
       <Route path="/venue-managers" element={<VenueManagersPage />} />
       <Route path="/franchise" element={<Franchise />} />
-
+      <Route path="/terms" element={<Terms />} />
+ <Route path='/privacy' element={<PrivacyPolicy />} />
+ <Route path='/safeguarding' element={<SafeguardingPolicy />} />
+ <Route path="/accessibility" element={<AccessibilityStatement />} />
 
       <Route
         path="*"

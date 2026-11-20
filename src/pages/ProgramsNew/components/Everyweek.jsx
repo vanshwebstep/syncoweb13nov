@@ -58,9 +58,9 @@ export function Everyweek() {
 
                         {/* Header Titles */}
                         <div>
-                            <h2 className="recline text-[32px] sm:text-[36px] md:text-[32px] min-[900px]:text-[40px] lg:text-[46px] xl:text-[52px] text-[#042C89] leading-[0.95]">
+                            <h2 className="recline text-[48px] sm:text-[48px] md:text-[48px] min-[900px]:text-[48px] lg:text-[48px] xl:text-[52px] text-[#042C89] leading-[0.95]">
                                 Every week a new {' '}
-                                <span className="gasoek md:block text-[32px] sm:text-[36px] md:text-[34px] min-[900px]:text-[44px] lg:text-[50px] xl:text-[56px] font-normal text-[#0DD180] leading-[0.95] mt-1">
+                                <span className="gasoek md:block text-[48px] sm:text-[48px] md:text-[48px] min-[900px]:text-[44px] lg:text-[50px] xl:text-[56px] font-normal text-[#0DD180] leading-[0.95] mt-1">
                                     skill to master
                                 </span>
                             </h2>
@@ -119,7 +119,7 @@ export function Everyweek() {
                                         <h3 className="gasoek text-[20px] md:text-[19px] min-[900px]:text-[21px] lg:text-[23px] xl:text-[26px] text-white tracking-wider mb-1.5 md:mb-2 mt-2 lg:mt-3">
                                             {card.title}
                                         </h3>
-                                        <p className="text-[12.5px] md:text-[11.5px] min-[900px]:text-[12.5px] lg:text-[13px] xl:text-[14px] poppins font-medium text-white leading-relaxed">
+                                        <p className="text-[14.5px] w-[50%] md:w-full md:text-[11.5px] min-[900px]:text-[12.5px] lg:text-[13px] xl:text-[14px] poppins font-medium text-white leading-relaxed">
                                             {card.desc}
                                         </p>
                                     </div>

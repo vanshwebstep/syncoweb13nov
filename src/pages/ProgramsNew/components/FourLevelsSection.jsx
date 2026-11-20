@@ -74,10 +74,10 @@ export function FourLevelSection() {
 
             {/* Header Title */}
             <div>
-              <h3 className="recline font-extrabold text-[36px] sm:text-[44px] md:text-[36px] min-[900px]:text-[46px] lg:text-[54px] xl:text-[66px] 2xl:text-[74px] text-white leading-[0.95] mt-2">
+              <h3 className="recline font-extrabold text-[61px] sm:text-[44px] md:text-[36px] min-[900px]:text-[46px] lg:text-[54px] xl:text-[66px] 2xl:text-[74px] text-white leading-[0.95] mt-2">
                 Four levels
               </h3>
-              <h2 className="gasoek text-[34px] sm:text-[42px] md:text-[36px] min-[900px]:text-[46px] lg:text-[54px] xl:text-[66px] 2xl:text-[74px] text-[#0DD180] leading-[0.95]">
+              <h2 className="gasoek text-[61px] sm:text-[42px] md:text-[36px] min-[900px]:text-[46px] lg:text-[54px] xl:text-[66px] 2xl:text-[74px] text-[#0DD180] leading-[0.95]">
                 Four roads <br />
                 to Rio
               </h2>

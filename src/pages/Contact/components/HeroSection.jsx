@@ -1,5 +1,6 @@
 import React from 'react';
 import { Container } from '../../../components/common/Container';
+import { ArrowRight, Phone } from 'lucide-react';
 
 const IMAGE_BASE = 'https://webstepdev.com/demo/syncoWebsiteImages/contact';
 const bannerDesktop = `${IMAGE_BASE}/banner.png`;
@@ -9,6 +10,7 @@ const bannerMobile = `${IMAGE_BASE}/banner_mobile_image.png`;
 const bannerLayerSmall = `${IMAGE_BASE}/banner_layer_small.png`;
 const bannerLayerSmallMobile = `${IMAGE_BASE}/banner_layer_small_mobile.png`;
 const TEXT_IMAGE = "https://webstepdev.com/demo/syncoWebsiteImages/coaches/text-button.png"; // bottom white wave (optional)
+const WHITELINE = 'https://webstepdev.com/demo/syncoWebsiteImages/roadtorio/whiteline.png';
 
 export function HeroSection() {
   const handleScrollToMessage = () => {
@@ -56,42 +58,41 @@ export function HeroSection() {
 
       {/* Hero Content */}
       <Container className="relative z-10 w-full ">
-        <div className="contact-hero-text text-left max-w-[660px]">
+         <div className="text-left max-w-[560px] md:max-w-[480px] lg:max-w-[700px]">
           {/* Heading */}
-          <h1 className="gasoek text-[36px] xs:text-[40px] sm:text-[42px] md:text-[42px] lg:text-[45px] xl:text-[64px] leading-[1.2] md:leading-[1.06]">
-            <span className="text-white ">Got a question?</span>
-            <span className="text-[#FFDE14]  text-[46px] sm:text-[48px] md:text-[48px] lg:text-[51px] xl:text-[64px]">We're here  <br className='sm:hidden block' />to help.</span>
+          <h1 className="leading-[1.1]">
+            <span className="recline block font-bold text-white text-[32px] sm:text-[40px] md:text-[34px] lg:text-[52px]">
+              Got a question?
+            </span>
+            <span className="gasoek relative inline-block whitespace-nowrap text-[#FFDE14] text-[30px] sm:text-[42px] md:text-[34px] lg:text-[60px] mt-3">
+              We’re here to help.
+              <img src={WHITELINE} alt="" aria-hidden="true" className="absolute left-0 -bottom-2 w-full h-auto pointer-events-none select-none" />
+            </span>
           </h1>
 
           {/* Subtitle */}
-          <p className="poppins text-white font-bold text-[16px] xl:text-[18px] leading-[1.6] md:py-5 py-4">
-            Whether it's about classes,<br className='sm:hidden block' /> memberships, camps or anything else Samba, send us a message and our team will get back to you.
+          <p className="poppins mt-8 font-medium text-[#042C89] text-[14px] sm:text-[16px] md:text-[14px] lg:text-[17px] leading-[1.6]">
+            Classes, memberships, camps or anything else Samba.
+            <br className="hidden sm:block" />
+            Send us a message and our team will get back to you.
           </p>
 
-          {/* CTA Button */}
-          <div>
+          {/* Buttons */}
+          <div className="mt-7 flex flex-wrap items-center gap-3">
             <button
+              type="button"
               onClick={handleScrollToMessage}
-              className="bg-[#042C89] hover:bg-[#021840] text-white font-bold text-[14px] sm:text-[15px] lg:text-[15.5px] px-6 sm:px-7 py-3 sm:py-3.5 rounded-full hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer poppins shadow-lg inline-flex items-center gap-2"
+              className="poppins inline-flex items-center justify-center gap-2 bg-[#042C89] hover:bg-[#021840] text-white font-bold text-[13px] lg:text-[15px] px-7 lg:px-9 py-3.5 lg:py-4 rounded-full shadow-lg transition-all duration-300 hover:scale-[1.03] active:scale-95 cursor-pointer whitespace-nowrap"
             >
-              <span>Send us a message</span>
-              <span className="text-md font-bold"><img src={TEXT_IMAGE} alt="Scroll down" className="h-[4px] rotate-[90deg]" /></span>
+              Send a message <ArrowRight className="w-4 h-4" />
             </button>
-          </div>
-
-          {/* Translucent Callout Card */}
-          <div className="contact-hero-callout mt-4 sm:mt-5 bg-white/30 backdrop-blur-md rounded-[20px] p-4 sm:px-6 sm:py-5 max-w-full sm:max-w-[520px] lg:max-w-[460px] xl:max-w-[520px]">
-            <p className="poppins font-bold text-[#042C89] text-[12px] md:text-[14px]  leading-snug">
-              Prefer to speak to us?
-            </p>
-            <p className="poppins text-[#042C89] font-bold text-[12px] md:text-[14px]  mt-1.5 leading-[1.7] md:leading-snug">
-              Call{' '}
-              <a href="tel:02072052723" dir="ltr" className="inline-block hover:underline">
-                020 7205 2723
-              </a>{' '} <br  className=" md:hidden block"/>
-              or email{' '}
-              <a href="mailto:admin@sambasoccerschools.com" dir="ltr" className="inline-block hover:underline">admin@sambasoccerschools.com</a>
-            </p>
+            <a
+              href="tel:02072052723"
+              dir="ltr"
+              className="poppins inline-flex items-center justify-center gap-2 border-[1.5px] border-white text-white hover:bg-white hover:text-[#042C89] font-bold text-[13px] lg:text-[15px] px-7 lg:px-9 py-3.5 lg:py-4 rounded-full transition-all duration-300 whitespace-nowrap"
+            >
+              <Phone className="w-4 h-4" /> 020 7205 2723
+            </a>
           </div>
         </div>
       <img

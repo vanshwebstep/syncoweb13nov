@@ -1,81 +1,113 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Plus, Minus } from 'lucide-react';
 import { Container } from '../../../components/common/Container';
-import textureBg from 'https://webstepdev.com/demo/syncoWebsiteImages/every-week.png';
-import managerPhoto from 'https://webstepdev.com/demo/syncoWebsiteImages/venues/coach_1.png';
 import { useVenue } from '../VenueContext';
 
+const DEFAULT_FAQS = [
+  {
+    q: 'Is the first session really free?',
+    a: 'Yes. Book a FREE trial, no card needed. If they love it, choose a plan afterwards.',
+  },
+  {
+    q: 'What should my child wear?',
+    a: 'Comfortable sportswear, trainers and shin pads. Bring a water bottle too.',
+  },
+  {
+    q: 'Can I stay and watch?',
+    a: 'Absolutely. Parents are welcome to stay and watch from the viewing area.',
+  },
+  {
+    q: 'What if my child is shy or a total beginner?',
+    a: 'No problem at all. Our coaches keep every session friendly and fun, and children are grouped by level so they feel confident from day one.',
+  },
+  {
+    q: 'How do the monthly payments work?',
+    a: 'Your first month is pro-rata. After that, you pay monthly by Direct Debit on the 1st.',
+  },
+  {
+    q: 'Can siblings come to the same class?',
+    a: 'Yes. Siblings can join the same class and you will get a sibling discount on your plan.',
+  },
+];
+
 export function AskVenueManagerSection() {
-  const { venue, venueName } = useVenue();
-  const managerName = venue?.managerName || (venue?.admins?.firstName ? `${venue.admins.firstName} ${venue.admins.lastName || ''}`.trim() : "Coach Nilio");
+  const { venue } = useVenue();
+  const [openIndex, setOpenIndex] = useState(0);
+
+  // Dynamic: use API faqs if available, else defaults
+  const apiFaqs = Array.isArray(venue?.faqs)
+    ? venue.faqs
+        .map((f) => ({
+          q: f.question || f.q || f.title,
+          a: f.answer || f.a || f.description,
+        }))
+        .filter((f) => f.q && f.a)
+    : [];
+  const faqs = apiFaqs.length > 0 ? apiFaqs : DEFAULT_FAQS;
 
   return (
-    <section 
-      className="py-16 sm:py-24 text-white relative overflow-hidden font-sans border-t border-white/10"
-      style={{
-        backgroundImage: `url(${textureBg})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundBlendMode: 'soft-light'
-      }}
-    >
-      {/* Right Side Wavy Wave Graphic Overlay */}
-
-      <Container className="relative z-10">
-        <div className="flex flex-col lg:flex-row justify-between gap-8 lg:gap-8 xl:gap-10 items-center max-w-[1090px] mx-auto">
-          
-          {/* Left Column: Heading & Paragraphs */}
-          <div className="w-full max-w-[562px] lg:max-w-[500px] xl:max-w-[562px] space-y-6 text-center lg:text-left">
-            
-            {/* Header Titles */}
-            <div>
-              <h2 className="gasoek text-4xl sm:text-[48px] lg:text-[50px] xl:text-[61px] text-[#FFDE14] leading-none">
-                Got a question?
-              </h2>
-              <h3 className="recline font-extrabold text-3xl sm:text-[44px] lg:text-[48px] xl:text-[57px] text-white leading-tight mt-1">
-                Ask {managerName}
-              </h3>
-            </div>
-
-            {/* Subtitles */}
-            <div className="space-y-1.5 text-white poppins pt-2">
-              <h4 className="font-extrabold sm:text-[22px] text-white">
-                Not sure which class to choose?
-              </h4>
-              <p className="text-white text-[22px]">
-                Wondering what happens at their first session?
-                {managerName} is here to help.
-              </p>
-             
-            </div>
-
-          </div>
-
-          {/* Right Column: White Venue Manager Card */}
-          <div className="w-full max-w-[440px] lg:max-w-[380px] xl:max-w-[440px] flex justify-center lg:justify-end">
-            <div className="bg-white rounded-[34px] p-5 shadow-2xl space-y-3 w-full border border-slate-100 text-[#052975] transform hover:-translate-y-1 transition-transform">
-              
-              {/* Photo Container */}
-              <div className="rounded-2xl overflow-hidden shadow-sm h-52 sm:h-70 border border-slate-100 bg-slate-100">
-                <img
-                  src={managerPhoto}
-                  alt={`${managerName} - Venue Manager`}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-
-              {/* Text Labels */}
-              <div className="pt-1">
-                <h4 className="gasoek text-[27px] leading-none text-[#052975]">
-                  {managerName}
-                </h4>
-                <span className="recline font-bold text-xs sm:text-[27px] text-[#052975] block pt-3">
-                  Venue Manager
-                </span>
-              </div>
-
+    <section className="py-12 sm:py-16 bg-white poppins">
+      <Container>
+        <div className="max-w-[760px] mx-auto">
+          {/* Heading */}
+          <div className="text-center">
+            <span className="block text-[13px] font-semibold uppercase tracking-wider text-[#00A6E3]">
+              FAQs
+            </span>
+            <h2 className="recline font-extrabold text-[40px] leading-none text-[#042C89] mt-3">
+              Questions
+            </h2>
+            <div className="relative inline-block mt-2">
+              <span
+                className="absolute left-0 right-0 bottom-1 h-[6px] bg-[#FFE600] rounded-full"
+                aria-hidden="true"
+              />
+              <span className="gasoek relative text-[50px] leading-none text-[#0DD180]">
+                parents ask.
+              </span>
             </div>
           </div>
 
+          {/* Accordion */}
+          <div className="mt-10 space-y-3">
+            {faqs.map((faq, idx) => {
+              const isOpen = openIndex === idx;
+              return (
+                <div
+                  key={idx}
+                  className="bg-white border border-slate-200 rounded-[22px] px-6 transition-all"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setOpenIndex(isOpen ? -1 : idx)}
+                    aria-expanded={isOpen}
+                    className="w-full flex items-center justify-between gap-4 py-5 text-left cursor-pointer"
+                  >
+                    <span className="text-[17px] font-bold text-[#042C89] leading-snug">
+                      {faq.q}
+                    </span>
+                    <span
+                      className={`w-[30px] h-[30px] rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                        isOpen ? 'bg-[#042C89] text-white' : 'bg-[#EEF3FB] text-[#042C89]'
+                      }`}
+                    >
+                      {isOpen ? (
+                        <Minus className="w-4 h-4" strokeWidth={3} />
+                      ) : (
+                        <Plus className="w-4 h-4" strokeWidth={3} />
+                      )}
+                    </span>
+                  </button>
+
+                  {isOpen && (
+                    <p className="text-[15px] text-slate-700 font-medium leading-relaxed pb-8">
+                      {faq.a}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </Container>
     </section>

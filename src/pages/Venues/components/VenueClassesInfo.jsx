@@ -1,106 +1,367 @@
-import React from 'react';
-import { useSearchParams } from 'react-router-dom';
+import React, { useMemo, useState } from 'react';
+import { ArrowRight, Info } from 'lucide-react';
 import { Container } from '../../../components/common/Container';
-import textureBg from 'https://webstepdev.com/demo/syncoWebsiteImages/skill-tracker.png';
-import { CleanVenueMap } from '../../../components/common/CleanVenueMap';
-
+import { useModal } from '../../../context/ModalContext';
 import { useVenue } from '../VenueContext';
 
-export function VenueClassesInfo() {
-  const { venue, venueName } = useVenue();
+const BASE = 'https://webstepdev.com/demo/syncoWebsiteImages';
+const icon = (name) => `${BASE}/icons/${name}.png`;
+const SWOOSH = `${BASE}/roadtorio/Swoosh.png`;
+const STARTER_BOX = `${BASE}/venues/${encodeURIComponent('Starter pack box')}.png`;
+const RECT_BG = `${BASE}/venues/rectanglebg.png`;
 
-  const infoList = [
-    {
-      title: "Address",
-      value: venue?.address || `Wandsworth High St, ${venueName} SW18 2PU.`,
-      borderColor: "bg-[#0DD180]"
-    },
-    {
-      title: "Parking",
-      value: venue?.hasParking
-        ? (venue.parkingNote && venue.parkingNote.toLowerCase() !== 'yes'
-            ? `Parking available on site. ${venue.parkingNote}`
-            : "Parking available on site.")
-        : (venue ? "No dedicated parking on site." : "Free car park on site, 120 spaces."),
-      borderColor: "bg-[#FFDE14]"
-    },
-    {
-      title: "Facilities",
-      value: venue?.facility ? `${venue.facility} facility with complete amenities.` : "Changing rooms, café & viewing area.",
-      borderColor: "bg-[#0DD180]"
-    },
-    {
-      title: "Indoor/outdoor",
-      value: `${venue?.facility || "Indoor"} sports pitch — all weather.`,
-      borderColor: "bg-[#FFDE14]"
-    },
-    {
-      title: "What to bring",
-      value: "Trainers, water bottle, shin pads.",
-      borderColor: "bg-[#0DD180]"
-    }
-  ];
+/* ====== Defaults (venue / API se na aaye to ye dikhega) ====== */
+const DEFAULT_CLASSES = [
+  { time: '7:15 – 8:15am', ages: '4–5 Years', level: 'Beginner', spotsLeft: 4 },
+  { time: '8:15 – 9:15am', ages: '6–7 Years', level: 'Intermediate', spotsLeft: 12 },
+  { time: '9:15 – 10:15am', ages: '8–12 Years', level: 'Advanced', spotsLeft: 0 },
+];
+
+const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+const parseDate = (v) => {
+  if (v instanceof Date) return v;
+  if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}/.test(v)) {
+    const [y, m, d] = v.slice(0, 10).split('-').map(Number);
+    return new Date(y, m - 1, d);
+  }
+  return new Date(v);
+};
+
+// Agle 4 same-weekday dates (dayIndex: 0=Sun ... 6=Sat)
+const nextDates = (dayIndex = 6, count = 4) => {
+  const out = [];
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + ((dayIndex - d.getDay() + 7) % 7));
+  for (let i = 0; i < count; i++) {
+    out.push(new Date(d));
+    d.setDate(d.getDate() + 7);
+  }
+  return out;
+};
+
+const STATUS = {
+  few: { pill: 'bg-[#FFF1D6] text-[#8A5300]', dot: 'bg-[#F5A623]' },
+  available: { pill: 'bg-[#E3F8EE] text-[#067A4B]', dot: 'bg-[#0DD180]' },
+  full: { pill: 'bg-[#FDE8E8] text-[#C2383D]', dot: 'bg-[#E5484D]' },
+};
+
+// Class object ko normalize karo (API ke alag field names ke liye)
+const normalizeClass = (c) => {
+  const spots = c.spotsLeft ?? c.placesLeft ?? c.availableSpots;
+  const status = c.status || (spots === 0 ? 'full' : spots > 0 && spots <= 5 ? 'few' : 'available');
+  const statusText =
+    c.statusText || (status === 'few' ? `Only ${spots ?? ''} places left`.replace('  ', ' ') : status === 'full' ? 'Fully booked' : 'Spaces available');
+  return {
+    time: c.time || [c.startTime, c.endTime].filter(Boolean).join(' – '),
+    ages: c.ages || c.ageGroup || '',
+    level: c.level || '',
+    status,
+    statusText,
+    raw: c,
+  };
+};
+
+/* =====================================================================
+   1. CLASSES AT {VENUE}
+   ===================================================================== */
+export function VenueClassesInfo({ onBookMembership, onBookTrial, onJoinWaitingList }) {
+  const { venue, venueName } = useVenue();
+  const { openModal } = useModal();
+
+  const name = venue?.venueName || venueName || 'Chelsea Academy';
+  const address = venue?.address || 'Lots Road, London SW10 0AB';
+  const dayIndex = Number.isInteger(venue?.dayIndex) ? venue.dayIndex : 6;
+
+  const dates = useMemo(() => {
+    const list = Array.isArray(venue?.trialDates) && venue.trialDates.length ? venue.trialDates.map(parseDate) : nextDates(dayIndex);
+    return list.slice(0, 4);
+  }, [venue, dayIndex]);
+
+  const classes = useMemo(
+    () => (Array.isArray(venue?.classes) && venue.classes.length ? venue.classes : DEFAULT_CLASSES).map(normalizeClass),
+    [venue]
+  );
+
+  const [activeDate, setActiveDate] = useState(0);
+  const selected = dates[activeDate] || dates[0];
+  const selectedLabel = selected ? `${WEEKDAYS[selected.getDay()]} ${selected.getDate()} ${MONTHS[selected.getMonth()]}` : '';
+
+  const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${name} ${address}`)}`;
+  const scrollTo = (id) => () => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+
+  const handleMembership = (c) => (onBookMembership ? onBookMembership(c.raw, selected) : openModal('booking', { type: 'membership', venue: name, class: c.raw }));
+  const handleTrial = (c) => (onBookTrial ? onBookTrial(c.raw, selected) : openModal('booking', { type: 'trial', venue: name, class: c.raw, date: selected }));
+  const handleWaiting = (c) => (onJoinWaitingList ? onJoinWaitingList(c.raw) : openModal('booking', { type: 'waiting-list', venue: name, class: c.raw }));
+
+  const chipCls =
+    'poppins inline-flex items-center gap-1.5 lg:gap-2 rounded-full bg-white/15 hover:bg-white/25 text-white font-bold text-[11.5px] lg:text-[13px] px-3.5 lg:px-4 py-2 transition-colors cursor-pointer whitespace-nowrap';
 
   return (
-    <section 
-      className="py-16 sm:py-20 sm:pt-[210px] bg-[#f8fafc] -mt-[140px] text-slate-800 relative overflow-hidden font-sans "
-      style={{
-        backgroundImage: `url(${textureBg})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundBlendMode: 'multiply'
-      }}
-    >
+    <section id="class-times" className="mt-12 relative w-full bg-white py-12 sm:py-14 lg:py-16 overflow-hidden">
       <Container className="relative z-10">
-        <div className="flex flex-col lg:flex-row max-w-[1250px] m-auto gap-8 lg:gap-8 xl:gap-[70px] items-stretch">
-          
-          {/* Left Column: Interactive Map Frame */}
-          <div className="w-full lg:w-[440px] xl:w-[588px] flex">
-            <div className="w-full h-full min-h-[380px] sm:min-h-[460px] rounded-[20px] overflow-hidden border-[8px] border-white bg-slate-200 relative">
-              <CleanVenueMap venue={venue} venueName={venueName} />
-            </div>
-          </div>
-
-          {/* Right Column: Section Header & 5 Info Blocks */}
-          <div className="w-full lg:flex-1 space-y-6 flex flex-col justify-between">
-            
-            {/* Header */}
+        <div className="max-w-[1100px] mx-auto">
+          {/* ===== Heading + trial dates ===== */}
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
             <div>
-              <h2 className="recline font-extrabold text-4xl sm:text-5xl md:text-[54px] lg:text-[54px] xl:text-[74px] text-[#042C89] leading-tight md:leading-[1.1] lg:leading-[1.1] xl:leading-[0.7]">
-                Classes at
+              <p className="poppins font-bold text-[#00A6E3] text-[10.5px] lg:text-[13px] tracking-[0.04em] uppercase">
+                Weekly football classes for kids
+              </p>
+              <h2 className="mt-3 leading-[1.1]">
+                <span className="recline block font-bold text-[#042C89] text-[30px] sm:text-[36px] lg:text-[40px]">Classes at</span>
+                <span className="gasoek relative inline-block text-[#0DD180] text-[30px] sm:text-[52px] lg:text-[72px] mt-1">
+                  {name}.
+                  <img src={SWOOSH} alt="" aria-hidden="true" className="absolute left-0 -bottom-2 w-full h-auto pointer-events-none select-none" />
+                </span>
               </h2>
-              <div className="gasoek text-4xl sm:text-5xl md:text-[52px] lg:text-[52px] xl:text-[70px] text-[#0DD180] font-regular leading-none mt-1">
-                {venueName}
-              </div>
-
-              {/* Description */}
-              <p className="text-[#27364B] font-light text-[18px] poppins  leading-relaxed max-w-xl pt-8">
-                You’ll find us at {venueName}, just near central transport links. Ample parking, accessibility, & facility information provided below. Our weekly classes bring the Samba Method to children across {venueName} and local areas.
+              <p className="poppins mt-6 text-[#042C89] text-[15px] lg:text-[17px] leading-relaxed max-w-[420px] lg:max-w-none">
+                Pick your child’s class and book their first session FREE.
               </p>
             </div>
 
-            {/* 5 Key Information Blocks */}
-         <div className="space-y-4 pt-2">
-              {infoList.map((item, idx) => (
-                <div 
-                  key={idx} 
-                  className="relative pl-6 py-1.5"
-                >
-                  <div className={`absolute left-0 top-0 bottom-0 w-[6px] h-full rounded-full ${item.borderColor}`}></div>
-                  <h3 className="recline font-extrabold text-[#042C89] text-base sm:text-[24px] leading-snug">
-                    {item.title}
-                  </h3>
-                  <p className="text-[#475569] font-medium poppins text-xs sm:text-[15px]">
-                    {item.value}
-                  </p>
-                </div>
-              ))}
+            <div className="lg:text-right">
+              <p className="poppins font-semibold text-[#797A88] text-[12px] lg:text-[14px]">Next four trial dates</p>
+              <div className="mt-3 grid grid-cols-4 gap-2.5 lg:flex lg:gap-3 lg:justify-end">
+                {dates.map((d, i) => {
+                  const active = i === activeDate;
+                  return (
+                    <button
+                      key={d.toISOString()}
+                      type="button"
+                      onClick={() => setActiveDate(i)}
+                      className={`poppins w-full lg:w-[74px] rounded-[16px] border py-2.5 lg:py-3 text-center cursor-pointer transition-all ${
+                        active ? 'bg-[#042C89] border-[#042C89]' : 'bg-white border-[#C9D3F0] hover:border-[#042C89]'
+                      }`}
+                    >
+                      <span className={`block font-bold text-[10px] lg:text-[11px] uppercase ${active ? 'text-[#FFDE14]' : 'text-[#797A88]'}`}>
+                        {WEEKDAYS[d.getDay()].slice(0, 3)}
+                      </span>
+                      <span className={`block font-bold text-[24px] lg:text-[28px] leading-none my-1 ${active ? 'text-white' : 'text-[#042C89]'}`}>{d.getDate()}</span>
+                      <span className={`block font-bold text-[9px] lg:text-[10px] uppercase ${active ? 'text-[#FFDE14] lg:text-white/80' : 'text-[#797A88]'}`}>
+                        {MONTHS[d.getMonth()].slice(0, 3)}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-
           </div>
 
+          {/* ===== Timetable card ===== */}
+          <div className="mt-8 rounded-[28px] border border-[#E8ECF5] overflow-hidden shadow-[0_6px_24px_rgba(4,44,137,0.05)] bg-white">
+            {/* Header */}
+            <div className="bg-[#042C89] px-5 sm:px-8 py-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <h3 className="poppins font-bold text-white text-[19px] lg:text-[22px] leading-tight">{name}</h3>
+                <p className="poppins mt-1.5 flex items-center gap-2 text-white/85 text-[11.5px] lg:text-[14px]">
+                  <img src={icon('calwhite')} alt="" className="w-[14px] h-[14px] object-contain" />
+                  {selectedLabel} · {address}
+                </p>
+              </div>
+              <div className="flex flex-nowrap md:flex-wrap gap-2 lg:gap-2.5">
+                <button type="button" onClick={scrollTo('prices')} className={chipCls}>
+                  <img src={icon('poundwhite')} alt="" className="w-[13px] h-[13px] object-contain" /> Prices
+                </button>
+                <a href={mapsLink} target="_blank" rel="noopener noreferrer" className={chipCls}>
+                  <img src={icon('dirwhite')} alt="" className="w-[13px] h-[13px] object-contain" /> Directions
+                </a>
+                <button type="button" onClick={scrollTo('parking')} className={chipCls}>
+                  <img src={icon('parkwhite')} alt="" className="w-[13px] h-[13px] object-contain" /> Parking
+                </button>
+              </div>
+            </div>
+
+            {/* Rows */}
+            <div className="p-3 sm:p-5 space-y-3">
+              {classes.map((c) => {
+                const st = STATUS[c.status] || STATUS.available;
+                return (
+                  <div
+                    key={`${c.time}-${c.ages}`}
+                    className="bg-[#F4F6FB] rounded-[18px] p-4 sm:px-6 lg:py-5 grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-3 lg:grid-cols-[210px_160px_170px_1fr] lg:gap-4"
+                  >
+                    {/* Time */}
+                    <div className="flex items-center gap-2.5 lg:gap-3 lg:order-1">
+                      <img src={icon('clocksky')} alt="" className="w-[18px] h-[18px] object-contain shrink-0" />
+                      <span className="poppins font-bold text-[#042C89] text-[17px] lg:text-[18px] whitespace-nowrap">{c.time}</span>
+                    </div>
+
+                    {/* Status (mobile: time ke right me) */}
+                    <div className="lg:order-3">
+                      <span className={`${st.pill} poppins inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 font-bold text-[10.5px] lg:text-[12.5px] whitespace-nowrap`}>
+                        <span className={`${st.dot} w-1.5 h-1.5 rounded-full`} />
+                        {c.statusText}
+                      </span>
+                    </div>
+
+                    {/* Ages + level (mobile: ek line me) */}
+                    <div className="col-span-2 lg:col-span-1 lg:order-2">
+                      <div className="flex items-baseline gap-2 lg:block">
+                        <p className="poppins font-bold text-[#042C89] text-[15px] lg:text-[17px] leading-tight">{c.ages}</p>
+                        {c.level && (
+                          <p className="poppins text-[#797A88] text-[12.5px] lg:text-[13.5px] lg:mt-0.5">
+                            <span className="lg:hidden mr-2">·</span>
+                            {c.level}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="col-span-2 lg:col-span-1 lg:order-4">
+                      {c.status === 'full' ? (
+                        <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center lg:justify-end">
+                          <span className="poppins text-[#797A88] text-[11.5px] lg:text-[12.5px]">We’ll text you when a place opens.</span>
+                          <button
+                            type="button"
+                            onClick={() => handleWaiting(c)}
+                            className="poppins w-full lg:w-auto bg-[#E6F4FB] hover:bg-[#d3ebf7] text-[#042C89] font-bold text-[14px] px-6 lg:px-8 py-3.5 rounded-full transition-colors cursor-pointer whitespace-nowrap"
+                          >
+                            Join waiting list
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col-reverse gap-3 lg:flex-row lg:flex-wrap lg:items-center lg:justify-end">
+                          <button
+                            type="button"
+                            onClick={() => handleMembership(c)}
+                            className="poppins w-full lg:w-auto bg-white border-[1.5px] border-[#042C89] text-[#042C89] hover:bg-[#042C89] hover:text-white font-bold text-[14px] px-5 lg:px-7 py-3.5 rounded-full transition-all cursor-pointer whitespace-nowrap"
+                          >
+                            Book a membership
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleTrial(c)}
+                            className="poppins w-full lg:w-auto inline-flex items-center justify-center gap-2 bg-[#042C89] hover:bg-[#021840] text-white font-bold text-[14px] lg:text-[15px] px-5 lg:px-7 py-3.5 rounded-full transition-all hover:scale-[1.03] active:scale-95 cursor-pointer whitespace-nowrap"
+                          >
+                            Book FREE trial <ArrowRight className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Note */}
+          <p className="poppins mt-6 flex items-start sm:items-center gap-2.5 font-semibold text-[#042C89] text-[12px] lg:text-[14px]">
+            <Info className="w-4 h-4 text-[#34353B] shrink-0 mt-0.5 sm:mt-0" />
+            Not sure which class? We place children by age, and the coach confirms their level at the trial.
+          </p>
         </div>
       </Container>
     </section>
   );
 }
+
+/* =====================================================================
+   2. HOW THE FREE TRIAL WORKS
+   ===================================================================== */
+const STEPS = [
+  { n: 1, title: 'Book in 2 minutes', desc: 'Pick a class above and book your trial.', c: 'bg-[#0DD180] text-[#042C89]' },
+  { n: 2, title: 'Arrive 10 mins early', desc: 'Meet the coach. Trainers and a water bottle is all they need.', c: 'bg-[#00A6E3] text-[#042C89]' },
+  { n: 3, title: 'Coach finds their level', desc: 'After the session we tell you which group suits them best.', c: 'bg-[#FFDE14] text-[#042C89]' },
+];
+
+export function VenueFirstSession({ onBookTrial }) {
+  const { venue } = useVenue();
+  const { openModal } = useModal();
+
+  // Dynamic: starter pack prices venue/API se aa sakte hain
+  const offerPrice = venue?.starterPackPrice || '£49.99';
+  const normalPrice = venue?.starterPackNormalPrice || '£89.99';
+  const holdHours = venue?.starterPackHoldHours || 24;
+
+  const handleBook = () => {
+    if (onBookTrial) return onBookTrial(venue);
+    const el = document.getElementById('class-times');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    else openModal('booking', { type: 'trial' });
+  };
+
+  return (
+    <section className="relative w-full bg-[#F6F8FC] py-12 sm:py-14 lg:py-16 overflow-hidden">
+      <Container className="relative z-10">
+        <div className="max-w-[1100px] mx-auto">
+          {/* ===== Heading ===== */}
+          <div className="text-center">
+            <p className="poppins font-bold text-[#00A6E3] text-[10.5px] lg:text-[13px] tracking-[0.04em] uppercase">How the free trial works</p>
+            <h2 className="mt-3 leading-[1.1]">
+              <span className="recline block font-bold text-[#042C89] text-[30px] sm:text-[36px] lg:text-[40px]">Your first</span>
+              <span className="gasoek relative inline-block text-[#0DD180] text-[36px] sm:text-[44px] lg:text-[50px] mt-1">
+                session.
+                <img src={SWOOSH} alt="" aria-hidden="true" className="absolute left-0 -bottom-2 w-full h-auto pointer-events-none select-none" />
+              </span>
+            </h2>
+            <p className="poppins mt-8 font-medium text-[#042C89] text-[14px] lg:text-[17px]">
+              Here’s exactly what happens, so you both know what to expect.
+            </p>
+          </div>
+
+          {/* ===== Steps ===== */}
+          <div className="mt-8 lg:mt-12 grid grid-cols-1 md:grid-cols-[1fr_auto_1fr_auto_1fr] items-stretch gap-3 md:gap-3">
+            {STEPS.map((s, i) => (
+              <React.Fragment key={s.n}>
+                <div className="bg-white border border-[#E8ECF5] rounded-[18px] md:rounded-[22px] p-4 md:p-6 lg:p-7 shadow-[0_2px_10px_rgba(4,44,137,0.03)] flex items-start gap-4 md:block">
+                  <span className={`${s.c} poppins w-[34px] h-[34px] md:w-[44px] md:h-[44px] shrink-0 rounded-full flex items-center justify-center font-bold text-[14px] lg:text-[20px]`}>
+                    {s.n}
+                  </span>
+                  <div>
+                    <h3 className="poppins md:mt-6 font-bold text-[#042C89] text-[15px] lg:text-[19px] leading-tight">{s.title}</h3>
+                    <p className="poppins mt-1.5 md:mt-2 text-[#34353B] text-[12.5px] lg:text-[14px] leading-relaxed">{s.desc}</p>
+                  </div>
+                </div>
+                {i < STEPS.length - 1 && (
+                  <div className="hidden md:flex items-center justify-center">
+                    <ArrowRight className="w-4 h-4 text-[#00A6E3]" />
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+
+          {/* ===== Offer banner (rectanglebg) ===== */}
+          <div className="relative mt-8 lg:mt-14">
+            <div
+              className="relative overflow-hidden rounded-[24px] lg:rounded-[28px] bg-[#042C89] bg-cover bg-right-bottom bg-no-repeat px-6 sm:px-8 lg:pl-[240px] lg:pr-10 pt-7 pb-8 lg:py-9 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5"
+              style={{ backgroundImage: `url(${RECT_BG})` }}
+            >
+              <div className="relative z-10 max-w-[560px]">
+                <h3 className="poppins font-bold text-white text-[17px] lg:text-[20px] leading-tight">
+                  <span className="block lg:inline text-[#FFDE14] lg:text-white text-[15px] lg:text-[20px] mb-1 lg:mb-0">Loved it?</span>{' '}
+                  Join within {holdHours} hours of the trial
+                </h3>
+                <p className="poppins mt-2 text-white/85 text-[12.5px] lg:text-[15px] leading-relaxed">
+                  Their place is held for {holdHours} hours and the starter pack is{' '}
+                  <span translate="no" className="notranslate">{offerPrice}</span> instead of{' '}
+                  <span translate="no" className="notranslate">{normalPrice}</span>.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleBook}
+                className="poppins relative z-10 inline-flex items-center justify-center gap-2 bg-[#FFDE14] hover:bg-[#f2d100] text-[#042C89] font-bold text-[14px] lg:text-[16px] px-7 lg:px-9 py-3.5 lg:py-4 rounded-full shadow-md transition-all duration-300 hover:scale-[1.03] active:scale-95 cursor-pointer whitespace-nowrap self-start lg:self-auto"
+              >
+                Book a FREE trial <ArrowRight className="w-4 h-4 lg:w-5 lg:h-5" />
+              </button>
+            </div>
+
+            {/* Starter pack image: mobile = bottom-right (andar), desktop = top-left (bahar nikla hua) */}
+            <img
+              src={STARTER_BOX}
+              alt="Samba starter pack"
+              className="absolute z-20 right-3 bottom-3 w-[122px] h-[119px] lg:right-auto lg:bottom-auto lg:left-6 lg:-top-8 lg:w-[184px] lg:h-[179px] object-contain pointer-events-none select-none drop-shadow-xl"
+            />
+          </div>
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+export default VenueClassesInfo;

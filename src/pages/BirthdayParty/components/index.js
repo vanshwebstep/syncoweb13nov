@@ -2,7 +2,7 @@ export { HeroBanner } from './HeroBanner';
 export { PlentyOfSamba } from './PlentyOfSamba';
 export { MomentOfTheDay } from './MomentOfTheDay';
 export { OrganiseSection } from './OrganiseSection';
-export { PartiesSection } from './PartiesSection';
+export { VenueParentsAllRoadsSection } from './PartiesSection';
 export { PickAParty } from './PickAParty';
 export { ReadyToStart } from './ReadyToStart';
 export { SambaApplication } from './SambaApplication';

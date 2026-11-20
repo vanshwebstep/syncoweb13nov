@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
-import { Facebook, Instagram, Youtube, Linkedin, Twitter, ShoppingCart } from 'lucide-react';
-
+import { Mail, Instagram } from 'lucide-react';
 import { Container } from '../../../components/common/Container';
-import joinmailinglist from 'https://webstepdev.com/demo/syncoWebsiteImages/blog/joinmailinglist.png';
-import joinmailinglistMobile from 'https://webstepdev.com/demo/syncoWebsiteImages/blog/mailing_mobile.png';
-import followoninstabg from 'https://webstepdev.com/demo/syncoWebsiteImages/blog/followoninstabg.png';
-import followoninstabgMb from 'https://webstepdev.com/demo/syncoWebsiteImages/blog/faqBg.png';
-import mobileImage from 'https://webstepdev.com/demo/syncoWebsiteImages/blog/img-kids-picture-2.png';
 
-function MailingListBanner() {
+const IMG = 'https://webstepdev.com/demo/syncoWebsiteImages/blog';
+const newsletterBg = `${IMG}/Newsletter.png`;
+const kidsCelebrating = `${IMG}/Kidscelebrating.png`;
+const clips = [1, 2, 3, 4, 5].map((n) => `${IMG}/clip${n}.png`);
+
+function NewsletterBanner() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState('idle'); // idle | success | error
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const isValid = /^\S+@\S+\.\S+$/.test(email);
-    if (!isValid) {
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
       setStatus('error');
       return;
     }
@@ -24,111 +22,153 @@ function MailingListBanner() {
   };
 
   return (
-    <div
-      className="relative overflow-hidden rounded-[32px] bg-cover bg-center bg-no-repeat bg-[image:var(--bg-mobile)] md:bg-[image:var(--bg-desktop)]"
-      style={{
-        '--bg-mobile': `url(${joinmailinglistMobile})`,
-        '--bg-desktop': `url(${joinmailinglist})`,
-      }}
-    >
-      <div className="relative md:text-center lg:text-start flex flex-col items-start gap-6 px-6 py-6 lg:flex-row md:items-center lg:justify-between md:px-12">
-        <div>
-          <h2 className="text-[36px] gasoek tracking-[2px]  text-[#042C89] md:text-[38px]">
-            Join our Mailing List
+    <div className="relative mt-6 md:mt-16">
+      <div
+        className="relative overflow-visible rounded-[28px] bg-[#0DD180] bg-cover bg-center bg-no-repeat md:min-h-[250px]"
+        style={{ backgroundImage: `url(${newsletterBg})` }}
+      >
+        <div className="relative z-10 px-6 py-10 md:w-[68%] md:px-[40px] md:py-[50px] lg:px-[40px]">
+          <h2 className="recline text-[24px] leading-[1.2] text-[#042C89] md:text-[30px]">
+            Football tips for parents,
           </h2>
-          <p className="mt-2 text-base font-bold text-[#042C89] tracking-[0.6px]  md:text-[18px]">
-            Sign-up for the SSS Newsletter
+          <h2 className="gasoek mt-1 text-[30px] leading-[1.15] text-white md:text-[40px]">
+            straight to your inbox.
+          </h2>
+
+          <p className="poppins mt-3 text-[13px] font-semibold leading-[1.5] text-[#042C89] md:text-[15px]">
+            Two emails a month. New articles, drills to try at home and camp dates. No spam.
           </p>
+
+          <form
+            onSubmit={handleSubmit}
+            className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center"
+          >
+            <div className="flex flex-col sm:w-[340px] lg:w-[400px]">
+              <div className="flex items-center rounded-full bg-white px-5 py-3.5">
+                <Mail className="h-4 w-4 shrink-0 text-[#042C89]" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (status !== 'idle') setStatus('idle');
+                  }}
+                  placeholder="Your email address"
+                  className="poppins ml-3 w-full min-w-0 bg-transparent text-[15px] text-[#042C89] outline-none placeholder:text-[#64748B]"
+                />
+              </div>
+              {status === 'error' && (
+                <span className="poppins mt-1 pl-4 text-[12px] font-semibold text-red-700">
+                  Please enter a valid email
+                </span>
+              )}
+              {status === 'success' && (
+                <span className="poppins mt-1 pl-4 text-[12px] font-semibold text-[#042C89]">
+                  Thanks, you're subscribed!
+                </span>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="poppins whitespace-nowrap rounded-full bg-[#042C89] px-10 py-3.5 text-[15px] font-bold text-white transition-colors hover:bg-[#031f63]"
+            >
+              Subscribe
+            </button>
+          </form>
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="flex w-full flex-col gap-3 md:mt-0 mt-4 sm:flex-row sm:items-center md:w-auto"
-        >
-          <div className="flex flex-col">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                if (status !== 'idle') setStatus('idle');
-              }}
-              placeholder="Enter your Email"
-              className="w-full rounded-full bg-white/90 px-6 py-3 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#042C89] sm:w-72"
-            />
-            {status === 'error' && (
-              <span className="mt-1 text-xs font-semibold text-red-700">
-                Please enter a valid email
-              </span>
-            )}
-            {status === 'success' && (
-              <span className="mt-1 text-xs font-semibold text-[#042C89]">
-                Thanks — you're subscribed!
-              </span>
-            )}
-          </div>
-
-          <button
-            type="submit"
-            className="whitespace-nowrap rounded-full bg-[#042C89] px-8 py-3 text-sm font-bold text-white transition-colors hover:bg-[#0a1172]/90"
-          >
-            Subscribe
-          </button>
-        </form>
+        {/* Kids image: desktop pe card se bahar nikalti hui */}
+        <img
+          src={kidsCelebrating}
+          alt="Kids celebrating"
+          className="pointer-events-none absolute bottom-[-30px] right-[4%] z-10 hidden h-[125%] w-auto max-w-none md:block"
+        />
       </div>
+
+      {/* Mobile image */}
+      <img
+        src={kidsCelebrating}
+        alt="Kids celebrating"
+        className="mx-auto -mt-4 block w-[200px] md:hidden"
+      />
     </div>
   );
 }
 
 function InstagramSection() {
   return (
-    <div
-      className="instagram-banner-card relative overflow-hidden py-8 md:py-0 rounded-[32px] lg:ps-[80px] px-6 md:my-14 my-10 bg-cover bg-center bg-no-repeat bg-[image:var(--bg-mobile)] md:bg-[image:var(--bg-desktop)]"
-      style={{
-        '--bg-mobile': `url(${followoninstabgMb})`,
-        '--bg-desktop': `url(${followoninstabg})`,
-      }}
-    >
-      <div className="instagram-banner-copy relative flex h-full flex-col justify-center gap-4  md:py-8 md:w-[450px] lg:w-[510px] w-full md:gap-6  md:py-12">
-        <h2 className="text-4xl gasoek leading-[1.2] text-white lg:text-[48px] tracking-[0.2px] ">
-          Follow us
-          <br />
-          on <span className="text-[#FFDE14]">Instagram</span>
-        </h2>
-
-        <p className=" font-semibold tracking-[0.2px] leading-[24.5px] text-white/90  text-[12px] md:text-[13px] lg:text-[14px]">
-          Relive every moment. Our photographers are always on the lookout for the best
-          flicks, tricks <br className="block md:hidden" /> and celebrations so you can add it to the family album. Follow the
-          action from our kids football training in London by subscribing to our Instagram.
-        </p>
+    <div className="mt-10 md:mt-16">
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="poppins text-[13px] font-bold uppercase tracking-wide text-[#0B8AD9]">
+            @sambasoccerschools
+          </p>
+          <h2 className="recline mt-2 text-[28px] leading-[1.15] text-[#042C89] md:text-[34px]">
+            Follow the fun
+          </h2>
+          <div className="relative inline-block">
+            <span className="gasoek block text-[34px] leading-[1.15] text-[#0DD180] md:text-[42px]">
+              on Instagram.
+            </span>
+            <svg
+              className="absolute -bottom-1 left-0 w-full"
+              height="8"
+              viewBox="0 0 200 8"
+              preserveAspectRatio="none"
+            >
+              <path
+                d="M2 5 Q 50 1, 100 4 T 198 3"
+                stroke="#FFDE14"
+                strokeWidth="3"
+                fill="none"
+                strokeLinecap="round"
+              />
+            </svg>
+          </div>
+        </div>
 
         <a
-          href="https://instagram.com"
+          href="https://instagram.com/sambasoccerschools"
           target="_blank"
           rel="noreferrer"
-          className="instagram-banner-btn inline-flex md:w-fit w-full items-center justify-center gap-2 rounded-full bg-[#FFDE14] px-6 py-3 text-[14px] lg:text-[16px] font-semibold text-[#042C89] transition-colors hover:bg-yellow-300"
+          className="poppins inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#042C89] px-9 py-3.5 text-[15px] font-bold text-white transition-colors hover:bg-[#031f63] sm:mb-2 sm:w-fit"
         >
-          <Instagram className="h-5 w-5" strokeWidth={2.5} />
-          Follow on Instagram
+          <Instagram className="h-4 w-4" strokeWidth={2.5} />
+          Follow us
         </a>
       </div>
-      <img src={mobileImage} className="block md:hidden pt-6" alt="Instagram" />
+
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5 md:gap-4">
+        {clips.map((src, i) => (
+          <a
+            key={src}
+            href="https://instagram.com/sambasoccerschools"
+            target="_blank"
+            rel="noreferrer"
+            className={`block overflow-hidden rounded-[20px] bg-gray-100 md:rounded-[24px] ${
+              i === 4 ? 'col-span-2 sm:col-span-1' : ''
+            }`}
+          >
+            <img
+              src={src}
+              alt={`Samba Instagram ${i + 1}`}
+              className="aspect-square w-full object-cover transition-transform duration-300 hover:scale-105"
+            />
+          </a>
+        ))}
+      </div>
     </div>
   );
 }
 
-
 export function Community() {
   return (
-    <section className="w-full pt-8 md:pt-12">
+    <section className="w-full pb-10 pt-8 md:pb-16 md:pt-12">
       <Container>
-        <div className="flex flex-col md:gap-8">
-          <MailingListBanner />
-          <InstagramSection />
-        </div>
+        <NewsletterBanner />
+        <InstagramSection />
       </Container>
-
-
     </section>
   );
 }

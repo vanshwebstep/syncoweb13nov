@@ -1,84 +1,112 @@
 import React from 'react';
 import { Container } from '../../../components/common/Container';
-import textureBg from 'https://webstepdev.com/demo/syncoWebsiteImages/programs/showcase-banner.png';
-import textureBgMobile from 'https://webstepdev.com/demo/syncoWebsiteImages/programs/showcase-mobile.png';
-import mascotKicking from 'https://webstepdev.com/demo/syncoWebsiteImages/group.png';
-import mascotKickingMobile from 'https://webstepdev.com/demo/syncoWebsiteImages/programs/roadmap-mobile.png';
-import mascotStanding from 'https://webstepdev.com/demo/syncoWebsiteImages/programs/layer_showcase.png';
+
+const BASE = 'https://webstepdev.com/demo/syncoWebsiteImages/roadtorio';
+const img = (name, ext = 'png') => `${BASE}/${encodeURIComponent(name)}.${ext}`;
+
+const WEEKS = [1, 2, 3, 4, 5];
 
 export function ShowcaseWeek() {
   return (
-    <section className="pt-16 pb-10 lg:pt-[100px] md:py-[70px] lg:pb-[160px] text-white relative overflow-hidden font-sans">
-      {/* Mobile background image */}
-      <img
-        src={textureBgMobile}
-        alt=""
-        aria-hidden="true"
-        className="block md:hidden absolute inset-0 w-full h-full object-fill pointer-events-none z-0"
-      />
+    <section className="relative bg-white py-14 lg:py-20 overflow-hidden font-sans">
+      <Container className="relative">
+        {/* ===== Heading ===== */}
+        <div className="text-center">
+          <p className="font-['Poppins',sans-serif] font-semibold text-[#00A6E3] text-[11px] lg:text-[13px] tracking-[0.06em] uppercase">
+            How each stop works
+          </p>
+          <h2 className="mt-3 font-['Recline',sans-serif] font-bold text-[#042C89] text-[30px] sm:text-[36px] lg:text-[40px] leading-[1.1]">
+            Five weeks to learn.
+          </h2>
+          <span className="relative inline-block font-['Gasoek_One',sans-serif] text-[#0DD180] text-[36px] sm:text-[44px] lg:text-[50px] leading-[1.15] mt-1">
+            One week to shine.
+            <img src={img('Swoosh')} alt="" className="absolute left-0 -bottom-1 w-full h-auto pointer-events-none" />
+          </span>
+          <p className="mt-5 font-['Poppins',sans-serif] text-[#34353B] text-[14px] lg:text-[17px]">
+            Every stop on the Road to Rio ends with Showcase Week.
+          </p>
+        </div>
 
-      {/* Desktop background image */}
-      <img
-        src={textureBg}
-        alt=""
-        aria-hidden="true"
-        className="hidden md:block absolute inset-0 w-full h-full object-cover object-top pointer-events-none z-0"
-      />
+        {/* ===== Timeline + Cards ===== */}
+        <div className="mt-10 lg:mt-14 lg:pr-[300px] xl:pr-[340px]">
+          {/* Timeline */}
+          <div className="flex items-start justify-between overflow-x-auto no-scrollbar pb-2">
+            {WEEKS.map((w) => (
+              <React.Fragment key={w}>
+                <div className="flex flex-col items-center shrink-0 w-[40px] lg:w-[56px]">
+                  <span className="h-5 mb-2 flex items-end font-['Poppins',sans-serif] font-semibold text-[#00A6E3] text-[10px] lg:text-[13px] uppercase whitespace-nowrap">
+                    Week {w}
+                  </span>
+                  <div className="h-[60px] lg:h-[88px] flex items-center justify-center">
+                    <img src={img('footballimg')} alt="" className="w-[40px] h-[40px] lg:w-[56px] lg:h-[56px] object-contain" />
+                  </div>
+                  <span className="mt-2 font-['Poppins',sans-serif] font-bold text-[#042C89] text-[11px] lg:text-[14px] whitespace-nowrap">
+                    Skill {w}
+                  </span>
+                </div>
+                {/* connector */}
+                <div
+                  className={`flex-1 min-w-[12px] mt-[56px] lg:mt-[70px] border-t-[3px] ${
+                    w === 5 ? 'border-dotted border-[#C9D3F0]' : 'border-solid border-[#042C89]'
+                  }`}
+                />
+              </React.Fragment>
+            ))}
 
-      <Container className="relative z-10">
-        <div className="showcase-week-grid grid grid-cols-1 lg:grid-cols-12 gap-10 items-center mt-6 lg:mt-10">
-
-          {/* Left Column: Heading & Paragraphs */}
-          <div className="showcase-week-text w-full md:max-w-[380px] min-[900px]:max-w-[460px] lg:max-w-[540px] xl:max-w-[620px] 2xl:max-w-none lg:col-span-7 xl:col-span-8 space-y-3.5 lg:space-y-6">
-
-            {/* Header Title */}
-            <div>
-              <h2 className="recline font-extrabold text-[30px] sm:text-[34px] md:text-[32px] min-[900px]:text-[38px] lg:text-[46px] xl:text-[54px] 2xl:text-[61px] text-white leading-[1]">
-                <span className="text-[#FFDE14] font-normal gasoek">Showcase Week.</span>
-              </h2>
-              <h2 className="recline font-extrabold text-[24px] sm:text-[26px] md:text-[24px] min-[900px]:text-[28px] lg:text-[32px] xl:text-[36px] 2xl:text-[39px] text-white leading-tight mt-1">
-                Five weeks to <span className="text-[#0DD180] font-normal gasoek">learn</span> <br />
-                One week to bring it all together.
-              </h2>
+            {/* Week 6 */}
+            <div className="flex flex-col items-center shrink-0 w-[60px] lg:w-[88px]">
+              <span className="h-5 mb-2 flex items-end font-['Poppins',sans-serif] font-semibold text-[#00A6E3] text-[10px] lg:text-[13px] uppercase whitespace-nowrap">
+                Week 6
+              </span>
+              <div className="h-[60px] lg:h-[88px] flex items-center justify-center">
+                <img src={img('trophyimg')} alt="" className="w-[60px] h-[60px] lg:w-[88px] lg:h-[88px] object-contain" />
+              </div>
+              <span className="mt-2 font-['Poppins',sans-serif] font-bold text-[#042C89] text-[11px] lg:text-[14px] whitespace-nowrap">
+                Showcase
+              </span>
             </div>
-
-            {/* Paragraphs */}
-            <div className="space-y-2.5 lg:space-y-3 poppins text-white font-semibold text-[14px] sm:text-[16px] md:text-[14px] min-[900px]:text-[16px] lg:text-[18px] xl:text-[19px] 2xl:text-[20px] leading-relaxed">
-              <p>
-                Every stop on the Road to Rio ends with Showcase Week, giving children <br className="hidden lg:block"/> the chance to put their new skills into play through our Skills Showcase <br className="hidden lg:block"/> and 1v1 Skills Showdown.
-              </p>
-
-              <p className="md:font-['Recline',sans-serif] font-['Poppins',sans-serif] text-[15px] sm:text-[18px] text-[#FFDE14] md:text-[16px] min-[900px]:text-[19px] lg:text-[22px] xl:text-[24px] 2xl:text-[26px]">
-                Then comes the Showcase Ceremony.
-              </p>
-
-              <p>
-                Celebrate their progress. Earn their Player <br className="block md:hidden"/>Badge. <br className="hidden lg:block"/>One step closer to Rio.
-              </p>
-            </div>
-
           </div>
 
-          {/* Right Column: 3D Mountain Winding Path & Mascot Graphic */}
+          {/* Label */}
+          <p className="mt-8 lg:mt-10 font-['Poppins',sans-serif] font-semibold text-[#00A6E3] text-[11px] lg:text-[12px] tracking-[0.06em] uppercase">
+            What happens in Showcase Week
+          </p>
 
+          {/* Cards */}
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="bg-[#042C89] rounded-[22px] p-5 lg:p-6">
+              <div className="flex items-center gap-3">
+                <img src={img('starimg')} alt="" className="w-[48px] h-[48px] object-contain shrink-0" />
+                <h3 className="font-['Poppins',sans-serif] font-bold text-white text-[15px] lg:text-[17px] leading-tight">
+                  Skills Showcase + 1v1 Showdown
+                </h3>
+              </div>
+              <p className="mt-4 font-['Poppins',sans-serif] text-[#C9D3F0] text-[13px] lg:text-[15px] leading-relaxed">
+                Children put their new skills into play in front of their coach and team.
+              </p>
+            </div>
+
+            <div className="bg-[#FFDE14] rounded-[22px] p-5 lg:p-6">
+              <div className="flex items-center gap-3">
+                <img src={img('ShowcaseCeremony')} alt="" className="w-[48px] h-[48px] object-contain shrink-0" />
+                <h3 className="font-['Poppins',sans-serif] font-bold text-[#042C89] text-[15px] lg:text-[17px] leading-tight">
+                  Showcase Ceremony
+                </h3>
+              </div>
+              <p className="mt-4 font-['Poppins',sans-serif] text-[#3B3A1E] text-[13px] lg:text-[15px] leading-relaxed">
+                They celebrate their progress, earn their Player Badge and move one step closer to Rio.
+              </p>
+            </div>
+          </div>
         </div>
+
+        {/* ===== Island ===== */}
+        <img
+          src={img('Road to Rio island')}
+          alt="Road to Rio island"
+          className="md:block hidden mx-auto mt-8 w-[220px] sm:w-[240px] lg:mx-0 lg:mt-0 lg:absolute lg:right-0 lg:bottom-[-20px] lg:w-[250px] xl:w-[280px] h-auto object-contain pointer-events-none"
+        />
       </Container>
-      <div className="md:absolute md:mt-0 mt-8 w-full max-w-[290px] sm:max-w-[300px] md:max-w-[260px] min-[900px]:max-w-[320px] lg:max-w-[380px] xl:max-w-[500px] 2xl:max-w-[600px] md:right-[2%] lg:right-[3%] xl:right-[4%] md:top-[12%] lg:top-[6%] xl:top-[4%] z-20 flex items-center justify-center">
-        <img
-          src={mascotKicking}
-          alt="Samba Player"
-          className="w-full h-full hidden md:block object-contain drop-shadow-xl"
-        />
-        <img
-          src={mascotKickingMobile}
-          alt="Samba Player"
-          className="w-full h-full block md:hidden object-contain drop-shadow-xl"
-        />
-
-      </div>
-
-      <img src={mascotStanding} alt="Samba Player" className="absolute bottom-[-8px] hidden md:block left-0 h-[280px] lg:h-[500px] w-full pointer-events-none" />
-
     </section>
   );
 }

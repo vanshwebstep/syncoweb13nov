@@ -21,26 +21,26 @@ export function ReadyToStart() {
             className="block absolute inset-0 w-full h-full object-cover object-center pointer-events-none z-0"
           />
 
-          {/* Mobile/Tablet Top Overlapping Photos (below xl) */}
-          <div className="flex xl:hidden justify-center items-center relative -mb-14 z-20 px-4">
-            <div className="w-[135px] sm:w-[150px] -rotate-[10deg] -mr-6 drop-shadow-xl z-10">
-              <img
-                src={playImgLeft}
-                alt="Kid playing football"
-                className="w-full h-auto object-contain"
-              />
-            </div>
-            <div className="w-[135px] sm:w-[150px] rotate-[8deg] drop-shadow-xl z-0">
-              <img
-                src={playImgRight}
-                alt="Coach with student"
-                className="w-full h-auto object-contain"
-              />
-            </div>
-          </div>
-
           {/* Inner White Box Container */}
-          <div className="bg-white relative rounded-[28px] sm:rounded-[60px] -mt-[4.5rem] xl:mt-0 p-5 pt-[80px] sm:p-10 sm:pt-[90px] lg:p-10 lg:pt-[90px] xl:p-12 xl:pt-12 2xl:p-14 2xl:pt-14 shadow-xl z-10 mx-auto max-w-[940px] flex flex-col items-center justify-between gap-3 md:gap-6 border border-slate-100">
+          <div className="bg-white relative rounded-[28px] sm:rounded-[60px] p-5 sm:p-10 xl:p-12 2xl:p-14 shadow-xl z-10 mx-auto max-w-[940px] flex flex-col items-center justify-between gap-3 md:gap-6 border border-slate-100">
+
+            {/* Mobile/Tablet Photos (below xl) - inside white box */}
+            <div className="flex xl:hidden justify-center items-center w-full">
+              <div className="w-[46%] max-w-[190px] -rotate-[8deg] -mr-4 drop-shadow-xl z-10">
+                <img
+                  src={playImgLeft}
+                  alt="Kid playing football"
+                  className="w-full h-auto object-contain"
+                />
+              </div>
+              <div className="w-[46%] max-w-[190px] rotate-[8deg] mt-3 drop-shadow-xl z-0">
+                <img
+                  src={playImgRight}
+                  alt="Coach with student"
+                  className="w-full h-auto object-contain"
+                />
+              </div>
+            </div>
 
             {/* Left Tilted Photo - Desktop only (xl+) */}
             <div className="hidden xl:block absolute xl:left-[-110px] 2xl:left-[-145px] xl:max-w-[200px] 2xl:max-w-[240px] z-20">
@@ -61,7 +61,7 @@ export function ReadyToStart() {
               </h2>
 
               {/* Desktop & Tablet Title */}
-              <h2 className="hidden sm:block recline text-3xl sm:text-4xl lg:leading-[60px] md:text-[34px] min-[900px]:text-[40px] lg:text-[48px] xl:text-[54px] 2xl:text-[61px] text-[#042C89] ]">
+              <h2 className="hidden sm:block recline text-3xl sm:text-4xl lg:leading-[60px] md:text-[34px] min-[900px]:text-[40px] lg:text-[48px] xl:text-[54px] 2xl:text-[61px] text-[#042C89]">
                 Ready to start <br className="hidden sm:inline" />
                 their{' '}
                 <span className="gasoek text-[#0DD180] inline-block">

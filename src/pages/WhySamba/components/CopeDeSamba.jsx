@@ -1,59 +1,121 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Container } from '../../../components/common/Container';
-import { useModal } from '../../../context/ModalContext';
 import waveBg from 'https://webstepdev.com/demo/syncoWebsiteImages/final-cta.png';
 import expPhoto from 'https://webstepdev.com/demo/syncoWebsiteImages/why-samba/exp_it.png';
+import kidsPhoto from 'https://webstepdev.com/demo/syncoWebsiteImages/why-samba/experienceboys.png';
+
+const stats = [
+  { value: '2009', label: 'Year we started', bg: '#FFDE14' },
+  { value: '15+', label: 'Years of Samba', bg: '#E7FAF2' },
+  { value: '20,000+', label: 'Children coached', bg: '#E6F4FB' },
+  { value: '4.8', label: 'Google rating', bg: '#FFF1E3' },
+];
 
 export function CopeDeSamba() {
-  const { openModal } = useModal();
-
   return (
     <section className="py-10 bg-white">
       <Container>
-        {/* Outer Banner with Blue/Green Waved Background */}
+        {/* ===== Stats Bar ===== */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8 lg:mb-12">
+          {stats.map((s) => (
+            <div
+              key={s.label}
+              className="rounded-[18px] sm:rounded-[22px] px-4 py-4 sm:px-6 sm:py-5"
+              style={{ backgroundColor: s.bg }}
+            >
+              <h3 className="font-['Gasoek_One',sans-serif] font-normal text-[28px] sm:text-[36px] lg:text-[44px] leading-tight text-[#042C89]">
+                {s.value}
+              </h3>
+              <p className="font-['Poppins',sans-serif] font-semibold text-[13px] sm:text-[15px] text-[#34353B] mt-1">
+                {s.label}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* ===== MOBILE CTA (screenshot jaisa) ===== */}
         <div
-          className="rounded-[30px] md:rounded-[44px] lg:rounded-[60px] p-3 py-8 xs:p-3.5 sm:p-5 md:py-8 md:px-4 lg:px-8 lg:pe-12 xl:pe-16 lg:py-[60px] max-w-[340px] xs:max-w-[365px] sm:max-w-none mx-auto relative overflow-hidden shadow-xl"
+          className="md:hidden rounded-[30px] bg-cover bg-center p-4"
+          style={{ backgroundImage: `url(${waveBg})` }}
+        >
+          <div className="rounded-[32px] bg-white px-5 pt-5 pb-8 text-center shadow-xl">
+            <img
+              src={expPhoto}
+              alt="Experience it for yourself, and your child"
+              className="block w-full h-auto rounded-[24px] object-cover"
+            />
+
+            <h2 className="mt-6 leading-[1.15]">
+              <span className="gasoek block text-[40px] text-[#0B9AE0]">Experience it</span>
+              <span className="recline mt-1 block text-[34px] text-[#042C89]">
+                for yourself, and your child
+              </span>
+            </h2>
+
+            <p className="poppins mt-4 text-[18px] leading-[1.5] text-[#475569]">
+              You've heard our story, now come and see how it works.
+            </p>
+
+            <Link
+              to="/book-trial"
+              className="poppins mt-6 flex w-full items-center justify-center rounded-full bg-[#042C89] px-6 py-4 text-[16px] font-bold text-white shadow-md transition-all active:scale-95"
+            >
+              Book a FREE trial
+            </Link>
+          </div>
+        </div>
+
+        {/* ===== DESKTOP CTA (same as before) ===== */}
+        <div
+          className="hidden md:block relative rounded-[44px] lg:rounded-[60px] overflow-hidden mx-auto md:min-h-[400px] lg:min-h-[480px]"
           style={{
             backgroundImage: `url(${waveBg})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
         >
-          {/* Inner White Container Card */}
-          <div className="why-samba-cta-card bg-white relative rounded-[30px] md:rounded-[40px] lg:rounded-[50px] xl:rounded-[60px] w-full md:w-[86%] xl:w-[84%] md:ms-auto shadow-xl px-4 pt-4 pb-8 xs:px-5 xs:pt-4 xs:pb-7 sm:px-8 md:pl-0 md:pr-6 md:py-8 lg:pr-8 lg:py-10 min-[1150px]:py-12 xl:pr-10 xl:py-12 flex flex-col md:flex-row items-center gap-0">
-            {/* Left Column: Photo of Coaches & Kids with Trophy */}
-            <div className="why-samba-cta-photo w-full md:w-[240px] lg:w-[310px] min-[1150px]:w-[360px] xl:w-[320px] 2xl:w-[320px] md:mt-0 mt-[-30px] md:absolute md:-left-[12%] md:top-1/2 md:-translate-y-1/2 shrink-0">
+          <div className="absolute inset-0 flex items-center">
+            <div className="absolute left-[4%] top-1/2 -translate-y-1/2 z-20 w-[28%] lg:w-[27%]">
               <img
                 src={expPhoto}
                 alt="Experience it for yourself, and your child"
-                className="w-full h-auto object-contain drop-shadow-lg block"
+                className="w-full h-auto object-contain rounded-[24px] lg:rounded-[32px] drop-shadow-lg block"
               />
             </div>
 
-            {/* Right Column: Headings, Subtitle & Free Trial Button */}
-            <div className="why-samba-cta-content w-full md:w-[360px] lg:w-[570px] min-[1150px]:w-[520px] xl:w-[660px] 2xl:w-[700px] md:ms-auto flex flex-col items-center justify-center text-center">
-              <div>
-                <h2 className="font-['Gasoek_One',sans-serif] leading-tight text-[28px] sm:text-[34px] md:text-[30px] lg:text-[55px] min-[1150px]:text-[40px] xl:text-[48px] text-[#00A6E3]">
-                  Experience it
-                </h2>
-                <h3 className="font-['Recline',sans-serif] font-bold text-[26px] sm:text-[32px] md:text-[24px] lg:text-[45px] min-[1150px]:text-[38px] xl:text-[46px] text-[#042C89] leading-[1.15] mt-1">
-                  <span className="block">for yourself, and your child</span>
-                </h3>
-              </div>
-
-              <p className="font-['Poppins',sans-serif] text-[#475569] font-normal text-[13px] sm:text-[15px] md:text-[16px] lg:text-[16px] min-[1150px]:text-[17.5px] xl:text-[20px] leading-relaxed mt-2.5 sm:mt-3 md:mt-2.5 lg:mt-3.5 xl:mt-4 mb-4 sm:mb-5 md:mb-4 lg:mb-5 xl:mb-6">
-                You've heard our story, now come and see how it works.
+            <div className="absolute z-10 left-[26%] right-[5%] top-1/2 -translate-y-1/2 bg-white rounded-[44px] lg:rounded-[56px] shadow-xl pt-8 pb-8 pl-[8%] pr-6 lg:py-12 lg:pl-[9%] lg:pr-10">
+              <p className="font-['Poppins',sans-serif] font-medium text-[#042C89] text-[14px] lg:text-[16px]">
+                You've heard our story.
               </p>
 
-              <div>
+              <h2 className="font-['Gasoek_One',sans-serif] font-normal text-[#042C89] leading-[1.15] text-[26px] lg:text-[44px] xl:text-[52px] mt-2">
+                Now come and <br />
+                experience it.
+              </h2>
+
+              <p className="font-['Poppins',sans-serif] text-[#34353B] text-[14px] lg:text-[15px] mt-3 mb-5 lg:mb-6">
+                Bring your child to a free trial and see how it works.
+              </p>
+
+              <div className="flex flex-row gap-3">
                 <Link
                   to="/book-trial"
-                  className="bg-[#042C89] hover:bg-[#032066] text-white font-['Poppins',sans-serif] font-bold text-[12.5px] sm:text-[15px] md:text-[13px] lg:text-[15.5px] min-[1150px]:text-[17px] xl:text-[19px] md:w-max w-full px-5 sm:px-7 md:px-5 lg:px-7 xl:px-8 py-3 sm:py-3.5 md:py-2.5 lg:py-3.5 xl:py-4 rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.03] active:scale-95 inline-block cursor-pointer text-center"
+                  className="inline-flex items-center justify-center gap-2 bg-[#042C89] hover:bg-[#032066] text-white font-['Poppins',sans-serif] font-semibold text-[13px] lg:text-[16px] px-6 lg:px-12 py-3 lg:py-3.5 rounded-full shadow-md transition-all duration-300 hover:scale-[1.03] active:scale-95 whitespace-nowrap"
                 >
-                  Book a FREE Trial
+                  Book a FREE trial <span aria-hidden>→</span>
+                </Link>
+                <Link
+                  to="/find-a-class"
+                  className="inline-flex items-center justify-center bg-white border-[1.5px] border-[#042C89] text-[#042C89] hover:bg-[#042C89] hover:text-white font-['Poppins',sans-serif] font-semibold text-[13px] lg:text-[16px] px-6 lg:px-12 py-3 lg:py-3.5 rounded-full transition-all duration-300 whitespace-nowrap"
+                >
+                  Find a class
                 </Link>
               </div>
+            </div>
+
+            <div className="absolute z-20 right-[-2%] bottom-0 w-[33%]">
+              <img src={kidsPhoto} alt="Samba kids" className="w-full h-auto object-contain block" />
             </div>
           </div>
         </div>

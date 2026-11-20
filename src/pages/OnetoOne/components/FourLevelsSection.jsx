@@ -1,94 +1,79 @@
 import React from 'react';
 import { Container } from '../../../components/common/Container';
-import { useModal } from '../../../context/ModalContext';
 import textureBg from 'https://webstepdev.com/demo/syncoWebsiteImages/bluetexturedbg.png';
-import textureBgMobile from 'https://webstepdev.com/demo/syncoWebsiteImages/bluetexturebg.png';
 
-import cardImg1 from 'https://webstepdev.com/demo/syncoWebsiteImages/one-to-one/diff1.png';
-import cardImg2 from 'https://webstepdev.com/demo/syncoWebsiteImages/one-to-one/diff2.png';
-import cardImg3 from 'https://webstepdev.com/demo/syncoWebsiteImages/one-to-one/diff3.png';
-import cardImg4 from 'https://webstepdev.com/demo/syncoWebsiteImages/one-to-one/diff4.png';
+const BASE = 'https://webstepdev.com/demo/syncoWebsiteImages/one-to-one';
+const img = (name, ext = 'png') => `${BASE}/${encodeURIComponent(name)}.${ext}`;
+const SWOOSH = 'https://webstepdev.com/demo/syncoWebsiteImages/roadtorio/Swoosh.png';
+
+const CARDS = [
+  {
+    title: 'They’ve got potential',
+    desc: 'You can see there’s more in them. They just need the attention to bring it out.',
+    image: 'clip1',
+  },
+  {
+    title: 'They’re just beginning',
+    desc: 'New to football? We build the basics, confidence and comfort on the ball.',
+    image: 'clip2',
+  },
+  {
+    title: 'Something isn’t clicking',
+    desc: 'First touch, weaker foot, taking players on. We fix exactly what they need.',
+    image: 'clip3',
+  },
+  {
+    title: 'They can’t get enough',
+    desc: 'Football before school, after school, in the garden. They just want more.',
+    image: 'clip4',
+  },
+];
 
 export function FourLevelSection() {
-  const { openModal } = useModal();
-
-  const cards = [
-    {
-      title: "They've got potential",
-      desc: <>You can see there's more in them. <br/> They just need the individual attention<br className='block md:hidden'/> to bring it out.</>,
-      img: cardImg1,
-    },
-    {
-      title: "They're just beginning",
-      desc: <>They're new to football and need time <br className='md:block hidden'/> to learn the basics, build confidence and get comfortable with the ball.</>,
-      img: cardImg2,
-    },
-    {
-      title: "Something isn't clicking",
-      desc: "Maybe it's their first touch, weaker foot, taking players on or confidence on the ball. We can focus on exactly what they need.",
-      img: cardImg3,
-    },
-    {
-      title: "They just can't get enough",
-      desc: <>Football before school. Football after school. Football in the garden. They just want more <br className='block md:hidden'/>time with a ball at their feet.</>,
-      img: cardImg4,
-    },
-  ];
-
   return (
-    <section className="py-12 sm:py-16 md:py-20  relative overflow-hidden">
-      {/* Background for Mobile & Desktop */}
-      <img
-        src={textureBg}
-        alt=""
-        aria-hidden="true"
-        className="block md:hidden absolute inset-0 w-full h-full object-cover object-top pointer-events-none z-0"
-      />
-      <img
-        src={textureBg}
-        alt=""
-        aria-hidden="true"
-        className="hidden md:block absolute inset-0 w-full h-full object-cover object-top pointer-events-none z-0"
-      />
-
-      <Container className="relative z-10">
-        {/* Main Heading */}
-        <div className="text-center mb-8 sm:mb-10 md:mb-14">
-          <h2 className="gasoek leading-[1.2] md:leading-[1.25] lg:leading-[1.4] text-[24px] xs:text-[34px] sm:text-[48px] md:text-[42px] lg:text-[56px]">
-            <span style={{ color: '#0DD180' }} className="block">
+    <section
+      className="relative overflow-hidden bg-[#042C89] py-10 sm:py-16 lg:py-20"
+      style={{
+        backgroundImage: `url(${textureBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'top',
+      }}
+    >
+      <Container className="relative z-10 px-5 sm:px-6">
+        {/* ===== Heading ===== */}
+        <div className="text-left sm:text-center">
+          <h2 className="leading-[1.1]">
+            <span className="block font-['Recline',sans-serif] font-bold text-white text-[25px] sm:text-[34px] lg:text-[40px]">
               Different starting points.
             </span>
-            <span style={{ color: '#fff' }} className="block text-[30px] md:mt-0 mt-3 md:text-[42px] lg:text-[56px]">
-              <span className="block md:inline ">Same individual </span>
-              <span className="block md:inline">attention.</span>
+            <span className="relative inline-block font-['Gasoek_One',sans-serif] text-[#FFDE14] text-[32px] sm:text-[42px] lg:text-[50px] mt-1">
+              Same attention.
+              <img src={SWOOSH} alt="" aria-hidden="true" className="absolute left-0 -bottom-1.5 sm:-bottom-2 w-full h-auto pointer-events-none select-none" />
             </span>
           </h2>
+          <p className="mt-5 sm:mt-6 font-['Poppins',sans-serif] text-white text-[16px] leading-[1.5] sm:text-[14px] lg:text-[17px]">
+            Whatever stage they’re at, the session is built around them.
+          </p>
         </div>
 
-        {/* Grid: 1 column vertical cards on mobile, 2x2 horizontal cards on desktop */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 md:gap-3.5 lg:gap-5 max-w-[340px] xs:max-w-[380px] sm:max-w-[480px] md:max-w-[1085px] mx-auto">
-          {cards.map((card, idx) => (
+        {/* ===== Cards ===== */}
+        <div className="mt-7 sm:mt-10 lg:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 justify-items-center">
+          {CARDS.map((c) => (
             <div
-              key={idx}
-              className="bg-white rounded-[20px] p-3.5 sm:p-4 md:p-3.5 lg:p-5 shadow-xl flex flex-col md:flex-row items-start gap-3 sm:gap-3.5 md:gap-3 lg:gap-4"
+              key={c.title}
+              className="w-full max-w-none sm:max-w-[282px] flex flex-row sm:flex-col items-center sm:items-stretch gap-4 sm:gap-0 bg-white rounded-[20px] sm:rounded-[24px] p-3.5 pr-4 sm:p-3.5 lg:p-4 sm:pb-7 lg:pb-9 shadow-xl"
             >
               <img
-                src={card.img}
-                alt={card.title}
-                className="w-full h-[135px] xs:h-[150px] sm:h-[180px] md:w-[130px] md:h-[130px] md:min-h-[130px] lg:w-[183px] lg:min-h-[153px] lg:h-auto object-cover rounded-[14px] sm:rounded-[16px] md:rounded-[18px] lg:rounded-[24px] flex-shrink-0"
+                src={img(c.image)}
+                alt={c.title}
+                className="w-[104px] h-[104px] shrink-0 sm:w-full sm:h-auto sm:aspect-[134/124] object-cover rounded-[14px] sm:rounded-[18px] lg:rounded-[20px]"
               />
-              <div className="w-full text-left px-0.5 mt-3 md:mt-0 sm:px-1 md:px-0">
-                <h3
-                  className="recline font-bold mb-1.5 md:mb-1 text-[19px] xs:text-[21px] sm:text-[22px] md:text-[18px] lg:text-[24px] leading-tight"
-                  style={{ color: '#00A6E3' }}
-                >
-                  {card.title}
+              <div className="sm:px-1.5 sm:mt-5 text-left">
+                <h3 className="font-['Recline',sans-serif] font-bold text-[#042C89] text-[15px] sm:text-[17px] lg:text-[19px] leading-tight">
+                  {c.title}
                 </h3>
-                <p
-                  className="poppins leading-[1.5] md:leading-snug lg:leading-relaxed font-medium text-[12.5px] xs:text-[13px] sm:text-[13.5px] md:text-[12.5px] lg:text-[14px]"
-                  style={{ color: '#475569' }}
-                >
-                  {card.desc}
+                <p className="mt-1.5 sm:mt-3 font-['Poppins',sans-serif] text-[#34353B] text-[13.5px] sm:text-[13px] lg:text-[14.5px] leading-[1.5] sm:leading-relaxed">
+                  {c.desc}
                 </p>
               </div>
             </div>

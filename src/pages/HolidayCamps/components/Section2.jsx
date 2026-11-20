@@ -1,79 +1,93 @@
 import React from 'react';
-import { Star } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, Check } from 'lucide-react';
 import { Container } from '../../../components/common/Container';
-import fourDaysImg from 'https://webstepdev.com/demo/syncoWebsiteImages/holiday-camps/four_days.png';
 import bgBanner from 'https://webstepdev.com/demo/syncoWebsiteImages/holiday-camps/four_day_banner.png';
 
-export function Section2() {
-  const highlights = [
-    'More touches.',
-    'New skills.',
-    'More confidence on the ball.',
-    'Plenty of time to put it all into practice.',
-  ];
+const BASE = 'https://webstepdev.com/demo/syncoWebsiteImages/holiday-camps';
+const img = (name, ext = 'png') => `${BASE}/${encodeURIComponent(name)}.${ext}`;
+const SWOOSH = 'https://webstepdev.com/demo/syncoWebsiteImages/roadtorio/Swoosh.png';
 
+const HIGHLIGHTS = [
+  'More touches.',
+  'New skills.',
+  'More confidence on the ball.',
+  'Plenty of time to put it all into practice.',
+];
+
+export function Section2() {
   return (
-    <section className="relative w-full overflow-hidden bg-[#FAFBFD] py-14 sm:py-16">
-      {/* Background with subtle pattern and blue curved wave on right */}
+    <section className="relative w-full overflow-hidden bg-white pt-10 pb-12 sm:py-16 lg:py-20">
+      {/* Background (white + blue wave bottom-right) */}
       <img
         src={bgBanner}
         alt=""
         aria-hidden="true"
-        className="absolute md:block px-2 md:px-0 hidden inset-0 w-full h-full object-cover pointer-events-none select-none z-0"
+        className="hidden md:block absolute inset-0 w-full h-full object-cover pointer-events-none select-none z-0"
       />
 
-      <Container className="relative z-10 w-full">
-        {/* TABLET: md:grid-cols-12 + md:gap-6 (lg pe purani values) */}
-        <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-10 md:gap-6 lg:gap-8 items-center">
-          {/* Left Column: Text & List */}
-          {/* TABLET: md:col-span-7 (lg pe wapas 6) */}
-          <div className="md:col-span-7 lg:col-span-6 xl:col-span-6 text-left">
-            {/* Tag / Badge */}
-            <div className="inline-block bg-[#DDF4FF] px-4 py-1 rounded-full mb-4 sm:mb-7 md:mb-5 lg:mb-7">
-              <span className="text-[#00A6E3] text-[11px] sm:text-[14px] md:text-[12px] lg:text-[14px] font-bold uppercase poppins">
-                SCHOOL’S OUT. THE BALL’S OUT.
-              </span>
-            </div>
+      <Container className="relative z-10 w-full px-5 md:px-6">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-6 lg:gap-8 items-center">
+          {/* ===== Left ===== */}
+          <div className="md:col-span-7 lg:col-span-6 text-left">
+            {/* Mobile eyebrow */}
+            <p className="md:hidden mb-2 font-['Poppins',sans-serif] font-semibold text-[#00A6E3] text-[11px] tracking-[0.04em] uppercase">
+              School’s out. The ball’s out.
+            </p>
 
-            {/* Main Heading */}
-            {/* TABLET: md:text-[34px] (pehle 54px tha), lg:text-[48px] same */}
-            <h2 className="gasoek uppercase text-[42px] md:text-[34px] lg:text-[48px] leading-[1.2] mb-5 sm:mb-10 md:mb-6 lg:mb-10">
-              <span className="text-[#0DD180] md:inline-flex block">FOUR DAYS </span>{' '}
-              <span className="text-[#042C89]">THEY WON'T SPEND <br className="hidden lg:block"/> ON  <br className="md:hidden block"/>THE SOFA.</span>
+            <h2 className="leading-[1.1]">
+              <span className="block font-['Recline',sans-serif] font-bold text-[#042C89] text-[30px] sm:text-[36px] md:text-[32px] lg:text-[44px]">
+                Four days they won’t
+              </span>
+              <span className="relative inline-block font-['Gasoek_One',sans-serif] text-[#0DD180] text-[36px] sm:text-[44px] md:text-[38px] lg:text-[54px] mt-1">
+                spend on the sofa.
+                <img src={SWOOSH} alt="" aria-hidden="true" className="absolute left-0 -bottom-1.5 md:-bottom-2 w-full h-auto pointer-events-none select-none" />
+              </span>
             </h2>
 
-            {/* Paragraphs */}
-            <p className="poppins text-[#50576B] text-[15px] sm:text-[18px] md:text-[15px] lg:text-[18px] leading-relaxed mb-5 md:mb-4 lg:mb-7">
-              Four days to get moving, meet other <br className="md:hidden block"/> football-mad kids and <br className='hidden lg:block'/> spend hours doing something they love.
-            </p>
-            <p className="poppins text-[#50576B] text-[15px] sm:text-[18px] md:text-[15px] lg:text-[18px] leading-relaxed mb-6 sm:mb-6 md:mb-4 lg:mb-6">
-              And while they’re having fun? They’re <br className="md:hidden block"/> getting better.
+            <p className="mt-6 md:mt-8 max-w-[500px] font-['Poppins',sans-serif] text-[#042C89] text-[14px] sm:text-[16px] md:text-[14px] lg:text-[18px] leading-relaxed">
+              Four days to get moving, meet other football-mad kids and spend hours doing something they love. And while
+              they’re having fun? They’re getting better.
             </p>
 
-            {/* Feature List with Green Stars */}
-            <ul className="space-y-2 sm:space-y-2">
-              {highlights.map((item, index) => (
-                <li key={index} className="flex items-center gap-3">
-                  <Star className="w-5 h-5 md:w-4 md:h-4 lg:w-5 lg:h-5 fill-[#0DD180] text-[#0DD180] shrink-0" />
-                  <span className="recline font-bold text-[#042C89] text-[16px] sm:text-[20px] md:text-[16px] lg:text-[20px]">
+            <ul className="mt-5 md:mt-6 space-y-3">
+              {HIGHLIGHTS.map((item) => (
+                <li key={item} className="flex items-center gap-3">
+                  <span className="w-[18px] h-[18px] rounded-full bg-[#0DD180] flex items-center justify-center shrink-0">
+                    <Check className="w-3 h-3 text-white stroke-[3.5]" />
+                  </span>
+                  <span className="font-['Poppins',sans-serif] font-bold text-[#042C89] text-[13px] sm:text-[15px] md:text-[13px] lg:text-[17px]">
                     {item}
                   </span>
                 </li>
               ))}
             </ul>
+
+            {/* Button (desktop) */}
+            <Link
+              to="/venues"
+              className="hidden md:inline-flex mt-8 items-center justify-center gap-2 bg-[#042C89] hover:bg-[#021840] text-white font-['Poppins',sans-serif] font-bold text-[13px] lg:text-[15px] px-7 lg:px-8 py-3.5 rounded-full shadow-md transition-all duration-300 hover:scale-[1.03] active:scale-95 whitespace-nowrap"
+            >
+              Find a holiday camp <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
 
-          {/* Right Column: Framed Image */}
-          {/* TABLET: md:col-span-5 (lg pe wapas 6) */}
-          <div className="md:col-span-5 lg:col-span-6 xl:col-span-6 flex justify-center lg:justify-end">
-            <div className="relative w-full max-w-[560px] md:max-w-full lg:max-w-none">
-              <img
-                src={fourDaysImg}
-                alt="Four days they won't spend on the sofa - kids at Samba Soccer"
-                className="w-full h-auto object-contain mx-auto drop-shadow-xl select-none"
-              />
-            </div>
+          {/* ===== Right: Image ===== */}
+          <div className="md:col-span-5 lg:col-span-6 flex justify-center lg:justify-end">
+            <img
+              src={img('spendonsofabg')}
+              alt="Kids at Samba Soccer holiday camp"
+              className="w-full max-w-none md:max-w-full lg:max-w-[536px] lg:h-[486px] h-auto object-contain select-none drop-shadow-xl"
+            />
           </div>
+
+          {/* Button (mobile, image ke neeche, full width) */}
+          <Link
+            to="/venues"
+            className="md:hidden flex w-full items-center justify-center gap-2 bg-[#042C89] hover:bg-[#021840] text-white font-['Poppins',sans-serif] font-bold text-[14px] py-4 rounded-full shadow-md transition-all duration-300 active:scale-95 whitespace-nowrap"
+          >
+            Find a holiday camp <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       </Container>
     </section>

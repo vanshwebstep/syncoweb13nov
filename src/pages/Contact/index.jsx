@@ -12,7 +12,7 @@ export function ContactPage() {
       <LocationSection />
 
         {/* Section 3: Map Section */}
-        <MapSection />
+        {/* <MapSection /> */}
         <FooterBottom />
     </div>
   );

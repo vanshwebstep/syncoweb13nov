@@ -6,6 +6,9 @@ import imgMaster from 'https://webstepdev.com/demo/syncoWebsiteImages/tech2.png'
 import imgTest from 'https://webstepdev.com/demo/syncoWebsiteImages/tech3.png';
 import imgPlay from 'https://webstepdev.com/demo/syncoWebsiteImages/tech4.png';
 import texture from 'https://webstepdev.com/demo/syncoWebsiteImages/blog/hero.png';
+const BASE = 'https://webstepdev.com/demo/syncoWebsiteImages';
+
+const SWOOSH = `${BASE}/roadtorio/Swoosh.png`;
 
 export function Section7() {
   const cards = [
@@ -56,14 +59,22 @@ export function Section7() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
           {/* Left Column: Heading & Intro */}
           <div className="lg:col-span-5 text-left">
-            <h2 className="gasoek uppercase text-[48px] md:text-[54px] lg:text-[60px] leading-[1.2]  mb-10">
-              <span className="text-[#0DD180] block">LEARN IT.</span>
-              <span className="text-[#042C89] block">MASTER IT.</span>
-              <span className="text-[#00A3E0] block">PUT IT INTO PLAY.</span>
+            <p className="font-['Poppins',sans-serif] font-bold text-[#00A6E3] text-[10px] sm:text-[11px] lg:text-[13px] tracking-[0.04em] uppercase">
+              HOW THEY LEARN
+            </p>
+            <h2 className="mt-3 leading-[1.1]">
+              <span className="block font-['Recline',sans-serif] font-bold text-[#042C89] text-[30px] sm:text-[36px] lg:text-[44px]">
+                Learn it. Master it.
+              </span>
+              <span className="relative inline-block font-['Gasoek_One',sans-serif] text-[#0DD180] text-[36px] sm:text-[44px] lg:text-[54px] mt-1">
+                Put it into play.
+                <img src={SWOOSH} alt="" aria-hidden="true" className="absolute left-0 -bottom-0 w-full h-auto pointer-events-none select-none" />
+              </span>
             </h2>
 
-            <p className="poppins text-[#042C89] text-[17px] sm:text-[20px] leading-[26px]">
-              Four new skills each coaching day. Broken <br className='hidden lg:block'/> down step by step, repeated with plenty of touches, tested under pressure, then taken  <br className='hidden lg:block'/> into games.
+
+            <p className="poppins text-[#042C89] text-[17px] sm:text-[20px] mt-10 font-semibold">
+              Four new skills each coaching day. Broken <br className='hidden lg:block' /> down step by step, repeated with plenty of touches, tested under pressure, then taken  <br className='hidden lg:block' /> into games.
             </p>
           </div>
 

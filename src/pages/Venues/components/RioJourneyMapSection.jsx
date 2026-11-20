@@ -1,98 +1,84 @@
 import React from 'react';
 import { Container } from '../../../components/common/Container';
-import textureBg from 'https://webstepdev.com/demo/syncoWebsiteImages/venues/map.png';
-import arrowNext from 'https://webstepdev.com/demo/syncoWebsiteImages/arrow-right.png';
-import skill from 'https://webstepdev.com/demo/syncoWebsiteImages/skill.png';
-import skill1 from 'https://webstepdev.com/demo/syncoWebsiteImages/skill2.png';
-import skill2 from 'https://webstepdev.com/demo/syncoWebsiteImages/skill3.png';
-import skill3 from 'https://webstepdev.com/demo/syncoWebsiteImages/skill4.png';
+
+const BASE = 'https://webstepdev.com/demo/syncoWebsiteImages';
+const icon = (name) => `${BASE}/icons/${name}.png`;
+const MAP_IMG = `${BASE}/roadtorio/BrazilianCarnivalMapIsland1.png`;
+const SWOOSH = `${BASE}/roadtorio/Swoosh.png`;
+
+const ROWS = [
+  { icon: 'starwhite', bg: '#0DD180', title: 'Weekly', desc: 'A skill of the day and a sticker for their map' },
+  { icon: 'bookwhite', bg: '#00A6E3', title: 'Every session', desc: 'Their own Skills Tracker to practise at home' },
+  { icon: 'medalblue', bg: '#FFDE14', title: 'Every 6 weeks', desc: 'Showcase Week: games, 1v1s and lots of Samba' },
+  { icon: 'trophywhite', bg: '#042C89', title: 'End of year', desc: 'The Copa de Samba: medals for every player' },
+];
 
 export function RioJourneyMapSection() {
-  const steps = [
-    { icon: skill, text: "Learn a new skill" },
-    { icon: skill1, text: "Earn the sticker" },
-    { icon: skill2, text: "Add it to map" },
-    { icon: skill3, text: "Keep moving" }
-  ];
-
-  const cities = [
-    { num: 1, name: "MANAUS", color: "bg-[#ff9800]" },
-    { num: 2, name: "BRASÍLIA", color: "bg-[#0DD180]" },
-    { num: 3, name: "RECIFE", color: "bg-[#052975]" },
-    { num: 4, name: "SÃO PAULO", color: "bg-[#ff1744]" },
-    { num: 5, name: "PORTO ALEGRE", color: "bg-[#9c27b0]" },
-    { num: 6, name: "RIO DE JANEIRO", color: "bg-[#FFDE14] text-[#042C89]" }
-  ];
+  /* Rows: desktop pe left column me, mobile pe map ke neeche (same JSX 2 jagah render hota hai) */
+  const rows = (
+    <div className="space-y-3 max-w-[540px]">
+      {ROWS.map((r) => (
+        <div key={r.title} className="bg-white rounded-[16px] px-4 py-3 lg:py-3.5 flex items-center gap-3.5 lg:gap-4 shadow-[0_2px_10px_rgba(4,44,137,0.04)]">
+          <span
+            className="w-[36px] h-[36px] lg:w-[44px] lg:h-[44px] rounded-full flex items-center justify-center shrink-0"
+            style={{ backgroundColor: r.bg }}
+          >
+            <img src={icon(r.icon)} alt="" className="w-[16px] h-[16px] lg:w-[20px] lg:h-[20px] object-contain" />
+          </span>
+          <div>
+            <h3 className="poppins font-bold text-[#042C89] text-[13px] lg:text-[15px] leading-tight">{r.title}</h3>
+            <p className="poppins mt-0.5 text-[#34353B] text-[11.5px] lg:text-[13.5px] leading-snug">{r.desc}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 
   return (
-    <section 
-     style={{
-        backgroundImage: `url(${textureBg})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundBlendMode: 'soft-light'
-      }}
-    className="py-16 sm:py-[150px]  xl:max-h-[860px] text-white relative overflow-hidden font-sans border-t border-white/20">
-      
-
+    <section className="relative w-full overflow-hidden bg-[#E6F4FB] py-12 sm:py-16 lg:py-20">
       <Container className="relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
-          {/* Left Column: Title, Paragraph, 4-Step Yellow Box & Bottom Text */}
-          <div className="lg:col-span-6 space-y-6">
-            
-            {/* Header Title */}
-            <div>
-              <h2 className="gasoek text-4xl sm:text-[61px] text-[#042C89]   leading-[1.2]">
-                WATCH THEIR <br />
-                JOURNEY FILL UP.
-              </h2>
-            </div>
-
-            {/* Paragraph Copy */}
-            <p className="text-white poppins font-bold text-sm sm:text-[18px] leading-relaxed max-w-2xl pt-1">
-              Every child gets their own fold-out Road to Rio Map. As they travel through Brazil and learn new skills, they collect stickers and add them to their map.
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center max-w-[1200px] mx-auto">
+          {/* ===== Left ===== */}
+          <div>
+            <p className="poppins font-bold text-[#00A6E3] text-[10.5px] lg:text-[13px] tracking-[0.04em] uppercase">
+              The road to Rio
             </p>
 
-            {/* Yellow 4-Step Process Box */}
-            <div className="bg-[#FFDE14] rounded-[20px] p-4 sm:p-5 shadow-2xl text-[#042C89] my-6 border border-white/20">
-              <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2">
-                {steps.map((step, idx) => (
-                  <React.Fragment key={idx}>
-                    {idx > 0 && (
-                      <span className="text-[#042C89] font-black text-sm select-none hidden sm:inline"><img src={arrowNext} alt="" /></span>
-                    )}
-                    <div className="bg-white rounded-2xl p-2.5 sm:p-3 text-center flex-1 min-w-[100px] shadow-sm space-y-1">
-                      <span className="text-2xl block"><img src={step.icon} alt="" className='w-[44px] h-[44px] ' /></span>
-                      <span className="font-extrabold text-[10px] sm:text-[13px] text-[#042C89] block text-left leading-tight">
-                        {step.text}
-                      </span>
-                    </div>
-                  </React.Fragment>
-                ))}
-              </div>
-            </div>
+            <h2 className="mt-3 leading-[1.1]">
+              <span className="recline block font-bold text-[#042C89] text-[42px] sm:text-[48px] lg:text-[40px]">
+                Their journey
+              </span>
+              <span className="gasoek relative inline-block text-[#00A6E3] text-[42px] sm:text-[50px] lg:text-[50px] mt-1">
+                to Rio.
+                <img src={SWOOSH} alt="" aria-hidden="true" className="absolute left-0 -bottom-0 w-full h-auto pointer-events-none select-none" />
+              </span>
+            </h2>
 
-            {/* Bottom Copy */}
-            <div className="space-y-2 max-w-xl">
-              <p className="text-white font-medium text-xs sm:text-[16px] poppins leading-relaxed">
-                There’s also a Player of the Day in each group, recognising effort, attitude, football and teamwork — while every player receives encouragement throughout the camp.
-              </p>
+            <p className="poppins mt-6 lg:mt-8 max-w-[540px] text-[#042C89] text-[15px] lg:text-[16px] leading-relaxed">
+              Here’s how the programme works: every child goes on a virtual journey through six Brazilian cities. Each
+              new skill they learn moves them one step closer to Rio, collecting stars and badges on their own map along
+              the way.
+            </p>
 
-              <h3 className="gasoek text-lg sm:text-xl text-white pt-2">
-                Day after day, Rio gets a little closer.
-              </h3>
-            </div>
-
+            {/* Rows (desktop only) */}
+            <div className="hidden lg:block mt-7">{rows}</div>
           </div>
 
-          {/* Right Column: Illustrated Brazil Island Map & City Stadium Badges */}
-          <div className="lg:col-span-6 relative flex justify-center">
-         
+          {/* ===== Right: Map ===== */}
+          <div className="flex justify-center lg:justify-end">
+            <img
+              src={MAP_IMG}
+              alt="Road to Rio Brazil map"
+              className="w-full max-w-[440px] lg:max-w-[560px] h-auto object-contain select-none"
+            />
           </div>
 
+          {/* Rows (mobile only, map ke neeche) */}
+          <div className="lg:hidden mt-2">{rows}</div>
         </div>
       </Container>
     </section>
   );
 }
+
+export default RioJourneyMapSection;

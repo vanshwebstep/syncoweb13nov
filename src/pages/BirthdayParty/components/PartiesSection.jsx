@@ -1,263 +1,256 @@
-import React from 'react';
-import { Container } from '../../../components/common/Container';
+import React, { useState, useRef } from 'react';
 import { Star } from 'lucide-react';
+import { Container } from '../../../components/common/Container';
+import textureBg from 'https://webstepdev.com/demo/syncoWebsiteImages/venues/allroads.png';
+import { useVenue } from '../../Venues/VenueContext';
 
-// Images
-import review1Avatar from 'https://webstepdev.com/demo/syncoWebsiteImages/birthday-party/review1.png';
-import review2Avatar from 'https://webstepdev.com/demo/syncoWebsiteImages/birthday-party/review2.png';
-import review3Avatar from 'https://webstepdev.com/demo/syncoWebsiteImages/review3.png';
-import texturePattern from 'https://webstepdev.com/demo/syncoWebsiteImages/the-samba-way.png';
-import googleLogo from 'https://webstepdev.com/demo/syncoWebsiteImages/google.png';
-import layer from 'https://webstepdev.com/demo/syncoWebsiteImages/g_layer1.png';
-import layer2 from 'https://webstepdev.com/demo/syncoWebsiteImages/g_layer2.png';
+import avatar1 from 'https://webstepdev.com/demo/syncoWebsiteImages/venues/testimonial-avatar-parent-1.png';
+import avatar2 from 'https://webstepdev.com/demo/syncoWebsiteImages/venues/testimonial-avatar-parent-2.png';
+import avatar3 from 'https://webstepdev.com/demo/syncoWebsiteImages/venues/testimonial-avatar-parent-3.png';
+import vector from 'https://webstepdev.com/demo/syncoWebsiteImages/yellow-vector.png';
+import blue from 'https://webstepdev.com/demo/syncoWebsiteImages/bluevector.png';
+import trophyTeamPhoto from 'https://webstepdev.com/demo/syncoWebsiteImages/venues/philosophy-ball-mastery-blob.png';
+import googleBg from 'https://webstepdev.com/demo/syncoWebsiteImages/birthday-party/what_happend_banner.png';
+import swoosh from 'https://webstepdev.com/demo/syncoWebsiteImages/roadtorio/Swoosh.png';
 
-export function PartiesSection() {
+const REVIEWS = [
+  {
+    name: 'Priya, mum of Arjun (6)',
+    avatar: avatar3,
+    text: 'Every week my son can’t wait to show me the new skill he’s learned. His confidence has gone through the roof.',
+    cardClass: 'bg-[#00A6E3]',
+    textClass: 'text-white',
+    authorClass: 'text-white/80',
+    starClass: 'fill-[#FFDE14] text-[#FFDE14]',
+  },
+  {
+    name: 'Mark, dad of Oliver (5)',
+    avatar: avatar1,
+    text: 'The coaches are brilliant with the little ones. It’s the highlight of our weekend, and the Copa was amazing.',
+    cardClass: 'bg-white border border-[#E5EAF3]',
+    textClass: 'text-[#042C89]',
+    authorClass: 'text-[#042C89]',
+    starClass: 'fill-[#FFDE14] text-[#FFDE14]',
+  },
+  {
+    name: 'Amara, mum of Zara (8)',
+    avatar: avatar2,
+    text: 'You can see the progress in the Skills Tracker. She’s gone from shy to scoring in every game.',
+    cardClass: 'bg-[#FFDE14]',
+    textClass: 'text-[#042C89]',
+    authorClass: 'text-[#042C89]',
+    starClass: 'fill-[#042C89] text-[#042C89]',
+  },
+];
+
+function ReviewCard({ r, mobile = false }) {
   return (
-    <section
-      className="relative w-full overflow-hidden bg-cover bg-center py-14 sm:py-18 lg:pb-16 lg:py-20"
-      style={{
-        backgroundImage: `url(${texturePattern})`,
-        backgroundRepeat: 'no-repeat',
-      }}
+    <div
+      className={`${r.cardClass} rounded-[24px] p-6 lg:p-7 ${
+        mobile ? 'min-h-[300px]' : 'min-h-[310px]'
+      } flex flex-col`}
     >
-      <Container className="relative z-10">
-        {/* Section Title */}
-        <div className="text-center mb-6 sm:mb-12">
-          <h2 className="recline text-white text-[38px] sm:text-[50px] md:text-[44px] lg:text-[64px] font-semibold leading-[1] md:leading-tight">
-            Parties they'll remember
-          </h2>
-
-          {/* Google Reviews Pill Badge with Rays */}
-          <div className="inline-flex items-center justify-center gap-2 sm:gap-3 md:mt-1 mt-4 relative">
-            {/* Left yellow ray accent */}
-            <span className="flex flex-col items-end gap-1 select-none">
-              <img
-                src={layer}
-                alt="Panda"
-                className="h-8 w-8 md:w-16 md:h-16 object-contain  drop-shadow-xs"
-              />
-            </span>
-
-            {/* Google Pill */}
-            <div className=" flex items-center gap-4">
-              <img src={googleLogo} alt="Google" className="h-8 w-8 md:w-[51px] md:h-[51px] object-contain" />
-              <span className="poppins font-semibold text-white text-[15px] sm:text-[24px]">
-                Real reviews from Google
-              </span>
-            </div>
-
-            {/* Right yellow ray accent */}
-            <span className="flex flex-col items-start gap-1 select-none">
-             <img
-                src={layer2}
-                alt="Panda"
-                className="h-8 w-8 md:w-16 md:h-16 object-contain  drop-shadow-xs"
-              />
-            </span>
-          </div>
+      {/* Avatar + stars */}
+      <div className="flex items-center gap-4">
+        <img
+          src={r.avatar}
+          alt={r.name}
+          className="w-[72px] h-[72px] object-cover shrink-0 rounded-[45%_55%_50%_50%/55%_45%_55%_45%] border-2 border-[#0DD180]"
+        />
+        <div className="flex gap-1.5">
+          {[...Array(5)].map((_, i) => (
+            <Star key={i} className={`w-3 h-3 ${r.starClass}`} />
+          ))}
         </div>
+      </div>
 
-        {/* Reviews Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-4 max-w-[1198px] mx-auto items-stretch">
+      {/* Quote */}
+      <p
+        className={`font-['Poppins',sans-serif] font-bold ${r.textClass} text-[15px] lg:text-[16px] leading-[1.5] mt-8`}
+      >
+        “{r.text}”
+      </p>
 
-          {/* LEFT — 2 Review Cards */}
-          <div className="md:col-span-7 flex flex-col gap-4">
-
-            {/* Cyan Review Card */}
-            <div className="bg-[#00A6E3] text-white rounded-[20px] sm:rounded-[24px] p-5 sm:px-8 sm:py-8 md:p-4 lg:px-8 lg:py-8 min-h-[176px] md:min-h-0 lg:min-h-[176px] flex flex-col justify-center">
-              {/* Mobile View (< sm) */}
-              <div className="block sm:hidden">
-                <div className="flex items-center gap-3.5 mb-3">
-                  <img
-                    src={review1Avatar}
-                    alt="Aleksandra Sroka"
-                    className="w-[60px] h-[60px] rounded-full object-cover shrink-0"
-                  />
-                  <div>
-                    <div className="flex items-center gap-1 mb-1">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="w-[16px] h-[16px] fill-[#FFDE14] text-[#FFDE14]"
-                        />
-                      ))}
-                    </div>
-                    <p className="poppins italic font-bold text-[12px] text-[#042C89]">
-                      Aleksandra Sroka
-                    </p>
-                  </div>
-                </div>
-                <p className="poppins font-semibold text-[#042C89] text-[13px] leading-[1.4]">
-                  Fantastic organisation of birthday party football workshop for my 9 year old son! Kids absolutely loved it!
-                </p>
-              </div>
-
-              {/* Desktop View (>= sm) - Untouched */}
-              <div className="hidden sm:flex items-center gap-5 sm:gap-6 md:gap-3.5 lg:gap-5 xl:gap-6">
-                <img
-                  src={review1Avatar}
-                  alt="Aleksandra Sroka"
-                  className="w-[88px] h-[88px] sm:w-[175px] sm:h-[156px] md:w-[90px] md:h-[90px] lg:w-[120px] lg:h-[120px] xl:w-[175px] xl:h-[156px] rounded-full object-contain shrink-0"
-                />
-
-                <div className="text-left flex-1">
-                  {/* Stars */}
-                  <div className="flex items-center gap-[5px] mb-3">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="w-[18px] h-[18px] sm:w-[30px] sm:h-[30px] md:w-[18px] md:h-[18px] lg:w-[22px] lg:h-[22px] xl:w-[30px] xl:h-[30px] fill-[#FFDE14] text-[#FFDE14]"
-                      />
-                    ))}
-                  </div>
-
-                  <p className="poppins font-semibold text-[#042C89] text-[14px] sm:text-[22px] md:text-[14px] lg:text-[16px] xl:text-[22px] leading-[1.35] mb-2 lg:mb-3 ">
-                    Fantastic organisation of birthday party football workshop for my 9 <br className="hidden xl:block" />
-                    year old son! Kids absolutely loved it!
-                  </p>
-
-                  <p className="poppins italic font-bold text-[11px] sm:text-[15px] md:text-[12px] lg:text-[14px] xl:text-[15px] text-[#042C89]">
-                    Aleksandra Sroka
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Yellow Review Card */}
-            <div className="bg-[#FFDE14] text-[#042C89] rounded-[20px] sm:rounded-[24px] p-5 sm:px-8 sm:py-8 md:p-4 lg:px-8 lg:py-8 min-h-[176px] md:min-h-0 lg:min-h-[176px] flex flex-col justify-center">
-              {/* Mobile View (< sm) */}
-              <div className="block sm:hidden">
-                <div className="flex items-center gap-3.5 mb-3">
-                  <img
-                    src={review3Avatar}
-                    alt="Mohamed Hassan"
-                    className="w-[60px] h-[60px] rounded-full object-contain shrink-0"
-                  />
-                  <div>
-                    <div className="flex items-center gap-1 mb-1">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="w-[16px] h-[16px] fill-[#042C89] text-[#042C89]"
-                        />
-                      ))}
-                    </div>
-                    <p className="poppins italic font-bold text-[12px] text-[#042C89]">
-                      Mohamed Hassan
-                    </p>
-                  </div>
-                </div>
-                <p className="poppins font-semibold text-[#042C89] text-[13px] leading-[1.4]">
-                  We had a fun birthday because of Samba Soccer School! Thank you! And a big shout to Toby!!
-                </p>
-              </div>
-
-              {/* Desktop View (>= sm) - Untouched */}
-              <div className="hidden sm:flex items-center gap-5 sm:gap-6 md:gap-3.5 lg:gap-5 xl:gap-6">
-                <img
-                  src={review3Avatar}
-                  alt="Mohamed Hassan"
-                  className="w-[88px] h-[88px] sm:w-[175px] sm:h-[156px] md:w-[90px] md:h-[90px] lg:w-[120px] lg:h-[120px] xl:w-[175px] xl:h-[156px] rounded-full object-contain shrink-0"
-                />
-
-                <div className="text-left flex-1">
-                  {/* Stars */}
-                  <div className="flex items-center gap-[5px] mb-3">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="w-[18px] h-[18px] sm:w-[30px] sm:h-[30px] md:w-[18px] md:h-[18px] lg:w-[22px] lg:h-[22px] xl:w-[30px] xl:h-[30px] fill-white text-white"
-                      />
-                    ))}
-                  </div>
-
-                  <p className="poppins font-semibold text-[#042C89] text-[14px] sm:text-[22px] md:text-[14px] lg:text-[16px] xl:text-[22px] leading-[1.35] mb-2 lg:mb-3 ">
-                    We had a fun birthday because of Samba Soccer School! Thank you!
-                    And a big shout to Toby!!
-                  </p>
-
-                  <p className="poppins italic font-bold text-[11px] sm:text-[15px] md:text-[12px] lg:text-[14px] xl:text-[15px] text-[#042C89]">
-                    Mohamed Hassan
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* RIGHT — Panda Review */}
-          <div className="md:col-span-5">
-            {/* Mobile View (< sm) */}
-            <div className="block sm:hidden bg-white rounded-[20px] p-6 text-center shadow-[0_5px_20px_rgba(0,0,0,0.06)]">
-              <img
-                src={review2Avatar}
-                alt="Panda"
-                className="w-[85px] h-[85px] object-contain mx-auto mb-3"
-              />
-
-              <p className="poppins font-bold text-[#042C89] text-[15px] leading-[1.35] mb-3">
-                John was super engaging and brilliant at making sure everyone had fun. My son and his friends had a ball! Thank you!
-              </p>
-
-              <p className="poppins italic font-bold text-[12px] text-[#042C89] mb-3">
-                Ali McCulloch
-              </p>
-
-              {/* Stars at bottom on mobile */}
-              <div className="flex items-center justify-center gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-[20px] h-[20px] fill-[#FFDE14] text-[#FFDE14]"
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Desktop View (>= sm) - Untouched */}
-            <div className="hidden sm:flex bg-white rounded-[20px] sm:rounded-[24px] px-7 py-7 sm:px-8 sm:py-8 md:px-4 md:py-6 lg:px-6 lg:py-6 xl:px-8 xl:py-8 flex-col items-center justify-center text-center h-full min-h-[366px] md:min-h-0 lg:min-h-[366px]">
-              <img
-                src={review2Avatar}
-                alt="Panda"
-                className="w-[110px] h-[110px] sm:w-[200px] sm:h-[178px] md:w-[100px] md:h-[100px] lg:w-[130px] lg:h-[130px] xl:w-[200px] xl:h-[178px] object-contain mb-2 lg:mb-3"
-              />
-
-              {/* Stars */}
-              <div className="flex items-center gap-[5px] mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-[30px] h-[30px] sm:w-[35px] sm:h-[35px] md:w-[20px] md:h-[20px] lg:w-[24px] lg:h-[24px] xl:w-[35px] xl:h-[35px] fill-[#FFDE14] text-[#FFDE14]"
-                  />
-                ))}
-              </div>
-
-              <p className="poppins font-semibold text-[#042C89] text-[15px] sm:text-[23px] md:text-[14px] lg:text-[16px] xl:text-[23px] leading-[1.4] max-w-[395px] mb-3 lg:mb-4">
-                John was super engaging and brilliant at making sure everyone had fun.
-                My son and his friends had a ball! Thank you!
-              </p>
-
-              <p className="poppins italic font-bold text-[12px] sm:text-[15px] md:text-[13px] lg:text-[14px] xl:text-[15px] text-[#042C89]">
-                Ali McCulloch
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom CTA Outline Button */}
-        <div className="text-center mt-8 sm:mt-12">
-          <a
-            href="https://maps.google.com/?q=Samba+Soccer+Schools+London"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 tracking-[0.5px] border-2 border-white text-white hover:bg-white hover:text-[#00A859] font-bold text-[12px] sm:text-[14px] uppercase px-7 py-3 sm:px-8 sm:py-3.5 rounded-full transition-all duration-200 poppins cursor-pointer w-full sm:w-auto"
-          >
-            <span>SEE MORE REVIEWS ON GOOGLE</span>
-            <span className="text-[14px]">→</span>
-          </a>
-        </div>
-      </Container>
-    </section>
+      {/* Author */}
+      <p
+        className={`font-['Poppins',sans-serif] font-semibold ${r.authorClass} text-[11px] lg:text-[12px] mt-auto pt-6`}
+      >
+        {r.name}
+      </p>
+    </div>
   );
 }
 
-export default PartiesSection;
+export function VenueParentsAllRoadsSection() {
+  const { venueName } = useVenue();
+  const [active, setActive] = useState(0);
+  const scrollRef = useRef(null);
+
+  const onScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const idx = Math.round(el.scrollLeft / el.clientWidth);
+    if (idx !== active && idx >= 0 && idx < REVIEWS.length) setActive(idx);
+  };
+
+  const goTo = (i) => {
+    const el = scrollRef.current;
+    if (el) el.scrollTo({ left: i * el.clientWidth, behavior: 'smooth' });
+    setActive(i);
+  };
+
+  return (
+    <div className="">
+      {/* 1. Parents know it best */}
+      <section
+        aria-label={`Parents at Samba ${venueName} know it best`}
+        className="relative w-full overflow-hidden bg-white py-10 sm:py-16 lg:py-20"
+        style={{
+          backgroundImage: `url(${googleBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        <Container className="relative z-10">
+          {/* ===== Heading ===== */}
+          <div className="text-left md:text-center">
+            <p className="font-['Poppins',sans-serif] font-bold text-[#00A6E3] text-[11px] tracking-wide uppercase mb-2">
+              Parents
+            </p>
+            <h2 className="leading-[1.1]">
+              <span className="block font-['Recline',sans-serif] font-bold text-[#042C89] text-[28px] sm:text-[36px] lg:text-[40px]">
+                Parents
+              </span>
+              <span className="relative inline-block font-['Gasoek_One',sans-serif] text-[#0DD180] text-[36px] sm:text-[44px] lg:text-[50px] mt-1">
+                know it best.
+                <img
+                  src={swoosh}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute left-0 -bottom-2 w-full h-auto pointer-events-none select-none"
+                />
+              </span>
+            </h2>
+
+            {/* Google pill */}
+            <div className="mt-6 md:mt-10 block">
+              <div className="inline-flex items-center gap-3 md:gap-4 bg-[#EEF3FB] rounded-full px-5 md:px-8 py-3 md:py-3.5">
+                <span className="font-['Gasoek_One',sans-serif] text-[#042C89] text-[18px] md:text-[20px] leading-none">
+                  4.8
+                </span>
+                <span className="flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-3 h-3 md:w-3.5 md:h-3.5 fill-[#FFDE14] text-[#FFDE14]" />
+                  ))}
+                </span>
+                <span className="font-['Poppins',sans-serif] font-semibold text-[#797A88] text-[11px] lg:text-[12px]">
+                  Google reviews
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* ===== Cards: Desktop grid ===== */}
+          <div className="hidden md:grid mt-10 grid-cols-3 gap-4 lg:gap-5 max-w-[1100px] mx-auto">
+            {REVIEWS.map((r) => (
+              <ReviewCard key={r.name} r={r} />
+            ))}
+          </div>
+
+          {/* ===== Cards: Mobile swipe carousel ===== */}
+          <div className="md:hidden mt-6">
+            <div
+              ref={scrollRef}
+              onScroll={onScroll}
+              className="flex overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {REVIEWS.map((r) => (
+                <div key={r.name} className="w-full shrink-0 snap-center">
+                  <ReviewCard r={r} mobile />
+                </div>
+              ))}
+            </div>
+
+            {/* Dots */}
+            <div className="mt-4 flex items-center justify-center gap-2">
+              {REVIEWS.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  aria-label={`Go to review ${i + 1}`}
+                  onClick={() => goTo(i)}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    i === active ? 'w-5 bg-[#0DD180]' : 'w-1.5 bg-[#C9D3E3]'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* 2. Bottom Curved White Section: All roads lead to Rio */}
+      <section
+        className="py-16 sm:py-24 text-[#042C89]   "
+        style={{
+          backgroundImage: `url(${textureBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundBlendMode: 'multiply'
+        }}
+      >
+
+        <Container className="relative z-10 text-center">
+
+          {/* Top Trophy Celebrating Kids Graphic */}
+          <div className="relative mx-auto mb-8 flex justify-center items-center">
+            <div className="w-[600px] ">
+              <img
+                src={trophyTeamPhoto}
+                alt="Copa de Samba Finale"
+                className="w-full h-full"
+              />
+            </div>
+          </div>
+
+          {/* Headline */}
+          <div className="space-y-1 mb-6">
+            <h2 className="text-[70px] recline leading-none text-[#042C89] ">
+              All roads lead
+              <span className="text-[70px] block leading-none gasoek text-[#0DD180] relative">
+                <div className="flex items-center justify-center gap-3">
+                  <img src={vector} alt="" className="w-[45px] rotate-[175deg]" />
+                  to rio
+                  <img src={vector} alt="" className="w-[45px] " />
+                </div>
+
+                <img src={blue} alt="" className="w-[170px] -mt-3 m-auto" />
+              </span>
+            </h2>
+          </div>
+
+          {/* Paragraph Copy */}
+          <p className="text-[#042C89] font-medium poppins text-xs sm:text-[22px] leading-relaxed max-w-xl mx-auto mb-6">
+            Every skill, every player and every week brings them one step closer to the Copa de Samba — the grand finale of their Road to Rio.
+          </p>
+
+          {/* Cyan Highlighting Lines */}
+          <p className="recline text-[#00A6E3] leading-[30px] font-bold text-sm sm:text-[24px] space-y-1 my-6">
+            Brazilian colours. <br />
+            Samba music. Families watching. <br />
+            One massive stage.
+          </p>
+
+          {/* Bottom Summary Lines */}
+          <div className="text-[#042C89] font-medium poppins text-sm sm:text-[22px] space-y-1 pt-2">
+            <p>The road ends in Rio.</p>
+            <p>The football stays with them.</p>
+          </div>
+
+        </Container>
+      </section>
+
+    </div>
+  );
+}

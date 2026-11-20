@@ -89,17 +89,22 @@ export function SingleBlog() {
         backgroundPosition: 'center',
       }}>
         {/* 1st Section - Hero Banner */}
-        <HowToPlanBanner blog={blog} loading={loading} />
+       {/* 1st Section - Hero Banner */}
+<HowToPlanBanner blog={blog} loading={loading} />
 
-        {/* 2nd Section - Blog Content & Sections */}
-        <Category blog={blog} loading={loading} />
+{/* 2nd Section - Blog Content */}
+<Category blog={blog} loading={loading} />
 
-        {/* 3rd Section - FAQs */}
-        <Faq faqs={blog?.faqs} blogTitle={blog?.title} loading={loading} />
+{/* 3rd Section - FAQs */}
+<Faq faqs={blog?.faqs} blogTitle={blog?.title} highlight="planning sessions." />
 
-        {/* 4th Section - Recent More Posts */}
-        <MorePosts currentSlug={slug} />
-        <FooterBottom />
+{/* 4th Section - More posts */}
+<MorePosts currentSlug={slug} category={blog?.tags?.[0] || blog?.category} />
+
+{/* 5th Section - Newsletter + social bar */}
+<Community />
+
+<FooterBottom />
 
       </div>
     </VenueProvider>

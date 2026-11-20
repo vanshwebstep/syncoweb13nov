@@ -36,13 +36,14 @@ export function OnetoOne() {
         {/* Section 6 - Pick a Party */}
 
         {/* Section 7 - Ready to Start */}
-        <ReadyToStart />
 
         {/* Section 8 - Samba Application */}
         <SambaApplication />
 
         {/* Section 9 - FAQ */}
         <OnetoOneFAQ />
+        <ReadyToStart />
+
       </div>
     </VenueProvider>
   );

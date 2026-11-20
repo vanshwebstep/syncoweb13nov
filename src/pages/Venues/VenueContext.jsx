@@ -36,7 +36,7 @@ export function VenueProvider({ children }) {
       isMounted = false;
     };
   }, [idFromParam, nameFromParam]);
-
+console.log('VenueContext: venue data loaded', venue);
   const venueDisplayName = venue?.venueName || nameFromParam || 'Elite Sports Academy';
   const venueDisplayArea = venue?.area || 'Manchester Central';
 

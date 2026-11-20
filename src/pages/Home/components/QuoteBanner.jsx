@@ -36,27 +36,17 @@ export function QuoteBanner() {
       <Container className="relative z-10 text-center">
         <div className="mx-auto space-y-4 max-w-[1140px] m-auto poppins">
           {/* Top 2 Lines: Dark Navy Bold Text */}
-          <div className="quote-banner-top-text text-[#042C89] font-bold text-[16px] sm:text-[20px] md:text-[17px] min-[900px]:text-[18px] lg:text-[19px] xl:text-[22px] 2xl:text-[24px] leading-[1.4]">
+          <div className="quote-banner-top-text text-white font-bold text-[16px] sm:text-[17px] md:text-[17px] min-[900px]:text-[18px] lg:text-[16px] xl:text-[17px] 2xl:text-[17px] leading-[1.4]">
             <p className="quote-banner-line block">
-              We don’t promise scouting.
+              We don’t promise scouting.  We can’t guarantee football <br className='md:hidden block' /> superstardom.
             </p>
-            <p className="quote-banner-line block">
-              We can’t guarantee football <br className='md:hidden block' /> superstardom.
-            </p>
+          
           </div>
 
-          {/* Yellow Squiggly Wave Line */}
-          <div className="py-2 flex justify-center">
-            <img
-              className="w-12 md:w-14 min-[900px]:w-16 md:h-2.5 min-[900px]:h-3 h-2"
-              src={Vector_2}
-              alt=""
-            />
-          </div>
 
           {/* Main Statement */}
-          <h3 className="poppins font-bold text-[26px] sm:text-[30px] md:text-[26px] min-[900px]:text-[30px] lg:text-[34px] xl:text-[38px] 2xl:text-[44px] text-white leading-tight mx-auto">
-            But here’s what we <br className='block md:hidden' /><span className="text-[#FFDE14]">do promise</span>.
+          <h3 className="gasoek font-regular text-[26px] sm:text-[30px] md:text-[26px] min-[900px]:text-[30px] lg:text-[34px] xl:text-[38px] 2xl:text-[48px] text-[#042C89] leading-tight mx-auto">
+            But here’s what we <br className='block md:hidden' />do promise.
           </h3>
 
           {/* Promise Cards */}

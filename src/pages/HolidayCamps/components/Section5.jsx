@@ -1,177 +1,108 @@
 import React from 'react';
-import { ArrowDown } from 'lucide-react';
 import { Container } from '../../../components/common/Container';
 
 const BASE = 'https://webstepdev.com/demo/syncoWebsiteImages';
 const mapbg = `${BASE}/holiday-camps/map_bg.png`;
 const rioMapImg = `${BASE}/road-to-rio-map-mobile.png`;
-const skill = `${BASE}/skill.png`;
-const skill2 = `${BASE}/skill2.png`;
-const skill3 = `${BASE}/skill3.png`;
-const skill4 = `${BASE}/skill4.png`;
 const arrow = `${BASE}/arrow-right.png`;
+const swoosh = 'https://webstepdev.com/demo/syncoWebsiteImages/roadtorio/Swoosh.png';
+
+const STEPS = [
+  { icon: `${BASE}/skill.png`, label: ['Learn', 'a new skill'] },
+  { icon: `${BASE}/skill2.png`, label: ['Earn', 'the sticker'] },
+  { icon: `${BASE}/skill3.png`, label: ['Add it', 'to the map'] },
+  { icon: `${BASE}/skill4.png`, label: ['Keep', 'moving'] },
+];
 
 export function Section5() {
-  const steps = [
-    {
-      icon: skill,
-      label: 'Learn a new skill',
-    },
-    {
-      icon: skill2,
-      label: 'Earn the sticker',
-    },
-    {
-      icon: skill3,
-      label: 'Add it to map',
-    },
-    {
-      icon: skill4,
-      label: 'Keep moving',
-    },
-  ];
-
   return (
-    <section className="relative z-0 w-full min-h-max overflow-hidden py-10 sm:py-16 md:py-20 lg:py-24">
-      {/* Fixed Image Wrapper */}
-      <div className="absolute inset-0 z-0 w-full h-full">
-        <img
-          src={mapbg}
-          alt=""
-          aria-hidden="true"
-          className="w-full h-full object-cover object-center pointer-events-none select-none"
-        />
-      </div>
+    <section className="relative z-0 w-full overflow-hidden pt-8 pb-10 sm:py-16 lg:py-20">
+      {/* Background (sea) */}
+      <img
+        src={mapbg}
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none z-0"
+      />
 
-      <Container className="relative z-10 w-full">
-        {/* ========================================================= */}
-        {/* MOBILE VIEW (< md) - Matches mobile reference image exact */}
-        {/* ========================================================= */}
-        <div className="md:hidden flex flex-col text-left w-full pt-2">
-          {/* 1. Mobile Title */}
-          <h2 className="gasoek uppercase text-[50px] leading-[1.2] text-[#042C89] mb-4">
-            WATCH
-            THEIR
-            JOURNEY
-            FILL UP.
-          </h2>
+      <Container className="relative z-10 w-full px-5 sm:px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-6 items-center">
+          {/* ===== Left (mobile: flex column with custom order) ===== */}
+          <div className="lg:col-span-7 flex flex-col text-center lg:text-left">
+            {/* Heading */}
+            <div className="order-1">
+              <p className="font-['Poppins',sans-serif] font-bold text-white lg:text-[#00A6E3] text-[12px] lg:text-[17.6px] tracking-[0.04em] uppercase">
+                The Road to Rio Map
+              </p>
 
-          {/* 2. Road to Rio Map Graphic */}
-          <div className="relative w-full max-w-[340px] xs:max-w-[380px] mx-auto mb-6">
-            <img
-              src={rioMapImg}
-              alt="Road to Rio Map illustration"
-              className="w-full h-auto object-contain select-none drop-shadow-xl"
-            />
-          </div>
-
-          {/* 3. Vertical Yellow Process Container */}
-          <div className="bg-[#FFDE14] w-full max-w-[220px] xs:max-w-[320px] mx-auto p-3 xs:p-3.5 rounded-2xl shadow-lg mb-6">
-            <div className="flex flex-col gap-2 items-stretch">
-              {steps.map((step, idx) => (
-                <React.Fragment key={idx}>
-                  <div className="flex flex-row items-center gap-3 bg-white rounded-xl px-3.5 py-2.5 shadow-xs w-full">
-                    <img
-                      src={step.icon}
-                      alt={step.label}
-                      className="w-7 h-7 object-contain shrink-0"
-                    />
-                    <span className="poppins text-[13.5px] font-extrabold text-[#042C89] leading-tight text-left">
-                      {step.label}
-                    </span>
-                  </div>
-                  {idx < steps.length - 1 && (
-                    <div className="flex justify-center py-0.5 text-[#042C89]">
-                      <img
-                        src={arrow}
-                        alt="Arrow"
-                        className="w-5 stroke-[3] rotate-[92deg]"
-                      />
-                    </div>
-                  )}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-
-          {/* 4. Text Descriptions */}
-          <p className="poppins text-[#042C89] font-semibold text-[15px] leading-relaxed mb-3">
-            Every child gets their own fold-out Road to Rio Map. As they learn new skills and make their way through Brazil, they collect stickers and add them to their map.
-          </p>
-
-          <p className="poppins text-[#fff] text-[14px] font-medium leading-relaxed mb-4">
-            And there’s more to play for. Each group has a Player of the Day, celebrating effort, attitude and teamwork.
-          </p>
-
-          <p className="gasoek text-white text-[19px] xs:text-[22px] leading-snug">
-            Day after day, Rio gets a little closer.
-          </p>
-        </div>
-
-        {/* ========================================================= */}
-        {/* DESKTOP VIEW (>= md)                                      */}
-        {/* ========================================================= */}
-        <div className="hidden md:grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-6 xl:gap-8 items-center pt-5">
-          {/* Left Column: Text & Step Card */}
-          <div className="lg:col-span-7 xl:col-span-6 text-left w-full">
-            <h2 className="gasoek uppercase text-[36px] sm:text-[48px] md:text-[61px] lg:text-[46px] xl:text-[61px] leading-[1.04] text-[#042C89] mb-4 sm:mb-5">
-              WATCH THEIR <br />
-              JOURNEY FILL UP.
-            </h2>
-
-            <p className="poppins text-[#fff] font-bold text-[15px] xl:text-[17px] 2xl:text-[18px] leading-relaxed mb-6 sm:mb-8">
-              Every child gets their own fold-out Road to Rio Map. As they learn new skills and make their way through Brazil, they collect stickers and add them to their map.
-            </p>
-
-            {/* Yellow Process Container with 4 Steps */}
-            <div className="bg-[#FFDE14] w-max md:w-[615px] lg:w-full xl:w-[615px] p-3 sm:p-5 lg:p-3.5 xl:p-5 rounded-2xl sm:rounded-3xl shadow-lg mb-6 sm:mb-8">
-              <div className="grid grid-cols-4 gap-[30px] lg:gap-[20px] xl:gap-[30px] items-center">
-                {steps.map((step, idx) => (
-                  <React.Fragment key={idx}>
-                    <div className="relative flex flex-col w-full bg-white rounded-[12px] p-4 lg:p-3 xl:p-4 gap-2 items-center justify-center md:items-start text-center min-h-[105px] shadow-xs">
-                      <img
-                        src={step.icon}
-                        alt={step.label}
-                        className="w-[44px] h-[44px] lg:w-[38px] lg:h-[38px] xl:w-[44px] xl:h-[44px] object-contain shrink-0"
-                      />
-                      <span className="poppins block md:pe-4 lg:pe-0 xl:pe-4 w-full text-center md:text-start text-[13px] lg:text-[12px] xl:text-[13px] font-extrabold text-[#042C89] leading-tight">
-                        {step.label}
-                      </span>
-
-                      {/* Arrow between steps */}
-                      {idx < steps.length - 1 && (
-                        <div className="flex absolute -right-6 lg:-right-5 xl:-right-6 top-1/2 -translate-y-1/2 z-20 text-[#042C89]">
-                          <img
-                            src={arrow}
-                            alt="Arrow"
-                            className="w-5 lg:w-4 xl:w-5 stroke-[3]"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </React.Fragment>
-                ))}
-              </div>
+              <h2 className="mt-2 lg:mt-3 leading-[1.1]">
+                <span className="block font-['Recline',sans-serif] font-bold text-[#042C89] text-[34px] sm:text-[44px] lg:text-[59.57px]">
+                  Watch their
+                </span>
+                <span className="relative inline-block font-['Gasoek_One',sans-serif] text-[#042C89] text-[38px] sm:text-[50px] lg:text-[73.11px] mt-1">
+                  journey fill up.
+                  <img src={swoosh} alt="" aria-hidden="true" className="absolute left-0 -bottom-1.5 lg:-bottom-2 w-full h-auto pointer-events-none select-none" />
+                </span>
+              </h2>
             </div>
 
-            <p className="poppins text-[#fff] text-[13.5px] font-medium xl:text-[15px] 2xl:text-[16px] leading-relaxed mb-4">
-              And there’s more to play for. Each group has a Player of the Day, celebrating effort, attitude and teamwork.
-            </p>
-
-            <p className="gasoek text-white text-[20px] sm:text-[24px]">
-              Day after day, Rio gets a little closer.
-            </p>
-          </div>
-
-          {/* Right Column: Road to Rio Map Graphic */}
-          <div className="lg:col-span-5 xl:col-span-6 flex justify-center items-center">
-            <div className="relative w-full max-w-[620px] transition-transform duration-500 hover:scale-[1.02]">
+            {/* Map (mobile only, heading ke neeche) */}
+            <div className="order-2 lg:hidden mt-5 -mx-2">
               <img
                 src={rioMapImg}
                 alt="Road to Rio Map illustration"
                 className="w-full h-auto object-contain drop-shadow-2xl select-none"
               />
             </div>
+
+            {/* Paragraph 1 (desktop: heading ke baad, mobile: steps ke baad) */}
+            <p className="order-4 lg:order-3 mt-6 lg:mt-8 max-w-[640px] mx-auto lg:mx-0 font-['Poppins',sans-serif] font-bold text-[#042C89] lg:text-white text-[14px] sm:text-[16px] lg:text-[18px] leading-relaxed">
+              Every child gets their own fold-out Road to Rio Map. As they learn new skills and make their way through
+              Brazil, they collect stickers and add them to their map.
+            </p>
+
+            {/* Steps: mobile = 4 separate white cards, sm+ = yellow box */}
+            <div className="order-3 lg:order-4 mt-5 lg:mt-6 w-full lg:w-[615px] sm:bg-[#FFDE14] sm:rounded-[24px] sm:p-5 sm:shadow-lg">
+              <div className="grid grid-cols-4 gap-2 sm:gap-0 sm:flex sm:items-center sm:justify-between">
+                {STEPS.map((s, i) => (
+                  <React.Fragment key={s.icon}>
+                    <div className="relative w-full sm:w-[119.94px] shrink-0 min-h-[105px] bg-white rounded-[12px] sm:rounded-[14px] px-1.5 sm:px-3.5 py-3 sm:py-3.5 flex flex-col items-center sm:items-start justify-between text-center sm:text-left shadow-md sm:shadow-none">
+                      <img src={s.icon} alt="" className="w-[40px] h-[40px] object-contain" />
+                      <span className="mt-2 block font-['Poppins',sans-serif] font-extrabold text-[#042C89] text-[12px] lg:text-[13px] leading-tight">
+                        {s.label[0]}
+                        <br />
+                        <span className="font-medium text-[#797A88] sm:font-extrabold sm:text-[#042C89]">{s.label[1]}</span>
+                      </span>
+                    </div>
+                    {i < STEPS.length - 1 && (
+                      <img
+                        src={arrow}
+                        alt=""
+                        aria-hidden="true"
+                        className="hidden sm:block w-[18px] h-auto shrink-0"
+                      />
+                    )}
+                  </React.Fragment>
+                ))}
+              </div>
+            </div>
+
+            <p className="md:block hidden order-5 mt-6 max-w-[620px] mx-auto lg:mx-0 font-['Poppins',sans-serif] font-medium text-white text-[13px] sm:text-[14px] lg:text-[16px] leading-relaxed">
+              And there’s more to play for. Each group has a Player of the Day, celebrating effort, attitude and teamwork.
+            </p>
+
+            <p className="md:block hidden order-6 mt-4 font-['Poppins',sans-serif] font-extrabold text-white text-[17px] sm:text-[19px] lg:text-[22px]">
+              Day after day, Rio gets a little closer.
+            </p>
+          </div>
+
+          {/* ===== Right: Map (desktop only) ===== */}
+          <div className="hidden lg:flex lg:col-span-5 justify-end">
+            <img
+              src={rioMapImg}
+              alt="Road to Rio Map illustration"
+              className="w-full max-w-[560px] h-auto object-contain drop-shadow-2xl select-none"
+            />
           </div>
         </div>
       </Container>

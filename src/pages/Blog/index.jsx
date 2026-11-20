@@ -14,7 +14,7 @@ export function Blog() {
         <HowToPlanBanner />
         <Category />
         <Community />
-        <FooterBottom />
+        {/* <FooterBottom /> */}
       </div>
     </VenueProvider>
   );

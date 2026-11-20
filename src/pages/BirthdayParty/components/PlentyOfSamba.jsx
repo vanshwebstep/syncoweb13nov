@@ -1,67 +1,44 @@
 import React from 'react';
 import { Container } from '../../../components/common/Container';
-
-// Images
-import plenty1 from 'https://webstepdev.com/demo/syncoWebsiteImages/birthday-party/plenty1.png';
-import plenty2 from 'https://webstepdev.com/demo/syncoWebsiteImages/birthday-party/plenty2.png';
-import plenty3 from 'https://webstepdev.com/demo/syncoWebsiteImages/birthday-party/plenty3.png';
-import plenty4 from 'https://webstepdev.com/demo/syncoWebsiteImages/birthday-party/plenty4.png';
 import bgTexture from 'https://webstepdev.com/demo/syncoWebsiteImages/birthday-party/what_happend_banner.png';
 
-// Icons
-import ballIcon from 'https://webstepdev.com/demo/syncoWebsiteImages/birthday-party/ball.png';
-import tournament from 'https://webstepdev.com/demo/syncoWebsiteImages/birthday-party/tournament.png';
-import pitchIcon from 'https://webstepdev.com/demo/syncoWebsiteImages/card1.png';
-import drumIcon from 'https://webstepdev.com/demo/syncoWebsiteImages/feature-samba-music.png';
+const BASE = 'https://webstepdev.com/demo/syncoWebsiteImages/birthday-party';
+const img = (name, ext = 'png') => `${BASE}/${encodeURIComponent(name)}.${ext}`;
+const SWOOSH = 'https://webstepdev.com/demo/syncoWebsiteImages/roadtorio/Swoosh.png';
+
+// Folder screenshot ke hisaab se file names (extension bina). Alag ho to yahin badal lena.
+const STEPS = [
+  {
+    time: '0 min',
+    title: '1. Kick-off',
+    desc: 'Samba music on and everyone welcomes the birthday star.',
+    photo: 'Clippathgroup1',
+    icon: 'ClipIIcongroup1',
+  },
+  {
+    time: '15 min',
+    title: '2. Ball mastery',
+    desc: 'Everyone gets a ball and learns a Samba trick or two.',
+    photo: 'Clippathgroup2',
+    icon: 'ClipIIcongroup2',
+  },
+  {
+    time: '35 min',
+    title: '3. Challenges',
+    desc: 'Fun games and skills challenges that get everyone involved.',
+    photo: 'Clippathgroup3',
+    icon: 'ClipIIcongroup3',
+  },
+  {
+    time: '55 min',
+    title: '4. Tournament',
+    desc: 'Teams, a mini World Cup and a medal for the birthday star.',
+    photo: 'Clippathgroup4',
+    icon: 'ClipIIcongroup4',
+  },
+];
 
 export function PlentyOfSamba() {
-  const cards = [
-    {
-      id: 'ball-mastery',
-      icon: ballIcon,
-      iconClass: 'w-[48px] h-[48px] sm:w-[54px] sm:h-[54px]',
-      title: 'Ball mastery',
-      subtitle: 'Learn a trick or two.',
-      desc: 'Everyone gets a ball and gets to show off some Samba skills.',
-      img: plenty1,
-      color: '#FFDE14',
-      rotation: '-rotate-[1.5deg]',
-    },
-    {
-      id: 'challenges',
-      icon: pitchIcon,
-      iconClass: 'w-[52px] h-[52px] sm:w-[58px] sm:h-[58px]',
-      title: 'Challenges',
-      subtitle: 'Bring on the competition.',
-      desc: 'Fun games and challenges that get everyone involved.',
-      img: plenty2,
-      color: '#0DD180',
-      rotation: 'rotate-[1.5deg]',
-    },
-    {
-      id: 'samba-music',
-      icon: drumIcon,
-      iconClass: 'w-[46px] h-[46px] sm:w-[52px] sm:h-[52px]',
-      title: 'Samba Music',
-      subtitle: 'Turn it up.',
-      desc: 'Brazilian beats and Samba energy from the moment they arrive.',
-      img: plenty3,
-      color: '#0DD180',
-      rotation: '-rotate-[1.5deg]',
-    },
-    {
-      id: 'tournament',
-      icon: tournament,
-      iconClass: 'w-[48px] h-[48px] sm:w-[54px] sm:h-[54px]',
-      title: 'Tournament',
-      subtitle: 'Game time.',
-      desc: 'Split into teams and finish the party with a Samba tournament.',
-      img: plenty4,
-      color: '#FFDE14',
-      rotation: 'rotate-[1.5deg]',
-    },
-  ];
-
   return (
     <section
       style={{
@@ -69,180 +46,79 @@ export function PlentyOfSamba() {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}
-      className="
-        relative
-        overflow-hidden
-        py-16
-        sm:py-20
-        lg:py-24
-        md:-mt-[130px]
-        md:pt-[200px]
-        lg:pt-[230px]
-      "
+      className="relative overflow-hidden py-12 sm:py-20 lg:py-24 md:-mt-[130px] md:pt-[200px] lg:pt-[230px]"
     >
       <Container className="relative z-10">
-
-        {/* Heading */}
-        <div className="text-center max-w-[650px] mx-auto mb-10 sm:mb-14">
-
-          <h2 className="gasoek text-[42px] sm:text-[48px] lg:text-[56px] leading-[1.05] ">
-            <span className="text-[#042C89] block">
+        {/* ===== Heading ===== */}
+        <div className="text-left lg:text-center max-w-[760px] mx-auto">
+          <h2 className="leading-[1.1]">
+            <span className="block font-['Recline',sans-serif] font-bold text-[#042C89] text-[28px] sm:text-[36px] lg:text-[44.49px]">
               Football. Friends.
             </span>
-
-            <span className="text-[#0DD180] block mt-1 sm:mt-2">
+            <span className="relative inline-block font-['Gasoek_One',sans-serif] text-[#0DD180] text-[32px] sm:text-[44px] lg:text-[55.62px] mt-1">
               Plenty of Samba.
+              <img src={SWOOSH} alt="" className="absolute left-0 bottom-0 w-full h-auto pointer-events-none" />
             </span>
           </h2>
 
-          <p className="poppins text-[#042C89] font-medium text-[14px] sm:text-[16px] mt-4 leading-relaxed">
-            From the first touch to the final whistle, we keep everyone
-            <br className="hidden sm:inline" />
-            involved, moving and having fun.
+          <p className="mt-5 lg:mt-6 font-['Poppins',sans-serif] font-medium text-[#042C89] text-[14px] lg:text-[20px] leading-relaxed">
+            From the first touch to the final whistle, we keep
+            <br className="hidden sm:inline" /> everyone involved, moving and having fun.
           </p>
         </div>
 
-        {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 md:gap-x-5 md:gap-y-7 lg:gap-x-8 lg:gap-y-10">
+        {/* ===== Steps ===== */}
+        <div className="relative mt-8 lg:mt-14">
+          {/* dotted connector (desktop) */}
+          <div
+            className="hidden lg:block absolute left-[12.5%] right-[12.5%] border-t-2 border-dotted border-[#C9D3E3] z-0 pointer-events-none"
+            style={{ top: '298px' }}
+          />
 
-          {cards.map((card) => (
-            <div
-              key={card.id}
-              className="relative min-w-0"
-            >
+          {/* vertical timeline line (mobile/tablet) */}
+          <div className="lg:hidden absolute left-[17px] top-4 bottom-4 w-[2px] bg-[#0DD180]/60 z-0 pointer-events-none" />
 
-              {/* =================================
-                  ROTATED BACKGROUND ACCENT CARD
-                  ================================= */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-y-8 lg:gap-y-10 lg:gap-x-6">
+            {STEPS.map((s) => (
               <div
-                className={`
-                  absolute
-                  inset-0
-                  rounded-[24px]
-                  ${card.rotation}
-                  z-0
-                `}
-                style={{
-                  backgroundColor: card.color,
-                }}
-              />
-
-              {/* =================================
-                  WHITE FRONT CARD
-                  ================================= */}
-              <div
-                className="
-                  relative
-                  z-10
-                  bg-white
-                  rounded-[22px]
-                  min-h-[175px]
-                  md:min-h-[180px]
-                  sm:min-h-[185px]
-                  overflow-hidden
-                  shadow-[0_4px_20px_rgba(0,0,0,0.06)]
-                  p-6
-                  sm:p-7
-                  md:p-5
-                  lg:p-7
-                  flex
-                  flex-col
-                  justify-between
-                "
+                key={s.title}
+                className="relative z-10 flex flex-col items-start lg:items-center text-left lg:text-center pl-[52px] lg:pl-0"
               >
-
-                {/* Top Section: Icon & Title */}
-                <div className="plenty-card-text relative z-20">
-                  {/* Icon */}
-                  <div className="h-[48px] sm:h-[52px] flex items-center mb-3">
-                    <img
-                      src={card.icon}
-                      alt=""
-                      className={`${card.iconClass} object-contain`}
-                    />
-                  </div>
-
-                  {/* Title */}
-                  <h3
-                    className="
-                      poppins
-                      font-black
-                      text-[#0DD180]
-                      text-[22px]
-                      sm:text-[24px]
-                      md:text-[20px]
-                      lg:text-[24px]
-                      leading-tight
-                      mb-1.5
-                    "
-                  >
-                    {card.title}
-                  </h3>
-
-                  {/* Subtitle / Highlight */}
-                  <p
-                    className="
-                      poppins
-                      font-bold
-                      text-[#1E293B]
-                      text-[13px]
-                      sm:text-[14px]
-                      md:text-[13px]
-                      lg:text-[14px]
-                      leading-snug
-                      mb-1
-                    "
-                  >
-                    {card.subtitle}
-                  </p>
-
-                  {/* Description */}
-                  <p
-                    className="
-                      poppins
-                      font-medium
-                      text-[#5B6B7C]
-                      text-[12px]
-                      sm:text-[13px]
-                      md:text-[12px]
-                      lg:text-[13px]
-                      leading-relaxed
-                      max-w-[70%]
-                      md:max-w-[62%]
-                      sm:max-w-[72%]
-                    "
-                  >
-                    {card.desc}
-                  </p>
+                {/* Photo */}
+                <div className="relative w-full rounded-[22px] lg:rounded-[26px] overflow-hidden shadow-[0_6px_20px_rgba(4,44,137,0.10)]">
+                  <img
+                    src={img(s.photo)}
+                    alt={s.title}
+                    className="w-full h-[170px] sm:h-[230px] lg:h-[250px] object-cover"
+                  />
+                  <span className="absolute top-3 left-3 bg-white text-[#042C89] font-['Poppins',sans-serif] font-semibold text-[10px] lg:text-[11px] px-3 py-1 rounded-full shadow-sm">
+                    {s.time}
+                  </span>
                 </div>
 
-                {/* =================================
-                    RIGHT CURVED IMAGE
-                    ================================= */}
+                {/* Icon: mobile = timeline dot on the line, desktop = below photo */}
                 <img
-                  src={card.img}
+                  src={img(s.icon)}
                   alt=""
-                  className="
-                    plenty-card-image
-                    absolute
-                    top-0
-                    right-0
-                    w-[160px]
-                    sm:w-[210px]
-                    md:w-[150px]
-                    lg:w-[225px]
-                    h-auto
-                    object-contain
-                    pointer-events-none
-                    z-10
-                  "
+                  className="absolute left-0 top-[46px] w-[36px] h-[36px] rounded-full bg-white object-contain lg:static lg:top-auto lg:-mt-2 lg:w-[56px] lg:h-[56px] lg:bg-transparent lg:rounded-none z-10"
                 />
 
+                {/* Text */}
+                <h3 className="mt-3 lg:mt-4 font-['Poppins',sans-serif] font-bold text-[#042C89] text-[16px] lg:text-[20px]">
+                  {s.title}
+                </h3>
+                <p className="mt-1.5 lg:mt-2 max-w-[260px] lg:max-w-[260px] font-['Poppins',sans-serif] text-[#5B6B7C] text-[13px] lg:text-[14.5px] leading-relaxed">
+                  {s.desc}
+                </p>
               </div>
-            </div>
-          ))}
-
+            ))}
+          </div>
         </div>
+
+        {/* ===== Footnote ===== */}
+        <p className="mt-10 lg:mt-14 text-left lg:text-center font-['Poppins',sans-serif] text-[#797A88] text-[12px] lg:text-[15.5px]">
+          Timings shown for a 75-minute Silver party. Gold adds more games and a longer tournament.
+        </p>
       </Container>
     </section>
   );

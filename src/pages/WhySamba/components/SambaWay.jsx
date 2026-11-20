@@ -66,9 +66,9 @@ export function SambaWay() {
 
             <Container className="relative z-10 ">
                 {/* Header Title & Subtitle */}
-                <div className=" mx-auto md:text-center block md:hidden space-y-4 mb-14">
+                <div className=" mx-auto md:text-center  space-y-4 mb-14">
                     <img
-                        className="w-full mb-10"
+                        className="w-full block md:hidden mb-10"
                         src={sambaWay}
                         alt=""
                     />

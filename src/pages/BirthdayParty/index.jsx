@@ -7,7 +7,7 @@ import {
   PlentyOfSamba,
   MomentOfTheDay,
   OrganiseSection,
-  PartiesSection,
+  VenueParentsAllRoadsSection,
   PickAParty,
   ReadyToStart,
   SambaApplication,
@@ -32,10 +32,10 @@ export function BirthdayParty() {
         <OrganiseSection />
 
         {/* Section 5 - Parties */}
-        <PartiesSection />
 
         {/* Section 6 - Pick a Party */}
         <PickAParty />
+        <VenueParentsAllRoadsSection />
 
         {/* Section 7 - Ready to Start */}
         <ReadyToStart />

@@ -20,21 +20,21 @@ const partners = [
     color: "#0DD180", // green
   },
   {
-    location: "Leeds",
-    name: "Aaron Cunningham",
-    role: "Leeds and Bradford Partner",
+    location: "Bromley",
+    name: "Kym Gayle",
+    role: "Bromley Partner",
     quote:
-      "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.",
-    image: DEMO_PLACEHOLDER,
+      "It’s incredibly rewarding doing something that you absolutely love and having a team to support you to make it a success on and off the pitch!",
+     image: `${BASE}/bromley.png`,
     color: "#FFDE14", // yellow
   },
   {
-    location: "Manchester",
-    name: "Samuel Talmoke",
-    role: "Territory · Partner since 20XX",
+    location: "Essex",
+    name: "Raz Partel",
+    role: "Essex Partner",
     quote:
-      "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.",
-    image: DEMO_PLACEHOLDER,
+      "We’ve got sessions taking place on the weekend and during the week. They’re all getting full so quickly. I couldn’t have got to these numbers without HQ.",
+     image: `${BASE}/essex.png`,
     color: "#00A6E3", // light blue
   },
 ];

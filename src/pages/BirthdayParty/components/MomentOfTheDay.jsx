@@ -39,14 +39,20 @@ export function MomentOfTheDay() {
           {/* Left Column: Headings & Copy */}
           <div className="w-full md:w-1/2 md:max-w-[360px] lg:max-w-[514px] text-left max-w-xl">
             {/* 2-line Gasoek Heading */}
-            <h2 className="gasoek text-[42px] xs:text-[48px] sm:text-[58px] md:text-[38px] lg:text-[64px] leading-[1.02] ">
-              <span className="text-white recline block">
-                Their day.
-              </span>
-              <span className="text-[#0DD180] block">
-                Their moment.
-              </span>
-            </h2>
+            <h2 className="gasoek text-[42px] xs:text-[48px] sm:text-[58px] md:text-[38px] lg:text-[64px] leading-[1.02]">
+  <span className="text-white recline block">
+    Their day.
+  </span>
+  <span className="relative inline-block text-[#0DD180] mt-1">
+    Their moment.
+    <img
+      src="https://webstepdev.com/demo/syncoWebsiteImages/roadtorio/whiteline.png"
+      alt=""
+      aria-hidden="true"
+      className="absolute left-0 bottom-0 w-full h-auto pointer-events-none select-none"
+    />
+  </span>
+</h2>
 
             {/* Bold Callout Paragraph */}
             <p className="poppins text-white font-bold text-[15px] sm:text-[18px] md:text-[16px] lg:text-[20px] md:leading-[1.38] leading-[1.5] md:mt-6 lg:mt-10 md:mb-5 lg:mb-8 my-6">

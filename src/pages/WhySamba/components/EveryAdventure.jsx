@@ -5,7 +5,12 @@ import cyanLayer from 'https://webstepdev.com/demo/syncoWebsiteImages/why-samba/
 import cyanLayerMobile from 'https://webstepdev.com/demo/syncoWebsiteImages/why-samba/yellow-top-layer-mobile.png';
 import beautyHeroImg from 'https://webstepdev.com/demo/syncoWebsiteImages/why-samba/putting_beauty.png';
 import beautyHeroImgMobile from 'https://webstepdev.com/demo/syncoWebsiteImages/why-samba/putting_beauty_mobile.png';
-import starIcon from 'https://webstepdev.com/demo/syncoWebsiteImages/why-samba/Star.png';
+import icongreen1 from 'https://webstepdev.com/demo/syncoWebsiteImages/why-samba/Group 1000002718.png';
+import iconyellow from 'https://webstepdev.com/demo/syncoWebsiteImages/why-samba/Group 1000002719.png';
+import iconblue from 'https://webstepdev.com/demo/syncoWebsiteImages/why-samba/Group 1000002720.png';
+import iconwhite from 'https://webstepdev.com/demo/syncoWebsiteImages/why-samba/Group 1000002721.png';
+import icongreen from 'https://webstepdev.com/demo/syncoWebsiteImages/why-samba/Group 1000002722.png';
+import swooshicon from 'https://webstepdev.com/demo/syncoWebsiteImages/why-samba/Swoosh.png';
 
 export function EveryAdventure() {
     return (
@@ -32,37 +37,106 @@ export function EveryAdventure() {
                     <div className="md:col-span-6 lg:col-span-6 space-y-4 lg:space-y-6">
                         {/* Heading */}
                         <div>
-                            <h2 className="font-['Recline',sans-serif] font-bold text-[38px] md:text-[38px] lg:text-[50px] xl:text-[61px] text-white leading-[1.08] ">
-                                Putting beauty <br className='hidden md:block' />
-                                back<br className='md:hidden block' /> in the <br />
-                                <span className="font-['Gasoek_One',sans-serif] font-normal text-[38px] md:text-[38px] lg:text-[50px] xl:text-[61px] text-[#0DD180] leading-none block mt-1">
-                                    beautiful game
+                            <h2 className="font-['Recline',sans-serif] font-bold text-[61px] md:text-[30px] lg:text-[35px] xl:text-[40px] text-white leading-[1.08] ">
+                                Putting beauty 
+                                back in  <br />
+                                <span className="font-['Gasoek_One',sans-serif] font-normal text-[61px] md:text-[30px] lg:text-[40px] xl:text-[48px] text-[#0DD180] leading-none block mt-1">
+                                 the   beautiful game
                                 </span>
                             </h2>
                         </div>
 
                         {/* 3 Star Bullet Items */}
-                        <ul className="space-y-1.5 pt-2">
-                            <li className="flex items-center gap-3 text-white font-['Recline',sans-serif] text-[15px] sm:text-[18px] md:text-[16px] lg:text-[19px] xl:text-[24px] font-semibold">
-                                <img src={starIcon} alt="" className="w-4 h-4 lg:w-5 lg:h-5 object-contain shrink-0" />
-                                <span>The <span className="text-[#0DD180] font-bold">skills</span> to take someone on.</span>
-                            </li>
-                            <li className="flex items-center gap-3 text-white font-['Recline',sans-serif] text-[15px] sm:text-[18px] md:text-[16px] lg:text-[19px] xl:text-[24px] font-semibold">
-                                <img src={starIcon} alt="" className="w-4 h-4 lg:w-5 lg:h-5 object-contain shrink-0" />
-                                <span>The <span className="text-[#0DD180] font-bold">flair</span> to try something unexpected.</span>
-                            </li>
-                            <li className="flex items-center gap-3 text-white font-['Recline',sans-serif] text-[15px] sm:text-[18px] md:text-[16px] lg:text-[19px] xl:text-[24px] font-semibold">
-                                <img src={starIcon} alt="" className="w-4 h-4 lg:w-5 lg:h-5 object-contain shrink-0" />
-                                <span>The <span className="text-[#0DD180] font-bold">creativity</span> to see another way.</span>
-                            </li>
-                        </ul>
+                      <ul className="space-y-4 pt-2">
+    {/* The Skill */}
+    <li className="flex items-center gap-3 text-white">
+        <img
+            src={icongreen1}
+            alt=""
+            className="w-[44px] h-[44px] object-contain shrink-0"
+        />
+        <div className="flex flex-col gap-0.5">
+            <span className="font-['Poppins',sans-serif] text-[15px] sm:text-[18px] md:text-[14px] lg:text-[16px] xl:text-[17px] font-semibold leading-tight">
+                The skill
+            </span>
+            <span className="text-white text-[14.5px] font-light leading-tight">
+                to take someone on
+            </span>
+        </div>
+    </li>
+
+    {/* The Flair */}
+    <li className="flex items-center gap-3 text-white">
+        <img
+            src={iconyellow}
+            alt=""
+            className="w-[44px] h-[44px] object-contain shrink-0"
+        />
+        <div className="flex flex-col gap-0.5">
+            <span className="font-['Poppins',sans-serif] text-[15px] sm:text-[18px] md:text-[14px] lg:text-[16px] xl:text-[17px] font-semibold leading-tight">
+                The flair
+            </span>
+            <span className="text-white text-[14.5px] font-light leading-tight">
+                to try something unexpected
+            </span>
+        </div>
+    </li>
+
+    {/* The Creativity */}
+    <li className="flex items-center gap-3 text-white">
+        <img
+            src={iconblue}
+            alt=""
+            className="w-[44px] h-[44px] object-contain shrink-0"
+        />
+        <div className="flex flex-col gap-0.5">
+            <span className="font-['Poppins',sans-serif] text-[15px] sm:text-[18px] md:text-[14px] lg:text-[16px] xl:text-[17px] font-semibold leading-tight">
+                The creativity
+            </span>
+            <span className="text-white text-[14.5px] font-light leading-tight">
+                to see another way
+            </span>
+        </div>
+    </li>
+
+    {/* The Freedom */}
+    <li className="flex items-center gap-3 text-white">
+        <img
+            src={iconwhite}
+            alt=""
+            className="w-[44px] h-[44px] object-contain shrink-0"
+        />
+        <div className="flex flex-col gap-0.5">
+            <span className="font-['Poppins',sans-serif] text-[15px] sm:text-[18px] md:text-[14px] lg:text-[16px] xl:text-[17px] font-semibold leading-tight">
+                The freedom
+            </span>
+            <span className="text-white text-[14.5px] font-light leading-tight">
+                to make their own decisions
+            </span>
+        </div>
+    </li>
+
+    {/* The Joy */}
+    <li className="flex items-center gap-3 text-white">
+        <img
+            src={icongreen}
+            alt=""
+            className="w-[44px] h-[44px] object-contain shrink-0"
+        />
+        <div className="flex flex-col gap-0.5">
+            <span className="font-['Poppins',sans-serif] text-[15px] sm:text-[18px] md:text-[14px] lg:text-[16px] xl:text-[17px] font-semibold leading-tight">
+                The joy
+            </span>
+            <span className="text-white text-[14.5px] font-light leading-tight">
+                that makes them fall in love with football
+            </span>
+        </div>
+    </li>
+</ul>
 
                         {/* Paragraph Copy */}
-                        <div className="space-y-3 lg:space-y-4 pt-2 lg:pt-3 font-['Poppins',sans-serif] text-white font-normal text-[13px] sm:text-[15px] md:text-[14px] lg:text-[18px] leading-relaxed md:max-w-xl">
-                            <p>
-                                The freedom to make their own decisions. And the joy <br className='hidden md:block' />
-                                that makes children fall in love with football.
-                            </p>
+                        <div className="space-y-3 lg:space-y-4 pt-2 lg:pt-3 font-['recline',sans-serif] text-[#FFDE14] font-normal text-[20px] sm:text-[18px] md:text-[20px] lg:text-[22px] leading-relaxed md:max-w-xl">
+                           
                             <p>
                                 We found it in Brazil. We built it into Samba. Now we <br className='hidden md:block' /> want to give it back.
                             </p>

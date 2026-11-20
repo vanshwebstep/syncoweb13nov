@@ -71,10 +71,10 @@ export function RightKitSection() {
 
             {/* Header Titles */}
             <div>
-              <h2 className="recline font-extrabold text-[34px] sm:text-[40px] md:text-[34px] min-[900px]:text-[42px] lg:text-[48px] xl:text-[54px] 2xl:text-[61px] text-[#FFFFFF] md:leading-[1.05] leading-[1.1] tracking-[1.5px]">
+              <h2 className="recline font-extrabold text-[69px] sm:text-[40px] md:text-[34px] min-[900px]:text-[42px] lg:text-[48px] xl:text-[54px] 2xl:text-[61px] text-[#FFFFFF] md:leading-[1.05] leading-[1.1] tracking-[1.5px]">
                 Every adventure <br />
                 needs the right{' '}
-                <span className="relative gasoek text-[34px] sm:text-[40px] md:text-[34px] min-[900px]:text-[42px] lg:text-[48px] xl:text-[54px] 2xl:text-[61px] text-[#0DD180] font-normal leading-[1.2] tracking-[1.5px] mt-1">
+                <span className="relative gasoek text-[69px] sm:text-[40px] md:text-[34px] min-[900px]:text-[42px] lg:text-[48px] xl:text-[54px] 2xl:text-[61px] text-[#0DD180] font-normal leading-[1.2] tracking-[1.5px] mt-1">
                   Kit
                   <img
                     className="absolute -bottom-4 left-0 w-full md:h-5 h-4 object-contain"
@@ -87,7 +87,7 @@ export function RightKitSection() {
             </div>
 
             {/* Paragraph Copy */}
-            <p className="text-[#FFFFFF] poppins font-semibold text-[15px] sm:text-[16px] md:text-[14px] min-[900px]:text-[16px] lg:text-[18px] xl:text-[19px] 2xl:text-[20px] leading-relaxed max-w-xl pt-2 lg:pt-5">
+            <p className="text-[#FFFFFF] poppins font-semibold text-[20px] sm:text-[16px] md:text-[14px] min-[900px]:text-[16px] lg:text-[18px] xl:text-[19px] 2xl:text-[20px] leading-relaxed max-w-xl pt-2 lg:pt-5">
               Every new Samba player receives their very own Starter Pack, with everything they need to play, practise and follow their Road to Rio.
             </p>
 

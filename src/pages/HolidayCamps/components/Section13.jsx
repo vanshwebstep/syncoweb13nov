@@ -1,95 +1,70 @@
 import React from 'react';
+import { ArrowRight } from 'lucide-react';
 import { Container } from '../../../components/common/Container';
 import { useModal } from '../../../context/ModalContext';
 
-const accelerateImg = 'https://webstepdev.com/demo/syncoWebsiteImages/holiday-camps/accelerate.png';
+const BASE = 'https://webstepdev.com/demo/syncoWebsiteImages';
+const studentImg = `${BASE}/holiday-camps/readytoaccelerate.png`;
+const swoosh = `${BASE}/roadtorio/whiteline.png`;
 
 export function Section13() {
   const { openModal } = useModal();
 
   return (
-    <section className="relative w-full overflow-hidden bg-white py-14">
+    <section className="relative w-full overflow-hidden bg-white py-10 sm:py-14">
       <Container className="relative z-10 w-full">
-        {/* Outer Banner Card with accelerate_banner.png Background */}
-        <div
-          style={{
-            backgroundSize: "cover",
-            backgroundPosition: "top",
-            backgroundRepeat: "no-repeat",
-          }}
-          className="max-w-[1160px] mx-auto accelerate-banner rounded-[32px] sm:rounded-[44px] flex justify-end md:rounded-[54px] p-3 pt-[160px] sm:p-5 md:pt-12 md:pb-12 md:px-6 xl:px-8 relative overflow-hidden">
-          {/* Background Image: accelerate_banner.png */}
+        {/* Banner: blue bg + green corner */}
+        <div className="relative overflow-hidden rounded-[28px] sm:rounded-[32px] bg-[#00A6E3] px-5 py-6 sm:px-6 sm:py-8 md:px-[26px] md:py-[26px]">
+          {/* Green corner (bottom-right) */}
+          <svg
+            className="absolute bottom-0 right-0 w-[60%] md:w-[48%] h-[70%] pointer-events-none select-none"
+            viewBox="0 0 400 200"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <path d="M400,0 L400,200 L0,200 C120,170 260,90 400,0 Z" fill="#0DD180" />
+          </svg>
 
-          {/* Inner White Box Card */}
-          <div className="relative z-10 bg-white md:w-[88%] xl:w-[85%] ms-auto rounded-[24px] sm:rounded-[34px] md:rounded-[42px] p-4 py-10 sm:p-7 md:p-8 xl:p-10 ">
-            <div className="grid grid-cols-1 px-2 md:px-0 md:grid-cols-12 gap-6 items-center">
+          <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 md:gap-10 lg:gap-14">
+            {/* Left: Photo */}
+            <div className="w-full md:w-[34%] shrink-0">
+              <img
+                src={studentImg}
+                alt="Ready to accelerate their Road to Rio"
+                className="w-full h-auto aspect-[1.1/1] object-cover rounded-[26px] block select-none"
+              />
+            </div>
 
-              {/* Left Column: Photo with built-in cyan speech bubble border */}
-              <div className="md:col-span-4 flex justify-center items-center">
-                <div
-                  className="
-                    absolute w-full m-auto left-0 right-0 top-[-23%] max-w-[95%]
-                    md:top-auto md:m-0 md:left-[-70px] md:right-auto md:w-[250px] md:max-w-none
-                    lg:left-[-80px] lg:w-[320px]
-                    xl:left-0 xl:right-0 xl:w-full xl:max-w-[430px] xl:ms-[-15%] xl:me-auto
-                  "
-                >
+            {/* Right: Text & CTA */}
+            <div className="flex-1 flex flex-col items-start text-left">
+              <h2 className="leading-[1.15]">
+                <span className="block recline font-bold text-white text-[30px] sm:text-[36px] lg:text-[40px]">
+                  Ready to accelerate
+                </span>
+                <span className="relative inline-block gasoek font-normal text-[#FFDE14] text-[38px] sm:text-[44px] lg:text-[50px] mt-1">
+                  their Road to Rio?
                   <img
-                    src={accelerateImg}
-                    alt="Ready to accelerate their Road to Rio"
-                    className="w-full h-auto object-contain select-none filter "
+                    src={swoosh}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute left-0 -bottom-2 w-full h-auto pointer-events-none select-none"
                   />
-                </div>
-              </div>
+                </span>
+              </h2>
 
-              {/* Right Column: Copy & CTA */}
-              <div className="md:col-span-8 text-left pl-0 md:pl-[40px] lg:pl-4 md:pt-0 pt-[90px]">
-                {/* 2-line Heading */}
-                <h2 className="xl:leading-[1.1] leading-[1.4] mb-4">
-                  <span className="gasoek text-[#00A3E0] text-[28px] sm:text-[40px] md:text-[26px] lg:text-[32px] xl:text-[48px] block">
-                    Ready to accelerate
-                  </span>
-                  <span className="recline text-[#042C89] font-bold text-[28px] sm:text-[40px] md:text-[26px] lg:text-[32px] xl:text-[48px] block">
-                    their Road to Rio?
-                  </span>
-                </h2>
+              <p className="poppins font-semibold text-white text-[17px] leading-[1.5] mt-6 max-w-[560px]">
+                Four days. Six Brazilian legends. Twelve new skills, stickers and plenty of
+                football along the way. Their place on the map is waiting.
+              </p>
 
-                {/* Description */}
-                <p className="poppins font-semibold text-[#27364B] text-[13.5px] sm:text-[16px] md:text-[15px] lg:text-[16px] xl:text-[20px] leading-relaxed mb-3 max-w-[530px]">
-                  Four days. Six Brazilian legends. Twelve new skills, stickers and plenty of football along the way.
-                </p>
-
-                {/* Cyan Squiggle Vector */}
-                <div className="my-3 sm:my-4">
-                  <svg
-                    className="w-16 h-3 text-[#00A3E0]"
-                    viewBox="0 0 64 12"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M2 6C6 2 10 2 14 6C18 10 22 10 26 6C30 2 34 2 38 6C42 10 46 10 50 6C54 2 58 2 62 6"
-                      stroke="currentColor"
-                      strokeWidth="3.5"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </div>
-
-                {/* Sub-text */}
-                <p className="poppins font-semibold text-[#27364B] text-[13px] sm:text-[17px] md:text-[15px] lg:text-[16px] xl:text-[20px] mb-5 sm:mb-6">
-                  Their place on the map is waiting.
-                </p>
-
-                {/* CTA Button */}
-                <button
-                  onClick={() => openModal('venue')}
-                  className="bg-[#042C89] hover:bg-[#031538] active:scale-95 text-white font-bold text-[14px] sm:text-[18px] md:text-[15px] lg:text-[16px] xl:text-[18px] w-full md:w-max md:px-6 lg:px-8 py-3.5 rounded-full transition-all duration-200 cursor-pointer poppins inline-block"
-                >
-                  Find A Skills Accelerator Camp
-                </button>
-              </div>
-
+              <button
+                type="button"
+                onClick={() => openModal('venue')}
+                className="mt-6 inline-flex items-center justify-center gap-3 bg-[#042C89] hover:bg-[#0A2E8A] text-white poppins font-semibold text-[15px] px-9 py-4 rounded-full hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+              >
+                Find a holiday camp
+                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+              </button>
             </div>
           </div>
         </div>

@@ -1,139 +1,204 @@
 // ReadyToBecomeCoach.jsx
 import React, { useState, useEffect } from "react";
+import {
+  ArrowRight,
+  ArrowLeft,
+  Calendar,
+  Check as CheckIcon,
+  ChevronDown,
+  Clock,
+  FileText,
+  Mail,
+  MapPin,
+  Phone,
+  X,
+} from "lucide-react";
 import { Container } from "../../../components/common/Container";
 import { useToast } from "../../../components/common/Toaster";
 import { fetchVenues } from "../../../services/venueService";
 
-/* ====== REPLACE THESE PATHS LATER ====== */
-const BG_DESKTOP = "https://webstepdev.com/demo/syncoWebsiteImages/coaches/ready-image.png"; // dark blue pattern + green wave
-const BG_MOBILE = "https://webstepdev.com/demo/syncoWebsiteImages/coaches/ready-image-mobile.png";
-/* ======================================= */
+const BASE = "https://webstepdev.com/demo/syncoWebsiteImages";
+const BG_DESKTOP = `${BASE}/coaches/ready-image.png`; // dark blue pattern + green wave
+const BG_MOBILE = `${BASE}/coaches/ready-image-mobile.png`;
+const COACH_IMG = `${BASE}/holiday-camps/sambacoachimg.png`;
+const WHITELINE = `${BASE}/roadtorio/whiteline.png`;
+const bgWave = `${BASE}/one-to-one/readytosee.png`; // green + yellow wave
+const missionImg = `${BASE}/holiday-camps/missionimg.png`;
 
 const ENDPOINT = "/api/open/recruitment/coach/candidate-profile";
 
-const QUALIFICATIONS = [
-  "FA Level 1",
-  "FA Level 2",
-  "DBS (within the year)",
-  "Futsal Level 1",
-  "UEFA B",
-  "First Aid (within 2 years)",
+/* ====== DATA ====== */
+const STEPS = ["About you", "Your venues", "Experience", "Availability"];
+const NEXT_LABEL = { 1: "Next: your venues", 2: "Next: your experience", 3: "Next: availability" };
+
+const LEFT_POINTS = [
+  "4 short steps",
+  "Pick the venues near you",
+  "Upload your CV at the end",
+  "We’ll call you if it’s a good fit",
 ];
-const AGE_GROUPS = ["4-5 years", "6-7 years", "8-9 years", "10-11 years"];
-const YEARS = ["None", "1 Year", "2 Years", "3 Years", "4 Years", "5+ Years"];
-const DEFAULT_VENUES = [
-  { id: 61, name: "Kings Cross / SAT (11am-1pm)" },
-  { id: 54, name: "Camden / SUN (10am-12pm)" },
-  { id: 78, name: "Islington / SAT (2pm-4pm)" },
+
+// Sample venues (screenshot wale). API se venues aaye to wo use hote hain.
+const SAMPLE_VENUES = [
+  { id: 1, name: "Samba Islington", place: "Islington Tennis Centre, N7", slots: ["Sat 9am–12pm", "Wed 4–6pm"], dist: "0.6 mi" },
+  { id: 2, name: "Samba Kings Cross", place: "Kings Cross Sports Hall, N1C", slots: ["Sat 11am–1pm"], dist: "1.0 mi" },
+  { id: 3, name: "Samba Highbury", place: "Highbury Fields, N5", slots: ["Sat 9am–1pm"], dist: "1.1 mi" },
+  { id: 4, name: "Samba Hackney", place: "Clissold Leisure Centre, N16", slots: ["Sun 9am–12pm", "Thu 4–6pm"], dist: "1.4 mi" },
+  { id: 5, name: "Samba Camden", place: "Talacre Sports Centre, NW5", slots: ["Sat 10am–1pm"], dist: "1.9 mi" },
+  { id: 6, name: "Samba Shoreditch", place: "Shoreditch Park, N1", slots: ["Sun 10am–1pm", "Tue 4–5pm"], dist: "2.2 mi" },
 ];
-const SOURCES = ["Indeed", "Facebook", "Google", "Referral", "Other"];
+const VISIBLE_VENUES = 6;
 
-const inputCls =
-  "w-full rounded-[6px] bg-[#F6F6F6] px-3.5 sm:px-4 py-2.5 sm:py-3 text-[12.5px] sm:text-[13px] lg:text-[14px] text-[#000] placeholder:text-[#B2B4C0] outline-none focus:bg-white  transition-all poppins";
-const labelCls = "mb-1.5 block text-[12.5px] sm:text-[13px] xl:text-[14px] 2xl:text-[16px] text-[#101014] font-medium poppins";
-const questionCls = "mb-2 text-[12.5px] sm:text-[13px] xl:text-[14px] 2xl:text-[16px] text-[#101014] font-medium poppins";
-
-const Field = ({ label, error, children }) => (
-  <div>
-    <label className={labelCls}>{label}</label>
-    {children}
-    {error && (
-      <p className="mt-1 text-[12px] text-red-500 poppins">{error}</p>
-    )}
-  </div>
-);
-
-/* ====== CUSTOM RADIO ====== */
-const Radio = ({ name, value, checked, onChange }) => (
-  <label className="flex cursor-pointer items-center gap-2.5 sm:gap-3 text-[12px] sm:text-[13px] xl:text-[14px] text-[#5F5F6D] poppins">
-    <input
-      type="radio"
-      name={name}
-      value={value}
-      checked={checked}
-      onChange={onChange}
-      className="peer sr-only"
-    />
-    <span
-      aria-hidden
-      className={`
-        flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-[1.5px] bg-white
-        transition-all duration-150
-        peer-focus-visible:ring-2 peer-focus-visible:ring-[#0DD180]/40
-        ${checked ? "border-[#0DD180]" : "border-[#D0D5DD]"}
-      `}
-    >
-      <span
-        className={`
-          h-2 w-2 rounded-full bg-[#0DD180] transition-transform duration-150
-          ${checked ? "scale-100" : "scale-0"}
-        `}
-      />
-    </span>
-    {value}
-  </label>
-);
-
-/* ====== CUSTOM CHECKBOX ====== */
-const Check = ({ label, checked, onChange }) => (
-  <label className="flex cursor-pointer items-center gap-2.5 sm:gap-3 text-[12px] sm:text-[13px] xl:text-[14px] text-[#5F5F6D] poppins">
-    <input
-      type="checkbox"
-      checked={checked}
-      onChange={onChange}
-      className="peer sr-only"
-    />
-    <span
-      aria-hidden
-      className={`
-        flex h-4 w-4 shrink-0 items-center justify-center rounded-[5px] border-[1.5px]
-        transition-all duration-150
-        peer-focus-visible:ring-2 peer-focus-visible:ring-[#0DD180]/40
-        ${checked ? "border-[#0DD180] bg-[#0DD180]/5" : "border-[#D0D5DD] bg-white"}
-      `}
-    >
-      <svg
-        viewBox="0 0 14 14"
-        fill="none"
-        className={`h-2 w-2 transition-transform duration-150 ${checked ? "scale-100" : "scale-0"}`}
-      >
-        <path
-          d="M2.5 7.5L5.5 10.5L11.5 3.5"
-          stroke="#0DD180"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </span>
-    {label}
-  </label>
-);
+const QUALIFICATIONS = ["FA Playmaker", "FA Level 1", "FA Level 2", "Futsal Level 1", "UEFA C", "UEFA B", "None yet"];
+const YEARS = ["None", "1 yr", "2–3 yrs", "4+ yrs"];
+const AGE_GROUPS = ["4–5 years", "6–7 years", "8–9 years", "10–11 years", "12+ years"];
+const DBS = ["Yes", "In progress", "No"];
+const YES_NO = ["Yes", "No"];
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const TIMES = ["Weekend mornings", "After school (3–6pm)", "Holiday camps"];
+const SOURCES = ["Indeed", "Facebook", "Instagram", "Google", "Referral", "Other"];
 
 const initialFormState = {
   firstName: "",
   surname: "",
   email: "",
   phone: "",
-  age: "",
+  dob: "",
   postcode: "",
-  vehicle: "Yes",
-  qualifications: [],
-  years: "1 Year",
-  ageGroups: [],
   venues: [],
-  cv: null,
+  anyVenue: false,
+  qualifications: [],
+  years: "1 yr",
+  ageGroups: [],
+  dbs: "Yes",
+  firstAid: "Yes",
   coverNote: "",
+  days: [],
+  times: [],
+  startDate: "",
+  vehicle: "Yes",
+  cv: null,
   source: "Indeed",
+  rightToWork: false,
+  consent: false,
 };
 
+/* ====== HELPERS ====== */
+const ageFromDob = (dob) => {
+  const d = new Date(dob);
+  if (isNaN(d.getTime())) return NaN;
+  const now = new Date();
+  let age = now.getFullYear() - d.getFullYear();
+  const m = now.getMonth() - d.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age -= 1;
+  return age;
+};
+
+const labelCls = "mb-1.5 block font-['Poppins',sans-serif] font-bold text-[#042C89] text-[12px] lg:text-[13px]";
+const inputCls = (err) =>
+  `w-full rounded-[12px] bg-[#F4F6FB] border px-3.5 py-3 text-[13px] lg:text-[14.6px] text-[#042C89] placeholder-[#9AA3B5] outline-none transition-all font-['Poppins',sans-serif] ${
+    err ? "border-red-500" : "border-[#E8ECF5] focus:border-[#00A6E3] focus:bg-white"
+  }`;
+
+const Field = ({ label, error, hint, children }) => (
+  <div>
+    {label && <label className={labelCls}>{label}</label>}
+    {hint && <p className="-mt-1 mb-2 font-['Poppins',sans-serif] text-[#797A88] text-[11px] lg:text-[12px]">{hint}</p>}
+    {children}
+    {error && <p className="mt-1 text-[12px] text-red-500 font-['Poppins',sans-serif]">{error}</p>}
+  </div>
+);
+
+const IconInput = ({ icon: Icon, error, className = "", ...props }) => (
+  <div className="relative">
+    <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#797A88] pointer-events-none" />
+    <input {...props} className={`${inputCls(error)} pl-10 ${className}`} />
+  </div>
+);
+
+/* Segmented control (single choice) */
+const Segmented = ({ options, value, onChange }) => (
+  <div className="flex w-full rounded-full border border-[#E8ECF5] bg-white p-1">
+    {options.map((o) => {
+      const active = value === o;
+      return (
+        <button
+          key={o}
+          type="button"
+          onClick={() => onChange(o)}
+          className={`flex-1 rounded-full py-2 px-2 font-['Poppins',sans-serif] font-bold text-[11px] lg:text-[12.5px] transition-all cursor-pointer whitespace-nowrap ${
+            active ? "bg-[#042C89] text-white" : "text-[#042C89] hover:bg-[#F4F6FB]"
+          }`}
+        >
+          {o}
+        </button>
+      );
+    })}
+  </div>
+);
+
+/* Chip (multi / single choice) */
+const Chip = ({ label, active, onClick }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 font-['Poppins',sans-serif] font-bold text-[11px] lg:text-[12px] cursor-pointer transition-all ${
+      active ? "bg-[#042C89] border-[#042C89] text-white" : "bg-white border-[#E8ECF5] text-[#042C89] hover:border-[#C9D3F0]"
+    }`}
+  >
+    {active && <CheckIcon className="w-3 h-3 stroke-[3.5]" />}
+    {label}
+  </button>
+);
+
+/* Square checkbox */
+const Box = ({ checked, onChange, children, className = "" }) => (
+  <label className={`flex items-start gap-3 cursor-pointer ${className}`}>
+    <input type="checkbox" checked={checked} onChange={onChange} className="sr-only peer" />
+    <span
+      aria-hidden
+      className={`mt-0.5 w-[18px] h-[18px] rounded-[5px] border-2 flex items-center justify-center shrink-0 transition-all peer-focus-visible:ring-2 peer-focus-visible:ring-[#00A6E3]/40 ${
+        checked ? "bg-[#042C89] border-[#042C89]" : "bg-white border-[#C9D3F0]"
+      }`}
+    >
+      {checked && <CheckIcon className="w-3 h-3 text-white stroke-[3.5]" />}
+    </span>
+    <span className="font-['Poppins',sans-serif] text-[#042C89] text-[11.5px] lg:text-[12.5px] leading-snug">{children}</span>
+  </label>
+);
+
+/* ====== COMPONENT ====== */
 const ReadyToBecomeCoach = () => {
   const toast = useToast();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState(initialFormState);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [venueOptions, setVenueOptions] = useState(DEFAULT_VENUES);
+  const [venueOptions, setVenueOptions] = useState(SAMPLE_VENUES);
+  const [showAll, setShowAll] = useState(false);
+  const [summary, setSummary] = useState(null); // success screen
+  const [copied, setCopied] = useState(false);
+
+  const handleApply = () => {
+    const el = document.getElementById("join");
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleShare = async () => {
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    const data = { title: "Samba Soccer Schools · Coach vacancy", text: "Know a great football coach? Check this out.", url };
+    try {
+      if (navigator.share) {
+        await navigator.share(data);
+      } else {
+        await navigator.clipboard.writeText(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }
+    } catch {
+      // user cancelled share
+    }
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -144,238 +209,161 @@ const ReadyToBecomeCoach = () => {
             data.map((v) => ({
               id: v.venueId || v.id || v.venueName,
               name: v.venueName || v.area || `Venue ${v.venueId}`,
+              place: v.area || "",
+              slots: [],
+              dist: "",
             }))
           );
         }
       })
-      .catch((err) => {
-        console.warn("Could not load dynamic venues, using defaults:", err);
-      });
-
+      .catch((err) => console.warn("Could not load venues, using sample list:", err));
     return () => {
       isMounted = false;
     };
   }, []);
 
+  const clearError = (key) =>
+    setErrors((prev) => {
+      if (!prev[key]) return prev;
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+
   const set = (key, value) => {
     setForm((f) => ({ ...f, [key]: value }));
-    if (errors[key]) {
-      setErrors((prev) => {
-        const next = { ...prev };
-        delete next[key];
-        return next;
-      });
-    }
+    clearError(key);
   };
 
   const toggle = (key, value) => {
     setForm((f) => {
-      const currentList = f[key] || [];
-      return {
-        ...f,
-        [key]: currentList.includes(value)
-          ? currentList.filter((v) => v !== value)
-          : [...currentList, value],
-      };
+      const list = f[key] || [];
+      return { ...f, [key]: list.includes(value) ? list.filter((v) => v !== value) : [...list, value] };
     });
-    if (errors[key]) {
-      setErrors((prev) => {
-        const next = { ...prev };
-        delete next[key];
-        return next;
-      });
-    }
+    clearError(key);
   };
 
-  const validateSection1 = (data) => {
-    const errs = {};
+  /* ====== VALIDATION ====== */
+  const validators = {
+    1: (d) => {
+      const e = {};
+      if (!d.firstName.trim()) e.firstName = "First name is required";
+      if (!d.surname.trim()) e.surname = "Surname is required";
 
-    if (!data.firstName?.trim()) {
-      errs.firstName = "First name is required";
-    }
+      const em = d.email.trim();
+      if (!em) e.email = "Email address is required";
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) e.email = "Enter a valid email address";
 
-    if (!data.surname?.trim()) {
-      errs.surname = "Surname is required";
-    }
-
-    const emailTrimmed = data.email?.trim() || "";
-    if (!emailTrimmed) {
-      errs.email = "Email address is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrimmed)) {
-      errs.email = "Enter a valid email address";
-    }
-
-    const rawPhone = data.phone?.trim() || "";
-    if (!rawPhone) {
-      errs.phone = "Telephone number is required";
-    } else {
-      const digits = rawPhone.replace(/\D/g, "");
-      const hasAllowedChars = /^[0-9+\s-]+$/.test(rawPhone);
-      if (!hasAllowedChars || digits.length < 10 || digits.length > 15) {
-        errs.phone = "Enter a valid telephone number (10-15 digits)";
+      const ph = d.phone.trim();
+      if (!ph) e.phone = "Telephone number is required";
+      else {
+        const digits = ph.replace(/\D/g, "");
+        if (!/^[0-9+\s-]+$/.test(ph) || digits.length < 10 || digits.length > 15) e.phone = "Enter a valid number (10-15 digits)";
       }
-    }
 
-    const rawAge = data.age !== undefined && data.age !== null ? String(data.age).trim() : "";
-    if (!rawAge) {
-      errs.age = "Age is required";
-    } else {
-      const ageNum = Number(rawAge);
-      if (isNaN(ageNum) || !/^\d+$/.test(rawAge)) {
-        errs.age = "Enter a valid age";
-      } else if (ageNum < 18) {
-        errs.age = "Age must be at least 18";
+      if (!d.dob) e.dob = "Date of birth is required";
+      else {
+        const age = ageFromDob(d.dob);
+        if (isNaN(age) || age < 0) e.dob = "Enter a valid date of birth";
+        else if (age < 18) e.dob = "You must be at least 18";
       }
-    }
 
-    const rawPostcode = data.postcode?.trim() || "";
-    if (!rawPostcode) {
-      errs.postcode = "London Postcode is required";
-    } else {
-      const ukPostcodeRegex = /^[A-Z]{1,2}[0-9][A-Z0-9]?\s?[0-9][A-Z]{2}$/i;
-      if (!ukPostcodeRegex.test(rawPostcode)) {
-        errs.postcode = "Enter a valid UK postcode format (e.g. SW1A 1AA)";
+      const pc = d.postcode.trim();
+      if (!pc) e.postcode = "Postcode is required";
+      else if (!/^[A-Z]{1,2}[0-9][A-Z0-9]?\s?[0-9][A-Z]{2}$/i.test(pc)) e.postcode = "Enter a valid UK postcode (e.g. N1 9AG)";
+      return e;
+    },
+    2: (d) => {
+      const e = {};
+      if (d.venues.length === 0 && !d.anyVenue) e.venues = "Pick at least one venue, or tick the box below";
+      return e;
+    },
+    3: (d) => {
+      const e = {};
+      if (d.qualifications.length === 0) e.qualifications = "Please select at least one option";
+      if (d.ageGroups.length === 0) e.ageGroups = "Please select at least one age group";
+      if (!d.coverNote.trim()) e.coverNote = "Cover note is required";
+      else if (d.coverNote.trim().split(/\s+/).filter(Boolean).length > 500) e.coverNote = "Cover note must not exceed 500 words";
+      return e;
+    },
+    4: (d) => {
+      const e = {};
+      if (d.days.length === 0) e.days = "Please select at least one day";
+      if (!d.cv) e.cv = "Please upload your CV";
+      else {
+        const name = (d.cv.name || "").toLowerCase();
+        const okExt = [".pdf", ".doc", ".docx"].some((x) => name.endsWith(x));
+        if (!okExt) e.cv = "CV must be a PDF, DOC, or DOCX file";
+        else if (d.cv.size > 5 * 1024 * 1024) e.cv = "CV file size must be less than 5MB";
       }
-    }
-
-    return errs;
-  };
-
-  const validateSection2 = (data) => {
-    const errs = {};
-
-    if (!data.qualifications || data.qualifications.length === 0) {
-      errs.qualifications = "Please select at least one qualification";
-    }
-
-    if (!data.ageGroups || data.ageGroups.length === 0) {
-      errs.ageGroups = "Please select at least one age group";
-    }
-
-    return errs;
-  };
-
-  const validateSection3 = (data) => {
-    const errs = {};
-
-    if (!data.cv) {
-      errs.cv = "Please upload your CV";
-    } else {
-      const allowedExtensions = [".pdf", ".doc", ".docx"];
-      const fileName = (data.cv.name || "").toLowerCase();
-      const hasValidExt = allowedExtensions.some((ext) => fileName.endsWith(ext));
-      const validMimes = [
-        "application/pdf",
-        "application/msword",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      ];
-      const hasValidMime = validMimes.includes(data.cv.type);
-
-      if (!hasValidExt && !hasValidMime) {
-        errs.cv = "CV must be a PDF, DOC, or DOCX file";
-      } else if (data.cv.size > 5 * 1024 * 1024) {
-        errs.cv = "CV file size must be less than 5MB";
-      }
-    }
-
-    const rawCover = data.coverNote?.trim() || "";
-    if (!rawCover) {
-      errs.coverNote = "Cover note is required";
-    } else {
-      const words = rawCover.split(/\s+/).filter(Boolean);
-      if (words.length > 500) {
-        errs.coverNote = "Cover note must not exceed 500 words";
-      }
-    }
-
-    if (!data.source) {
-      errs.source = "Please select how you heard about us";
-    }
-
-    return errs;
+      if (!d.source) e.source = "Please select how you heard about us";
+      if (!d.rightToWork) e.rightToWork = "Please confirm your right to work in the UK";
+      if (!d.consent) e.consent = "Please agree to continue";
+      return e;
+    },
   };
 
   const handleNext = () => {
-    if (step === 1) {
-      const s1Errors = validateSection1(form);
-      if (Object.keys(s1Errors).length > 0) {
-        setErrors(s1Errors);
-        return;
-      }
-      setErrors({});
-      setStep(2);
-    } else if (step === 2) {
-      const s2Errors = validateSection2(form);
-      if (Object.keys(s2Errors).length > 0) {
-        setErrors(s2Errors);
-        return;
-      }
-      setErrors({});
-      setStep(3);
+    const errs = validators[step](form);
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs);
+      return;
     }
+    setErrors({});
+    setStep((s) => s + 1);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (step < 3) {
+    if (step < 4) {
       handleNext();
       return;
     }
 
-    // Step 3 submission: Validate whole form
-    const errs1 = validateSection1(form);
-    const errs2 = validateSection2(form);
-    const errs3 = validateSection3(form);
-    const allErrors = { ...errs1, ...errs2, ...errs3 };
-
+    // Final: poora form validate karo, jis step me error ho wahan jao
+    const stepErrors = [1, 2, 3, 4].map((n) => validators[n](form));
+    const allErrors = Object.assign({}, ...stepErrors);
     if (Object.keys(allErrors).length > 0) {
       setErrors(allErrors);
-      if (Object.keys(errs1).length > 0) {
-        setStep(1);
-      } else if (Object.keys(errs2).length > 0) {
-        setStep(2);
-      } else {
-        setStep(3);
-      }
+      setStep(stepErrors.findIndex((s) => Object.keys(s).length > 0) + 1);
       return;
     }
 
     setIsSubmitting(true);
-
     try {
       const rawBase = import.meta.env.VITE_API_BASE_URL || "https://api.grabbite.com";
-      const baseUrl = rawBase.replace(/\/+$/, "");
-      const apiUrl = `${baseUrl}${ENDPOINT}`;
+      const apiUrl = `${rawBase.replace(/\/+$/, "")}${ENDPOINT}`;
 
       const formData = new FormData();
       formData.append("firstName", form.firstName.trim());
       formData.append("lastName", form.surname.trim());
       formData.append("email", form.email.trim());
       formData.append("phoneNumber", form.phone.trim());
-      formData.append("age", String(form.age).trim());
+      formData.append("age", String(ageFromDob(form.dob))); // DOB se age
+      formData.append("dateOfBirth", form.dob);
       formData.append("postcode", form.postcode.trim());
       formData.append("howDidYouHear", form.source);
       formData.append("accessToOwnVehicle", form.vehicle === "Yes" ? "true" : "false");
       formData.append("whichQualificationYouHave", JSON.stringify(form.qualifications));
       formData.append("footballExperience", form.years);
+      formData.append("ageGroupExperience", form.ageGroups.join(", "));
+      formData.append("dbsCheck", form.dbs);
+      formData.append("firstAid", form.firstAid);
+      formData.append("coverNote", form.coverNote.trim());
+      if (form.cv) formData.append("uploadCv", form.cv);
 
       const formattedVenues = form.venues.map((v) => {
         const num = Number(v);
         return !isNaN(num) && String(num) === String(v).trim() ? num : v;
       });
       formData.append("availableVenueWork", JSON.stringify(formattedVenues));
+      formData.append("openToAnyVenue", form.anyVenue ? "true" : "false");
+      formData.append("availableDays", form.days.join(", "));
+      formData.append("availableTimes", form.times.join(", "));
+      formData.append("earliestStartDate", form.startDate);
+      formData.append("rightToWorkInUK", "true");
 
-      if (form.cv) {
-        formData.append("uploadCv", form.cv);
-      }
-      formData.append("coverNote", form.coverNote.trim());
-      formData.append("ageGroupExperience", form.ageGroups.join(", "));
-
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(apiUrl, { method: "POST", body: formData });
 
       let data = null;
       try {
@@ -386,12 +374,15 @@ const ReadyToBecomeCoach = () => {
 
       if (response.ok && data?.status !== false) {
         toast.success(data?.message || "Application submitted successfully!");
+        setSummary({
+          name: form.firstName.trim(),
+          venues: venueOptions.filter((v) => form.venues.some((id) => String(id) === String(v.id))),
+        });
         setForm(initialFormState);
         setErrors({});
         setStep(1);
       } else {
-        const errorMsg = data?.message || "Something went wrong. Please try again.";
-        toast.error(errorMsg);
+        toast.error(data?.message || "Something went wrong. Please try again.");
       }
     } catch (error) {
       console.error("Coach registration error:", error);
@@ -401,398 +392,518 @@ const ReadyToBecomeCoach = () => {
     }
   };
 
+  const Err = ({ field }) =>
+    errors[field] ? <p className="mt-1 text-[12px] text-red-500 font-['Poppins',sans-serif]">{errors[field]}</p> : null;
+
+  const today = new Date().toISOString().split("T")[0];
+  const visibleVenues = showAll ? venueOptions : venueOptions.slice(0, VISIBLE_VENUES);
+  const hiddenCount = Math.max(venueOptions.length - VISIBLE_VENUES, 0);
+  const cardCls = "w-full max-w-[560px] ms-auto rounded-[24px] md:rounded-[28px] bg-white p-5 sm:p-7 lg:p-8 shadow-[0_4px_30px_rgba(0,0,0,0.12)]";
+  const h3Cls = "mt-4 md:mt-6 font-['Poppins',sans-serif] font-bold text-[#042C89] text-[18px] lg:text-[22px] leading-tight";
+
   return (
-    <section
-      className="
-        relative isolate w-full overflow-hidden bg-[#1B2F8E]
-        bg-cover bg-bottom bg-no-repeat
-        bg-[image:var(--bg-mobile)] md:bg-[image:var(--bg-desktop)]
-      "
-      style={{
-        "--bg-desktop": `url(${BG_DESKTOP})`,
-        "--bg-mobile": `url(${BG_MOBILE})`,
-      }}
-    >
-      <Container className="py-14 sm:py-16 md:py-20 lg:py-24">
-        {/* LEFT: TEXT */}
-        <div className="flex flex-col md:flex-row justify-between items-start gap-8 md:gap-6 lg:gap-10 xl:gap-[50px] 2xl:gap-[60px]">
-          <div className="w-full md:w-[42%] lg:w-[40%] xl:w-[42%] md:max-w-[480px] shrink-0">
-            <h2 className="leading-[1.08] md:leading-[1.02]">
-              <span
-                className="
-                block recline font-bold text-white
-                text-[36px] sm:text-[42px] md:text-[36px] lg:text-[46px] xl:text-[56px] 2xl:text-[66px]
-              "
-              >
-                Ready to
-              </span>
-              <span
-                className="
-                block recline font-bold text-white
-                text-[36px] sm:text-[42px] md:text-[36px] lg:text-[46px] xl:text-[56px] 2xl:text-[66px]
-              "
-              >
-                become a
-              </span>
-              <span
-                className="
-                block gasoek text-[#0DD180]
-                text-[36px] sm:text-[42px] md:text-[36px] lg:text-[46px] xl:text-[52px] 2xl:text-[58px]
-              "
-              >
-                Samba Coach?
-              </span>
-            </h2>
+    <>
+      <section
+        className="relative isolate w-full overflow-hidden bg-[#042C89] bg-cover bg-bottom bg-no-repeat bg-[image:var(--bg-mobile)] md:bg-[image:var(--bg-desktop)]"
+        style={{ "--bg-desktop": `url(${BG_DESKTOP})`, "--bg-mobile": `url(${BG_MOBILE})` }}
+      >
+        <Container className="px-5 md:px-6 pt-12 pb-10 sm:py-16 md:py-20 lg:py-24">
+          <div className="flex flex-col md:flex-row justify-between items-center md:items-center gap-8 md:gap-6 lg:gap-12">
+            {/* ===== LEFT ===== */}
+            <div className="w-full md:w-[44%] lg:w-[46%] md:max-w-[520px] shrink-0">
+              <h2 className="leading-[1.1]">
+                <span className="block font-['Recline',sans-serif] font-bold text-white text-[30px] sm:text-[38px] md:text-[32px] lg:text-[40px] xl:text-[44px]">
+                  Ready to become a
+                </span>
+                <span className="relative inline-block font-['Gasoek_One',sans-serif] text-[#0DD180] text-[36px] sm:text-[44px] md:text-[38px] lg:text-[48px] xl:text-[54px] mt-1">
+                  Samba coach?
+                  <img src={WHITELINE} alt="" aria-hidden="true" className="absolute left-0 -bottom-1.5 md:-bottom-2 w-full h-auto pointer-events-none select-none" />
+                </span>
+              </h2>
 
-            <p className="mt-5 sm:mt-7 poppins text-[14px] sm:text-[15px] md:text-[14px] lg:text-[16px] xl:text-[18px] 2xl:text-[20px] leading-[1.65] font-medium text-white/90">
-              Tell us a little about yourself and let&apos;s see if we&apos;re a
-              good fit. Our recruitment team will reach out to you as soon as
-              possible.
-            </p>
-          </div>
+              <p className="mt-5 md:mt-7 font-['Poppins',sans-serif] text-white text-[15px] lg:text-[17px] leading-[1.5] md:leading-relaxed">
+                Tell us a little about yourself. It takes about 5 minutes, and our recruitment team will be in touch as
+                soon as possible.
+              </p>
 
-          {/* RIGHT: FORM CARD */}
-          <div className="w-full md:flex-1 md:max-w-[620px] ms-auto">
-            <form
-              onSubmit={handleSubmit}
-              noValidate
-              className="
-                rounded-[24px] sm:rounded-[28px] md:rounded-[32px] bg-white
-                p-5 sm:p-7 md:p-6 lg:p-8 xl:p-10 2xl:p-12 shadow-[0_4px_30px_rgba(0,0,0,0.1)]
-              "
-            >
-              {/* TABS */}
-              <div className="mb-5 sm:mb-6 flex items-center pb-2 sm:pb-3 gap-3 sm:gap-6 lg:gap-8 text-[12.5px] sm:text-[14px] lg:text-[16px] xl:text-[18px] 2xl:text-[20px]">
-                {[1, 2, 3].map((n) => (
-                  <button
-                    key={n}
-                    type="button"
-                    onClick={() => n < step && setStep(n)}
-                    className={`
-                  pb-2 transition poppins
-                  ${
-                    step === n
-                      ? "border-b-[4px] md:border-b-[5px] border-[#0DD180] px-3 sm:px-4 rounded-[5px] font-bold text-[#0DD180]"
-                      : "border-b-[4px] md:border-b-[5px] px-2.5 sm:px-3 border-transparent text-[#9E9EB3] hover:text-[#7A7A8C]"
-                  }
-                `}
-                  >
-                    Section {n}
-                  </button>
+              {/* Mobile: sirf pehle 2 points ek row me. Desktop: sab 4 list me */}
+              <ul className="mt-5 md:mt-6 flex flex-row flex-wrap gap-x-4 gap-y-2 md:flex-col md:gap-0 md:space-y-3">
+                {LEFT_POINTS.map((p, i) => (
+                  <li key={p} className={`${i > 1 ? "hidden md:flex" : "flex"} items-center gap-2 md:gap-3`}>
+                    <span className="w-[18px] h-[18px] md:w-[20px] md:h-[20px] rounded-full bg-[#0DD180] flex items-center justify-center shrink-0">
+                      <CheckIcon className="w-3 h-3 text-white stroke-[3.5]" />
+                    </span>
+                    <span className="font-['Poppins',sans-serif] font-bold text-white text-[12px] md:text-[13px] lg:text-[15px]">{p}</span>
+                  </li>
                 ))}
-              </div>
+              </ul>
 
-              {/* STEP 1 */}
-              {step === 1 && (
-                <div className="space-y-4 sm:space-y-5 pb-8 sm:pb-10">
-                  <Field label="First Name" error={errors.firstName}>
-                    <input
-                      className={`${inputCls} ${errors.firstName ? "border border-red-500 ring-1 ring-red-500/20" : ""}`}
-                      placeholder="First Name"
-                      value={form.firstName}
-                      onChange={(e) => set("firstName", e.target.value)}
-                    />
-                  </Field>
-                  <Field label="Surname" error={errors.surname}>
-                    <input
-                      className={`${inputCls} ${errors.surname ? "border border-red-500 ring-1 ring-red-500/20" : ""}`}
-                      placeholder="Surname"
-                      value={form.surname}
-                      onChange={(e) => set("surname", e.target.value)}
-                    />
-                  </Field>
-                  <Field label="Email Address" error={errors.email}>
-                    <input
-                      type="email"
-                      className={`${inputCls} ${errors.email ? "border border-red-500 ring-1 ring-red-500/20" : ""}`}
-                      placeholder="Email Address"
-                      value={form.email}
-                      onChange={(e) => set("email", e.target.value)}
-                    />
-                  </Field>
-                  <Field label="Telephone Number" error={errors.phone}>
-                    <input
-                      type="tel"
-                      className={`${inputCls} ${errors.phone ? "border border-red-500 ring-1 ring-red-500/20" : ""}`}
-                      placeholder="Telephone Number"
-                      value={form.phone}
-                      onChange={(e) => set("phone", e.target.value)}
-                    />
-                  </Field>
-                  <Field label="Age" error={errors.age}>
-                    <input
-                      type="number"
-                      min="18"
-                      className={`${inputCls} ${errors.age ? "border border-red-500 ring-1 ring-red-500/20" : ""}`}
-                      placeholder="Age"
-                      value={form.age}
-                      onChange={(e) => set("age", e.target.value)}
-                    />
-                  </Field>
-                  <Field label="London Postcode" error={errors.postcode}>
-                    <input
-                      className={`${inputCls} ${errors.postcode ? "border border-red-500 ring-1 ring-red-500/20" : ""}`}
-                      placeholder="London Postcode"
-                      value={form.postcode}
-                      onChange={(e) => set("postcode", e.target.value)}
-                    />
-                  </Field>
-                </div>
-              )}
+              <img
+                src={COACH_IMG}
+                alt="Samba coach"
+                className="hidden md:block mt-8 w-[260px] lg:w-[400px] h-[185px] lg:h-[280px] object-cover rounded-[20px] shadow-xl"
+              />
+            </div>
 
-              {/* STEP 2 */}
-              {step === 2 && (
-                <div className="space-y-4 sm:space-y-5 pb-8 sm:pb-10">
-                  <div>
-                    <p className={questionCls}>
-                      Do you have access to your own vehicle?
+            {/* ===== RIGHT ===== */}
+            <div className="w-full md:flex-1 md:max-w-[560px]">
+              {summary ? (
+                /* ===== SUCCESS ===== */
+                <div className={cardCls}>
+                  <div className="flex flex-col items-center text-center">
+                    <span className="w-[72px] h-[72px] rounded-full bg-[#0DD180]/15 flex items-center justify-center">
+                      <span className="w-[48px] h-[48px] rounded-full bg-[#0DD180] flex items-center justify-center">
+                        <CheckIcon className="w-6 h-6 text-white stroke-[3.5]" />
+                      </span>
+                    </span>
+                    <h3 className="mt-4 font-['Poppins',sans-serif] font-bold text-[#042C89] text-[20px] lg:text-[24px]">Application sent!</h3>
+                    <p className="mt-2 max-w-[360px] font-['Poppins',sans-serif] text-[#797A88] text-[12px] lg:text-[13.5px] leading-relaxed">
+                      Thanks {summary.name}. Your application has gone to the team that runs the venues you picked.
                     </p>
-                    <div className="space-y-3">
-                      {["Yes", "No"].map((v) => (
-                        <Radio
-                          key={v}
-                          name="vehicle"
-                          value={v}
-                          checked={form.vehicle === v}
-                          onChange={() => set("vehicle", v)}
-                        />
-                      ))}
-                    </div>
                   </div>
 
-                  <div>
-                    <p className={questionCls}>
-                      Please select which qualifications you have
-                    </p>
-                    <div className="space-y-2">
-                      {QUALIFICATIONS.map((q) => (
-                        <Check
-                          key={q}
-                          label={q}
-                          checked={form.qualifications.includes(q)}
-                          onChange={() => toggle("qualifications", q)}
-                        />
-                      ))}
-                    </div>
-                    {errors.qualifications && (
-                      <p className="mt-1 text-[12px] text-red-500 poppins">
-                        {errors.qualifications}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <p className={questionCls}>
-                      How many years football coaching experience do you have?
-                    </p>
-                    <div className="relative">
-                      <select
-                        value={form.years}
-                        onChange={(e) => set("years", e.target.value)}
-                        className="w-full rounded-lg bg-[#FFFFFF] px-4 py-3 text-[12.5px] xl:text-[14px] text-[#101828] outline-none focus:bg-white  border border-[#D0D5DD] poppins transition-all"
-                      >
-                        {YEARS.map((y) => (
-                          <option key={y} value={y}>
-                            {y}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className={questionCls}>
-                      Which age groups do you have experience working with? Please
-                      select from the options
-                    </p>
-                    <div className="space-y-3">
-                      {AGE_GROUPS.map((a) => (
-                        <Check
-                          key={a}
-                          label={a}
-                          checked={form.ageGroups.includes(a)}
-                          onChange={() => toggle("ageGroups", a)}
-                        />
-                      ))}
-                    </div>
-                    {errors.ageGroups && (
-                      <p className="mt-1 text-[12px] text-red-500 poppins">
-                        {errors.ageGroups}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* STEP 3 */}
-              {step === 3 && (
-                <div className="space-y-6">
-                  <div>
-                    <p className={`${questionCls} pb-2`}>
-                      Please select which venues you are available for work
-                    </p>
-                    <div className="relative">
-                      <select
-                        value=""
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          if (val && !form.venues.includes(val)) {
-                            set("venues", [...form.venues, val]);
-                          }
-                        }}
-                        className="w-full rounded-[8px] bg-[#fff] px-4 py-2.5 shadow-sm text-[13px] xl:text-[14px] 2xl:text-[16px] text-[#797A88] border border-[#D0D5DD] outline-none focus:bg-white  poppins transition-all"
-                      >
-                        <option value="">
-                          {form.venues.length > 0 ? "Add another venue" : "Select venue"}
-                        </option>
-                        {venueOptions.map((v) => (
-                          <option key={v.id} value={v.id}>
-                            {v.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {form.venues.length > 0 && (
-                      <div className="mt-2.5 flex flex-wrap gap-2">
-                        {form.venues.map((vId) => {
-                          const matched = venueOptions.find(
-                            (item) => String(item.id) === String(vId)
-                          );
-                          const displayName = matched ? matched.name : vId;
-                          return (
-                            <span
-                              key={vId}
-                              className="inline-flex items-center gap-1.5 rounded-[16px] bg-[#0DD180]/15 px-2.5 py-1 text-[10px] 2xl:text-[12px] font-medium text-[#027A48] poppins"
-                            >
-                              {displayName}
-                              <button
-                                type="button"
-                                aria-label={`Remove ${displayName}`}
-                                onClick={() => toggle("venues", vId)}
-                                className="text-[12px] leading-none hover:text-[#12B76A]"
-                              >
-                                ×
-                              </button>
+                  {summary.venues.length > 0 && (
+                    <div className="mt-6 rounded-[16px] bg-[#F4F6FB] p-4 lg:p-5">
+                      <p className="font-['Poppins',sans-serif] font-bold text-[#00A6E3] text-[10px] lg:text-[11px] tracking-[0.04em] uppercase">You applied for</p>
+                      <ul className="mt-3 space-y-2.5">
+                        {summary.venues.map((v) => (
+                          <li key={v.id} className="flex items-center justify-between gap-3">
+                            <span className="flex items-center gap-2 font-['Poppins',sans-serif] font-bold text-[#042C89] text-[12px] lg:text-[13.5px]">
+                              <CheckIcon className="w-3.5 h-3.5 text-[#0DD180] stroke-[3]" />
+                              {v.name}
                             </span>
+                            {v.slots.length > 0 && (
+                              <span className="font-['Poppins',sans-serif] font-semibold text-[#797A88] text-[10.5px] lg:text-[12px] whitespace-nowrap">{v.slots[0]}</span>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  <h4 className="mt-6 font-['Poppins',sans-serif] font-bold text-[#042C89] text-[14px] lg:text-[16px]">What happens next</h4>
+                  <ul className="mt-4 space-y-4">
+                    {[
+                      { n: 1, t: "We review it", s: "Usually within 3 working days.", c: "bg-[#0DD180] text-white" },
+                      { n: 2, t: "Quick phone chat", s: "About your experience and availability.", c: "bg-[#00A6E3] text-white" },
+                      { n: 3, t: "Trial session", s: "Coach alongside one of our Samba Stars.", c: "bg-[#FFDE14] text-[#042C89]" },
+                    ].map((x) => (
+                      <li key={x.n} className="flex items-center gap-3.5">
+                        <span className={`${x.c} w-7 h-7 rounded-full flex items-center justify-center font-['Poppins',sans-serif] font-bold text-[11px] shrink-0`}>{x.n}</span>
+                        <div>
+                          <p className="font-['Poppins',sans-serif] font-bold text-[#042C89] text-[12px] lg:text-[13.5px] leading-tight">{x.t}</p>
+                          <p className="font-['Poppins',sans-serif] text-[#797A88] text-[11px] lg:text-[12px] mt-0.5">{x.s}</p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <a
+                    href="/"
+                    className="mt-7 flex items-center justify-center rounded-full border border-[#E8ECF5] py-3.5 font-['Poppins',sans-serif] font-bold text-[#042C89] text-[12px] lg:text-[13.5px] hover:bg-[#F4F6FB] transition-colors"
+                  >
+                    Back to the homepage
+                  </a>
+                </div>
+              ) : (
+                /* ===== FORM ===== */
+                <form onSubmit={handleSubmit} noValidate className={cardCls}>
+                  {/* Progress */}
+                  <div className="grid grid-cols-4 gap-2">
+                    {STEPS.map((label, i) => {
+                      const n = i + 1;
+                      return (
+                        <button
+                          key={label}
+                          type="button"
+                          onClick={() => n < step && setStep(n)}
+                          className={`text-left ${n < step ? "cursor-pointer" : "cursor-default"}`}
+                        >
+                          <span className={`block h-[4px] rounded-full ${n <= step ? "bg-[#0DD180]" : "bg-[#E3E7EF]"}`} />
+                          {/* Desktop/tablet: har step ka label */}
+                          <span
+                            className={`hidden sm:block mt-2 font-['Poppins',sans-serif] font-bold text-[10.5px] lg:text-[12.55px] whitespace-nowrap ${
+                              step === n ? "text-[#042C89]" : "text-[#6B7280]"
+                            }`}
+                          >
+                            {n}. {label}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Mobile: "Step 1 of 4 · About you" */}
+                  <p className="sm:hidden mt-3 font-['Poppins',sans-serif] font-bold text-[#042C89] text-[12px]">
+                    Step {step} of 4 · {STEPS[step - 1]}
+                  </p>
+
+                  {/* ===== STEP 1: About you ===== */}
+                  {step === 1 && (
+                    <>
+                      <h3 className={h3Cls}>Tell us about you</h3>
+                      <div className="mt-5 space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <Field label="First name" error={errors.firstName}>
+                            <input className={inputCls(errors.firstName)} placeholder="First name" value={form.firstName} onChange={(e) => set("firstName", e.target.value)} />
+                          </Field>
+                          <Field label="Surname" error={errors.surname}>
+                            <input className={inputCls(errors.surname)} placeholder="Surname" value={form.surname} onChange={(e) => set("surname", e.target.value)} />
+                          </Field>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <Field label="Email" error={errors.email}>
+                            <IconInput icon={Mail} type="email" placeholder="you@email.com" error={errors.email} value={form.email} onChange={(e) => set("email", e.target.value)} />
+                          </Field>
+                          <Field label="Phone" error={errors.phone}>
+                            <IconInput icon={Phone} type="tel" placeholder="07…" error={errors.phone} value={form.phone} onChange={(e) => set("phone", e.target.value)} />
+                          </Field>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <Field label="Date of birth" error={errors.dob}>
+                            <IconInput icon={Calendar} type="date" max={today} error={errors.dob} value={form.dob} onChange={(e) => set("dob", e.target.value)} />
+                          </Field>
+                        </div>
+
+                        <div>
+                          <Field label="Your postcode" error={errors.postcode}>
+                            <IconInput icon={MapPin} placeholder="e.g. N1 9AG" error={errors.postcode} value={form.postcode} onChange={(e) => set("postcode", e.target.value)} />
+                          </Field>
+                          <p className="mt-2 font-['Poppins',sans-serif] text-[#797A88] text-[11px] lg:text-[12.5px]">
+                            We use this to find the Samba venues closest to you.
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* ===== STEP 2: Your venues ===== */}
+                  {step === 2 && (
+                    <>
+                      <h3 className={h3Cls}>Where could you coach?</h3>
+                      <p className="mt-1.5 font-['Poppins',sans-serif] text-[#797A88] text-[11.5px] lg:text-[13px] leading-relaxed">
+                        These are the Samba venues closest to you. Tick every venue you could work at. You can pick more than one.
+                      </p>
+
+                      <div className="mt-4 flex items-center justify-between rounded-[12px] border border-[#E8ECF5] px-3.5 py-3">
+                        <span className="flex items-center gap-2 font-['Poppins',sans-serif] font-bold text-[#042C89] text-[12px] lg:text-[13px] uppercase">
+                          <MapPin className="w-4 h-4 text-[#00A6E3]" />
+                          {form.postcode.trim() || "N1 9AG"}
+                        </span>
+                        <button type="button" onClick={() => setStep(1)} className="font-['Poppins',sans-serif] font-bold text-[#00A6E3] text-[11px] lg:text-[12px] cursor-pointer">
+                          Change
+                        </button>
+                      </div>
+
+                      <div className="mt-4 flex items-center justify-between">
+                        <p className="font-['Poppins',sans-serif] font-bold text-[#042C89] text-[11.5px] lg:text-[12.5px]">{venueOptions.length} nearest venues</p>
+                        {form.venues.length > 0 && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-[#E3F8EE] px-2.5 py-1 font-['Poppins',sans-serif] font-bold text-[#067A4B] text-[10.5px] lg:text-[11.5px]">
+                            <CheckIcon className="w-3 h-3 stroke-[3]" /> {form.venues.length} selected
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="mt-3 space-y-2.5">
+                        {visibleVenues.map((v) => {
+                          const checked = form.venues.some((id) => String(id) === String(v.id));
+                          return (
+                            <label
+                              key={v.id}
+                              className={`flex items-start gap-3 rounded-[14px] border-2 px-3.5 py-3 cursor-pointer transition-all ${
+                                checked ? "border-[#00A6E3] bg-[#E6F4FB]" : "border-[#E8ECF5] bg-white hover:border-[#C9D3F0]"
+                              }`}
+                            >
+                              <input type="checkbox" checked={checked} onChange={() => toggle("venues", v.id)} className="sr-only" />
+                              <span
+                                aria-hidden
+                                className={`mt-0.5 w-[18px] h-[18px] rounded-[5px] border-2 flex items-center justify-center shrink-0 ${
+                                  checked ? "bg-[#042C89] border-[#042C89]" : "bg-white border-[#C9D3F0]"
+                                }`}
+                              >
+                                {checked && <CheckIcon className="w-3 h-3 text-white stroke-[3.5]" />}
+                              </span>
+                              <span className="flex-1 min-w-0">
+                                <span className="flex items-start justify-between gap-2">
+                                  <span className="font-['Poppins',sans-serif] font-bold text-[#042C89] text-[13px] lg:text-[14.5px] leading-tight">{v.name}</span>
+                                  {v.dist && <span className="font-['Poppins',sans-serif] text-[#797A88] text-[10.5px] lg:text-[11.5px] whitespace-nowrap">{v.dist}</span>}
+                                </span>
+                                {v.place && (
+                                  <span className="mt-1 flex items-center gap-1.5 font-['Poppins',sans-serif] text-[#797A88] text-[10.5px] lg:text-[11.5px]">
+                                    <MapPin className="w-3 h-3 shrink-0" /> {v.place}
+                                  </span>
+                                )}
+                                {v.slots.length > 0 && (
+                                  <span className="mt-2 flex flex-wrap gap-1.5">
+                                    {v.slots.map((s) => (
+                                      <span key={s} className="inline-flex items-center gap-1 rounded-full bg-[#E6F4FB] px-2.5 py-1 font-['Poppins',sans-serif] font-bold text-[#042C89] text-[10px] lg:text-[11px]">
+                                        <Clock className="w-3 h-3 text-[#00A6E3]" /> {s}
+                                      </span>
+                                    ))}
+                                  </span>
+                                )}
+                              </span>
+                            </label>
                           );
                         })}
                       </div>
-                    )}
-                  </div>
 
-                  <div>
-                    <p className={`${questionCls} pb-2`}>Please upload your CV</p>
-                    <label
-                      className={`
-                    flex cursor-pointer flex-col items-center justify-center gap-1.5
-                    rounded-[8px] border bg-white shadow-[0_1px_2px_rgba(16,24,40,0.05)]
-                    px-4 py-6 text-center hover:bg-slate-50/50 transition-all
-                    ${errors.cv ? "border-red-500 ring-1 ring-red-500/20" : "border-[#EAECF0]"}
-                  `}
-                    >
-                      <div
-                        aria-hidden
-                        className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F0F2F8] text-[15px] text-[#6C757D]"
+                      {hiddenCount > 0 && !showAll && (
+                        <button
+                          type="button"
+                          onClick={() => setShowAll(true)}
+                          className="mt-3 w-full inline-flex items-center justify-center gap-1.5 rounded-full border border-[#E8ECF5] py-2.5 font-['Poppins',sans-serif] font-bold text-[#042C89] text-[11.5px] lg:text-[12.5px] cursor-pointer hover:bg-[#F4F6FB]"
+                        >
+                          See {hiddenCount} more venues <ChevronDown className="w-4 h-4" />
+                        </button>
+                      )}
+
+                      <Box
+                        checked={form.anyVenue}
+                        onChange={() => {
+                          set("anyVenue", !form.anyVenue);
+                          clearError("venues");
+                        }}
+                        className="mt-4 rounded-[12px] bg-[#FFF8D1] border border-[#FFE680] px-3.5 py-3"
                       >
-                        <svg className="w-5 h-5 text-[#6C757D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                        </svg>
+                        I can’t see a venue that suits me, or I’m happy to travel to other Samba venues.
+                      </Box>
+                      <Err field="venues" />
+                    </>
+                  )}
+
+                  {/* ===== STEP 3: Experience ===== */}
+                  {step === 3 && (
+                    <>
+                      <h3 className={h3Cls}>Your experience</h3>
+                      <div className="mt-5 space-y-5">
+                        <Field label="Which qualifications do you have?" hint="Tick all that apply" error={errors.qualifications}>
+                          <div className="flex flex-wrap gap-2">
+                            {QUALIFICATIONS.map((q) => (
+                              <Chip key={q} label={q} active={form.qualifications.includes(q)} onClick={() => toggle("qualifications", q)} />
+                            ))}
+                          </div>
+                        </Field>
+
+                        <Field label="Years of football coaching experience">
+                          <Segmented options={YEARS} value={form.years} onChange={(v) => set("years", v)} />
+                        </Field>
+
+                        <Field label="Which age groups have you coached?" error={errors.ageGroups}>
+                          <div className="flex flex-wrap gap-2">
+                            {AGE_GROUPS.map((a) => (
+                              <Chip key={a} label={a} active={form.ageGroups.includes(a)} onClick={() => toggle("ageGroups", a)} />
+                            ))}
+                          </div>
+                        </Field>
+
+                        <Field label="DBS check (within the last year)?">
+                          <Segmented options={DBS} value={form.dbs} onChange={(v) => set("dbs", v)} />
+                        </Field>
+
+                        <Field label="First aid (within the last 2 years)?">
+                          <div className="max-w-[240px]">
+                            <Segmented options={YES_NO} value={form.firstAid} onChange={(v) => set("firstAid", v)} />
+                          </div>
+                        </Field>
+
+                        <Field label="Short cover note" error={errors.coverNote}>
+                          <textarea
+                            rows={4}
+                            placeholder="Where you’ve played or coached, and why you’d love to coach with Samba…"
+                            value={form.coverNote}
+                            onChange={(e) => set("coverNote", e.target.value)}
+                            className={`${inputCls(errors.coverNote)} resize-none`}
+                          />
+                          <p className="mt-1 text-right font-['Poppins',sans-serif] text-[#797A88] text-[10.5px] lg:text-[11.5px]">
+                            {form.coverNote.trim() ? form.coverNote.trim().split(/\s+/).length : 0} / 500 words
+                          </p>
+                        </Field>
                       </div>
-                      <span className="text-[12px] poppins mt-1">
-                        <span className=" text-[#6941C6] font-medium">
-                          Click to upload
-                        </span>{" "}
-                        <span className="text-[#667085]">or drag and drop</span>
-                      </span>
-                      <span className="text-[12px] text-[#667085] poppins truncate max-w-full px-2">
-                        {form.cv
-                          ? form.cv.name
-                          : "PDF, DOC or DOCX (max. 5MB)"}
-                      </span>
-                      <input
-                        type="file"
-                        accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                        className="hidden"
-                        onChange={(e) => set("cv", e.target.files?.[0] || null)}
-                      />
-                    </label>
-                    {errors.cv && (
-                      <p className="mt-1 text-[12px] text-red-500 poppins">
-                        {errors.cv}
-                      </p>
-                    )}
-                  </div>
+                    </>
+                  )}
 
-                  <div>
-                    <p className={questionCls}>
-                      Please Add a short cover note (500 words max)
-                    </p>
-                    <textarea
-                      rows={5}
-                      placeholder="Message"
-                      value={form.coverNote}
-                      onChange={(e) => set("coverNote", e.target.value)}
-                      className={`
-                        w-full resize-none rounded-[8px] border bg-white
-                        px-[14px] py-[10px] text-[14px] xl:text-[16px] leading-[1.5]
-                        text-[#5F5F6D] placeholder:text-[#5F5F6D]
-                        shadow-[0_1px_2px_rgba(16,24,40,0.05)]
-                        outline-none transition-all poppins
-                        focus:border-[#0DD180] focus:ring-4 focus:ring-[#0DD180]/15
-                        ${errors.coverNote ? "border-red-500 ring-1 ring-red-500/20" : "border-[#D0D5DD]"}
-                      `}
-                    />
-                    {errors.coverNote && (
-                      <p className="mt-1 text-[12px] text-red-500 poppins">
-                        {errors.coverNote}
-                      </p>
-                    )}
-                  </div>
+                  {/* ===== STEP 4: Availability and CV ===== */}
+                  {step === 4 && (
+                    <>
+                      <h3 className={h3Cls}>Availability and CV</h3>
+                      <div className="mt-5 space-y-5">
+                        <Field label="Which days can you work?" error={errors.days}>
+                          <div className="flex flex-wrap gap-2">
+                            {DAYS.map((d) => (
+                              <Chip key={d} label={d} active={form.days.includes(d)} onClick={() => toggle("days", d)} />
+                            ))}
+                          </div>
+                        </Field>
 
-                  <div>
-                    <p className={questionCls}>
-                      How did you hear about this opportunity?
-                    </p>
-                    <div className="space-y-2">
-                      {SOURCES.map((s) => (
-                        <Radio
-                          key={s}
-                          name="source"
-                          value={s}
-                          checked={form.source === s}
-                          onChange={() => set("source", s)}
-                        />
-                      ))}
-                    </div>
-                    {errors.source && (
-                      <p className="mt-1 text-[12px] text-red-500 poppins">
-                        {errors.source}
-                      </p>
+                        <Field label="Which times?">
+                          <div className="flex flex-wrap gap-2">
+                            {TIMES.map((t) => (
+                              <Chip key={t} label={t} active={form.times.includes(t)} onClick={() => toggle("times", t)} />
+                            ))}
+                          </div>
+                        </Field>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <Field label="Earliest start date">
+                            <IconInput icon={Calendar} type="date" min={today} error={false} value={form.startDate} onChange={(e) => set("startDate", e.target.value)} />
+                          </Field>
+                          <Field label="Your own vehicle?">
+                            <Segmented options={YES_NO} value={form.vehicle} onChange={(v) => set("vehicle", v)} />
+                          </Field>
+                        </div>
+
+                        <Field label="Upload your CV" error={errors.cv}>
+                          {form.cv ? (
+                            <div className="flex items-center gap-3 rounded-[12px] border border-[#0DD180] bg-[#E3F8EE] px-3.5 py-3">
+                              <span className="w-8 h-8 rounded-[8px] bg-white flex items-center justify-center shrink-0">
+                                <FileText className="w-4 h-4 text-[#042C89]" />
+                              </span>
+                              <div className="flex-1 min-w-0">
+                                <p className="truncate font-['Poppins',sans-serif] font-bold text-[#042C89] text-[12px] lg:text-[13px]">{form.cv.name}</p>
+                                <p className="font-['Poppins',sans-serif] font-semibold text-[#067A4B] text-[10.5px] lg:text-[11.5px]">
+                                  {Math.max(Math.round(form.cv.size / 1024), 1)} KB · Uploaded
+                                </p>
+                              </div>
+                              <button
+                                type="button"
+                                aria-label="Remove CV"
+                                onClick={() => set("cv", null)}
+                                className="w-6 h-6 rounded-full bg-white flex items-center justify-center cursor-pointer hover:bg-[#F4F6FB]"
+                              >
+                                <X className="w-3.5 h-3.5 text-[#042C89]" />
+                              </button>
+                            </div>
+                          ) : (
+                            <label
+                              className={`flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-[12px] border border-dashed bg-white px-4 py-6 text-center hover:bg-[#F4F6FB]/60 transition-all ${
+                                errors.cv ? "border-red-500" : "border-[#C9D3F0]"
+                              }`}
+                            >
+                              <span className="w-9 h-9 rounded-full bg-[#F0F2F8] flex items-center justify-center">
+                                <FileText className="w-4 h-4 text-[#6C757D]" />
+                              </span>
+                              <span className="font-['Poppins',sans-serif] text-[12px] mt-1">
+                                <span className="text-[#6941C6] font-medium">Click to upload</span>{" "}
+                                <span className="text-[#667085]">or drag and drop</span>
+                              </span>
+                              <input
+                                type="file"
+                                accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                className="hidden"
+                                onChange={(e) => set("cv", e.target.files?.[0] || null)}
+                              />
+                            </label>
+                          )}
+                          <p className="mt-1.5 font-['Poppins',sans-serif] text-[#797A88] text-[10.5px] lg:text-[11.5px]">PDF or Word, up to 5MB.</p>
+                        </Field>
+
+                        <Field label="How did you hear about us?" error={errors.source}>
+                          <div className="flex flex-wrap gap-2">
+                            {SOURCES.map((s) => (
+                              <Chip key={s} label={s} active={form.source === s} onClick={() => set("source", s)} />
+                            ))}
+                          </div>
+                        </Field>
+
+                        <div className="space-y-3 pt-1">
+                          <div>
+                            <Box checked={form.rightToWork} onChange={() => set("rightToWork", !form.rightToWork)}>
+                              <span className="font-bold">I have the right to work in the UK.</span>
+                            </Box>
+                            <Err field="rightToWork" />
+                          </div>
+                          <div>
+                            <Box checked={form.consent} onChange={() => set("consent", !form.consent)}>
+                              I agree that Samba Soccer Schools and the franchise partner who runs my chosen venues can store my details to process this application.
+                            </Box>
+                            <Err field="consent" />
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* ===== BUTTONS ===== */}
+                  <div className="mt-6 flex items-center gap-3">
+                    {step > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => setStep((s) => s - 1)}
+                        className="inline-flex items-center justify-center gap-2 rounded-full border border-[#E8ECF5] bg-white px-5 lg:px-6 py-4 font-['Poppins',sans-serif] font-bold text-[#042C89] text-[12px] lg:text-[14px] hover:bg-[#F4F6FB] transition-colors cursor-pointer"
+                      >
+                        <ArrowLeft className="w-4 h-4" /> Back
+                      </button>
                     )}
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className={`flex-1 inline-flex items-center justify-center gap-2 rounded-full py-4 font-['Poppins',sans-serif] font-bold text-[13px] lg:text-[15px] transition-all duration-200 active:scale-[0.99] cursor-pointer ${
+                        step === 4 ? "bg-[#0DD180] hover:bg-[#0bb86f] text-[#042C89]" : "bg-[#042C89] hover:bg-[#021840] text-white"
+                      } ${isSubmitting ? "opacity-75 cursor-not-allowed" : ""}`}
+                    >
+                      {step === 4 ? (isSubmitting ? "Sending..." : "Send application") : NEXT_LABEL[step]}
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
                   </div>
-                </div>
+                </form>
               )}
-
-              {/* BUTTON */}
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className={`
-                  mt-6 sm:mt-8 w-full rounded-full bg-[#0DD180] hover:bg-[#0bbd73] py-3
-                  text-[14px] sm:text-[15px] lg:text-[16px] xl:text-[18px] font-bold text-white
-                  active:scale-98 transition-all duration-200 poppins
-                  focus:outline-none focus-visible:ring-2 focus-visible:ring-[#042C89]
-                  ${isSubmitting ? "opacity-75 cursor-not-allowed" : ""}
-                `}
-              >
-                {step === 3 ? (isSubmitting ? "Sending..." : "Send") : "Next"}
-              </button>
-            </form>
+            </div>
           </div>
-        </div>
-      </Container>
-    </section>
+        </Container>
+      </section>
+
+      {/* ===== SHARE THE MISSION ===== */}
+      <section className="w-full bg-[#F6F8FC] py-10 sm:py-14">
+        <Container>
+          <div
+            className="relative mx-auto max-w-[1100px] overflow-hidden rounded-[30px] lg:rounded-[36px] bg-[#0DD180] bg-cover bg-center"
+            style={{ backgroundImage: `url(${bgWave})` }}
+          >
+            <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-8 lg:gap-10 p-5 sm:p-6 lg:p-6 lg:pe-12">
+              <div className="w-full md:w-[300px] lg:w-[360px] shrink-0">
+                <img
+                  src={missionImg}
+                  alt="Samba coach with children on the pitch"
+                  className="w-full h-[220px] md:h-[340px] lg:h-[340px] object-cover rounded-[22px] lg:rounded-[28px] shadow-lg"
+                />
+              </div>
+
+              <div className="text-left pb-2 md:pb-0">
+                <p className="font-['Recline',sans-serif] font-bold text-[#042C89] text-[15px] lg:text-[24px]">Know someone who’d be great?</p>
+
+                <h2 className="mt-3  font-['Gasoek_One',sans-serif] text-white text-[34px] sm:text-[40px] lg:text-[48px] leading-[1.1]">
+                  Share the mission.
+                </h2>
+
+                <p className=" md:block hidden mt-4 font-['Poppins',sans-serif] font-bold text-[#042C89] text-[12.5px] lg:text-[16px]">
+                  Send this page to a coach friend, or apply yourself.
+                </p>
+
+                <div className="md:mt-5 mt-20 flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={handleApply}
+                    className="md:inline-flex hidden items-center justify-center gap-2 bg-[#042C89] hover:bg-[#021840] text-white font-['Poppins',sans-serif] font-bold text-[13px] lg:text-[16px] px-7 lg:px-9 py-3.5 lg:py-4 rounded-full shadow-md transition-all duration-300 hover:scale-[1.03] active:scale-95 cursor-pointer whitespace-nowrap"
+                  >
+                    Apply now <ArrowRight className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleShare}
+                    className="inline-flex md:w-fit w-full items-center justify-center md:bg-white bg-[#042C89] border-[1.5px] border-[#042C89] md:text-[#042C89] text-white hover:bg-[#042C89] hover:text-white font-['Poppins',sans-serif] font-bold text-[13px] lg:text-[16px] px-7 lg:px-9 py-3.5 lg:py-4 rounded-full transition-all duration-300 cursor-pointer whitespace-nowrap"
+                  >
+                    {copied ? "Link copied!" : "Share this job"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+    </>
   );
 };
 
