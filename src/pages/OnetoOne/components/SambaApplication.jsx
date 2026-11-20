@@ -150,22 +150,20 @@ export function SambaApplication() {
       ]
         .filter(Boolean)
         .join(' ');
+      // Backend short day names expect karta hai (sample: "Sun")
+      const DAY_MAP = { Saturday: 'Sat', Sunday: 'Sun', Weekdays: 'Weekdays' };
 
-          const payload = {
+      const payload = {
         parentName: formData.name.trim(),
         childName: formData.childName.trim(),
         email: formData.email.trim(),
         phoneNumber: formData.phone.trim(),
-        phone: formData.phone.trim(),
         age: Number(formData.childAge) || formData.childAge,
-        postcode: formData.postcode.trim(),
-        packageInterest: opt.name,
+        postCode: formData.postcode.trim(),
         packageId,
-        availability: formData.days.join(', '),
-        days: formData.days,                 // ["Saturday", "Sunday"]
-        focus: formData.focus,               // ["Ball control", "Shooting"]
-        focusAreas: formData.focus.join(', '), // "Ball control, Shooting"
-        notes: formData.notes.trim(),
+        availability: formData.days.map((d) => DAY_MAP[d] || d),
+        focusAreas: formData.focus,
+        notes: notes,
       };
 
       const response = await fetch(apiUrl, {

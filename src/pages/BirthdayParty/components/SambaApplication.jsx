@@ -139,24 +139,28 @@ export function SambaApplication() {
       const packageId = matchedPkg?.id || (formData.package.toLowerCase() === 'gold' ? 2 : 1);
 
       let dayStr = 'sat';
+      
+    
+
+ let availableDays = ['Saturday'];
       const d = new Date(formData.partyDate);
       if (!isNaN(d.getTime())) {
-        dayStr = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][d.getDay()];
+        availableDays = [
+          ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][d.getDay()],
+        ];
       }
 
-
-      const payload = {
+       const payload = {
         parentName: formData.name.trim(),
         childName: formData.childName.trim(),
         age: Number(formData.childAge) || formData.childAge,
         partyDate: formData.partyDate,
-        packageInterest: formData.package,
-        packageId,
         phoneNumber: formData.phone.trim(),
         email: formData.email.trim(),
         postCode: formData.postcode.trim(),
-        availableDays: dayStr,
-        doYouHaveVenue: formData.venue, // true / false
+        packageId,
+        doYouHaveVenue: formData.venue,
+        availableDays,
         notes: formData.message.trim(),
       };
       const response = await fetch(apiUrl, {

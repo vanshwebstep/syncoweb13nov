@@ -96,8 +96,7 @@ const ageFromDob = (dob) => {
 
 const labelCls = "mb-1.5 block font-['Poppins',sans-serif] font-bold text-[#042C89] text-[12px] lg:text-[13px]";
 const inputCls = (err) =>
-  `w-full rounded-[12px] bg-[#F4F6FB] border px-3.5 py-3 text-[13px] lg:text-[14.6px] text-[#042C89] placeholder-[#9AA3B5] outline-none transition-all font-['Poppins',sans-serif] ${
-    err ? "border-red-500" : "border-[#E8ECF5] focus:border-[#00A6E3] focus:bg-white"
+  `w-full rounded-[12px] bg-[#F4F6FB] border px-3.5 py-3 text-[13px] lg:text-[14.6px] text-[#042C89] placeholder-[#9AA3B5] outline-none transition-all font-['Poppins',sans-serif] ${err ? "border-red-500" : "border-[#E8ECF5] focus:border-[#00A6E3] focus:bg-white"
   }`;
 
 const Field = ({ label, error, hint, children }) => (
@@ -126,9 +125,8 @@ const Segmented = ({ options, value, onChange }) => (
           key={o}
           type="button"
           onClick={() => onChange(o)}
-          className={`flex-1 rounded-full py-2 px-2 font-['Poppins',sans-serif] font-bold text-[11px] lg:text-[12.5px] transition-all cursor-pointer whitespace-nowrap ${
-            active ? "bg-[#042C89] text-white" : "text-[#042C89] hover:bg-[#F4F6FB]"
-          }`}
+          className={`flex-1 rounded-full py-2 px-2 font-['Poppins',sans-serif] font-bold text-[11px] lg:text-[12.5px] transition-all cursor-pointer whitespace-nowrap ${active ? "bg-[#042C89] text-white" : "text-[#042C89] hover:bg-[#F4F6FB]"
+            }`}
         >
           {o}
         </button>
@@ -142,9 +140,8 @@ const Chip = ({ label, active, onClick }) => (
   <button
     type="button"
     onClick={onClick}
-    className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 font-['Poppins',sans-serif] font-bold text-[11px] lg:text-[12px] cursor-pointer transition-all ${
-      active ? "bg-[#042C89] border-[#042C89] text-white" : "bg-white border-[#E8ECF5] text-[#042C89] hover:border-[#C9D3F0]"
-    }`}
+    className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 font-['Poppins',sans-serif] font-bold text-[11px] lg:text-[12px] cursor-pointer transition-all ${active ? "bg-[#042C89] border-[#042C89] text-white" : "bg-white border-[#E8ECF5] text-[#042C89] hover:border-[#C9D3F0]"
+      }`}
   >
     {active && <CheckIcon className="w-3 h-3 stroke-[3.5]" />}
     {label}
@@ -157,9 +154,8 @@ const Box = ({ checked, onChange, children, className = "" }) => (
     <input type="checkbox" checked={checked} onChange={onChange} className="sr-only peer" />
     <span
       aria-hidden
-      className={`mt-0.5 w-[18px] h-[18px] rounded-[5px] border-2 flex items-center justify-center shrink-0 transition-all peer-focus-visible:ring-2 peer-focus-visible:ring-[#00A6E3]/40 ${
-        checked ? "bg-[#042C89] border-[#042C89]" : "bg-white border-[#C9D3F0]"
-      }`}
+      className={`mt-0.5 w-[18px] h-[18px] rounded-[5px] border-2 flex items-center justify-center shrink-0 transition-all peer-focus-visible:ring-2 peer-focus-visible:ring-[#00A6E3]/40 ${checked ? "bg-[#042C89] border-[#042C89]" : "bg-white border-[#C9D3F0]"
+        }`}
     >
       {checked && <CheckIcon className="w-3 h-3 text-white stroke-[3.5]" />}
     </span>
@@ -310,11 +306,19 @@ const ReadyToTakeTheLead = () => {
       const rawBase = import.meta.env.VITE_API_BASE_URL || "https://api.grabbite.com";
       const apiUrl = `${rawBase.replace(/\/+$/, "")}${ENDPOINT}`;
 
+      // Weekend choice + weekday chips -> availableDays (full day names)
+      const WEEKDAY_FULL = { Mon: "Monday", Tue: "Tuesday", Wed: "Wednesday", Thu: "Thursday", Fri: "Friday" };
+      const weekendDays =
+        form.weekend === "Sat + Sun" ? ["Saturday", "Sunday"] : form.weekend === "Sat only" ? ["Saturday"] : ["Sunday"];
+      const weekdayDays = form.weekdays.filter((d) => WEEKDAY_FULL[d]).map((d) => WEEKDAY_FULL[d]);
+      const availableDays = [...weekdayDays, ...weekendDays];
+      const holidayCamps = form.weekdays.includes("Holiday camps");
+
       const formData = new FormData();
       formData.append("firstName", form.firstName.trim());
       formData.append("lastName", form.surname.trim());
       formData.append("age", String(ageFromDob(form.dob)));
-      formData.append("dateOfBirth", form.dob);
+      formData.append("dob", form.dob);
       formData.append("email", form.email.trim());
       formData.append("phoneNumber", form.phone.trim());
       formData.append("postcode", form.postcode.trim());
@@ -336,11 +340,10 @@ const ReadyToTakeTheLead = () => {
       formData.append("availableVenueWork", JSON.stringify(formattedVenues));
       formData.append("openToAnyVenue", form.anyVenue ? "true" : "false");
       formData.append("fullWeekendAvailablity", form.weekend === "Sat + Sun" ? "true" : "false");
-      formData.append("weekendAvailability", form.weekend);
-      formData.append("weekdayAvailability", form.weekdays.join(", "));
-      formData.append("earliestStartDate", form.startDate);
+      formData.append("availableDays", JSON.stringify(availableDays));
+      if (holidayCamps) formData.append("availableTimes", JSON.stringify(["Holiday camps"]));
+      if (form.startDate) formData.append("earliestStartDate", form.startDate);
       formData.append("rightToWorkInUK", "true");
-
       const response = await fetch(apiUrl, { method: "POST", body: formData });
 
       let data = null;
@@ -509,9 +512,8 @@ const ReadyToTakeTheLead = () => {
                         <span className={`block h-[4px] rounded-full ${n <= step ? "bg-[#0DD180]" : "bg-[#E3E7EF]"}`} />
                         {/* Desktop/tablet: har step ka label */}
                         <span
-                          className={`hidden sm:block mt-2 font-['Poppins',sans-serif] font-bold text-[10.5px] lg:text-[12.55px] whitespace-nowrap ${
-                            step === n ? "text-[#042C89]" : "text-[#6B7280]"
-                          }`}
+                          className={`hidden sm:block mt-2 font-['Poppins',sans-serif] font-bold text-[10.5px] lg:text-[12.55px] whitespace-nowrap ${step === n ? "text-[#042C89]" : "text-[#6B7280]"
+                            }`}
                         >
                           {n}. {label}
                         </span>
@@ -607,16 +609,14 @@ const ReadyToTakeTheLead = () => {
                         return (
                           <label
                             key={v.id}
-                            className={`flex items-start gap-3 rounded-[14px] border-2 px-3.5 py-3 cursor-pointer transition-all ${
-                              checked ? "border-[#00A6E3] bg-[#E6F4FB]" : "border-[#E8ECF5] bg-white hover:border-[#C9D3F0]"
-                            }`}
+                            className={`flex items-start gap-3 rounded-[14px] border-2 px-3.5 py-3 cursor-pointer transition-all ${checked ? "border-[#00A6E3] bg-[#E6F4FB]" : "border-[#E8ECF5] bg-white hover:border-[#C9D3F0]"
+                              }`}
                           >
                             <input type="checkbox" checked={checked} onChange={() => toggle("venues", v.id)} className="sr-only" />
                             <span
                               aria-hidden
-                              className={`mt-0.5 w-[18px] h-[18px] rounded-[5px] border-2 flex items-center justify-center shrink-0 ${
-                                checked ? "bg-[#042C89] border-[#042C89]" : "bg-white border-[#C9D3F0]"
-                              }`}
+                              className={`mt-0.5 w-[18px] h-[18px] rounded-[5px] border-2 flex items-center justify-center shrink-0 ${checked ? "bg-[#042C89] border-[#042C89]" : "bg-white border-[#C9D3F0]"
+                                }`}
                             >
                               {checked && <CheckIcon className="w-3 h-3 text-white stroke-[3.5]" />}
                             </span>
@@ -772,9 +772,8 @@ const ReadyToTakeTheLead = () => {
                           </div>
                         ) : (
                           <label
-                            className={`flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-[12px] border border-dashed bg-white px-4 py-6 text-center hover:bg-[#F4F6FB]/60 transition-all ${
-                              errors.cv ? "border-red-500" : "border-[#C9D3F0]"
-                            }`}
+                            className={`flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-[12px] border border-dashed bg-white px-4 py-6 text-center hover:bg-[#F4F6FB]/60 transition-all ${errors.cv ? "border-red-500" : "border-[#C9D3F0]"
+                              }`}
                           >
                             <span className="w-9 h-9 rounded-full bg-[#F0F2F8] flex items-center justify-center">
                               <FileText className="w-4 h-4 text-[#6C757D]" />
@@ -834,9 +833,8 @@ const ReadyToTakeTheLead = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className={`flex-1 inline-flex items-center justify-center gap-2 rounded-full py-4 font-['Poppins',sans-serif] font-bold text-[13px] lg:text-[15px] transition-all duration-200 active:scale-[0.99] cursor-pointer ${
-                      step === 4 ? "bg-[#0DD180] hover:bg-[#0bb86f] text-[#042C89]" : "bg-[#042C89] hover:bg-[#021840] text-white"
-                    } ${isSubmitting ? "opacity-75 cursor-not-allowed" : ""}`}
+                    className={`flex-1 inline-flex items-center justify-center gap-2 rounded-full py-4 font-['Poppins',sans-serif] font-bold text-[13px] lg:text-[15px] transition-all duration-200 active:scale-[0.99] cursor-pointer ${step === 4 ? "bg-[#0DD180] hover:bg-[#0bb86f] text-[#042C89]" : "bg-[#042C89] hover:bg-[#021840] text-white"
+                      } ${isSubmitting ? "opacity-75 cursor-not-allowed" : ""}`}
                   >
                     {step === 4 ? (isSubmitting ? "Sending..." : "Send application") : NEXT_LABEL[step]}
                     <ArrowRight className="w-4 h-4" />

@@ -10,10 +10,37 @@ let cachedRawVenues = null;
 let cachedDynamicVenues = null;
 let fetchPromise = null;
 
+/* ------------------------------------------------------------------ */
+/* Helpers                                                             */
+/* ------------------------------------------------------------------ */
+
+const toTitleCase = (str = '') =>
+  String(str)
+    .trim()
+    .toLowerCase()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+
+const capFirst = (s = '') => (s ? s.charAt(0).toUpperCase() + s.slice(1) : '');
+
+/** "4-5 years", "4–5 Years", "6-8 Years", "10–12 Years" -> '4-5' | '6-7' | '8-9' | '10-12' */
+export const getAgeId = (name = '') => {
+  const nums = (String(name).match(/\d+/g) || []).map(Number);
+  if (!nums.length) return '4-5';
+  const mid = (nums[0] + (nums[1] ?? nums[0])) / 2;
+  if (mid < 6) return '4-5';
+  if (mid < 8) return '6-7';
+  if (mid < 10) return '8-9';
+  return '10-12';
+};
+
+/* ------------------------------------------------------------------ */
+/* Venues API                                                          */
+/* ------------------------------------------------------------------ */
+
 /**
- * Fetch raw dynamic venues list from live API endpoint: /api/open/find-class
- * @param {boolean} forceRefresh - If true, bypass memory cache
- * @returns {Promise<Array>} List of raw venue objects
+ * Fetch raw dynamic venues list: GET /api/open/find-class
+ * @param {boolean} forceRefresh
+ * @returns {Promise<Array>}
  */
 export async function fetchVenues(forceRefresh = false) {
   if (cachedRawVenues && !forceRefresh) {
@@ -26,12 +53,7 @@ export async function fetchVenues(forceRefresh = false) {
 
   fetchPromise = (async () => {
     try {
-      const requestOptions = {
-        method: 'GET',
-        redirect: 'follow'
-      };
-
-      const response = await fetch(API_URL, requestOptions);
+      const response = await fetch(API_URL, { method: 'GET', redirect: 'follow' });
       if (!response.ok) {
         throw new Error(`Failed to fetch venues: ${response.status} ${response.statusText}`);
       }
@@ -52,22 +74,14 @@ export async function fetchVenues(forceRefresh = false) {
 }
 
 /**
- * Fetch a single class and its venue details by classId: /api/open/find-class/:id
- * e.g. GET https://api.grabbite.com/api/open/find-class/115 (or classId)
- * @param {string|number} classId
- * @returns {Promise<Object|null>}
+ * Fetch a single class and its venue: GET /api/open/find-class/:id
  */
 export async function fetchClassById(classId) {
   if (!classId) return null;
 
   try {
-    const requestOptions = {
-      method: 'GET',
-      redirect: 'follow'
-    };
-
     const url = `${BASE_URL}/api/open/find-class/${classId}`;
-    const response = await fetch(url, requestOptions);
+    const response = await fetch(url, { method: 'GET', redirect: 'follow' });
 
     if (!response.ok) {
       throw new Error(`Failed to fetch class ${classId}: ${response.status} ${response.statusText}`);
@@ -82,10 +96,7 @@ export async function fetchClassById(classId) {
 }
 
 /**
- * Transform an API venue from /api/open/find-class into the rich format
- * expected by FindAClass UI components (VenueCardList, VenueCardCompact, Modals, Map).
- * @param {Object} raw - Raw venue from API
- * @returns {Object} Transformed venue object
+ * Transform an API venue into the format used by FindAClass UI components.
  */
 export function transformApiVenue(raw) {
   if (!raw) return null;
@@ -93,26 +104,19 @@ export function transformApiVenue(raw) {
   const rawId = raw.venueId != null ? raw.venueId : raw.id;
   const venueIdStr = String(rawId || 'venue');
 
-  // Format clean venue name
-  const formattedName = raw.venueName
-    ? raw.venueName
-        .split(' ')
-        .map((w) => (w.length > 0 ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase() : ''))
-        .join(' ')
-    : raw.name || '-';
+  const formattedName = raw.venueName ? toTitleCase(raw.venueName) : raw.name || '-';
+  const formattedArea = raw.area ? toTitleCase(raw.area) : '-';
 
-  // Process classes & days
+  // Classes & days
   const scheduleClasses = [];
   let primaryDay = '-';
 
   if (raw.classes && typeof raw.classes === 'object') {
     const dayKeys = Object.keys(raw.classes);
-    if (dayKeys.length > 0) {
-      primaryDay = dayKeys[0].charAt(0).toUpperCase() + dayKeys[0].slice(1);
-    }
+    if (dayKeys.length > 0) primaryDay = capFirst(dayKeys[0]);
 
     dayKeys.forEach((dayKey) => {
-      const capDay = dayKey.charAt(0).toUpperCase() + dayKey.slice(1);
+      const capDay = capFirst(dayKey);
       const dayClasses = Array.isArray(raw.classes[dayKey]) ? raw.classes[dayKey] : [];
 
       dayClasses.forEach((c) => {
@@ -130,13 +134,7 @@ export function transformApiVenue(raw) {
           statusText = `Only ${spotsLeft} place${spotsLeft === 1 ? '' : 's'} left`;
         }
 
-        // Determine age group id: '4-5' | '6-7' | '8-9' | '10-12'
-        const nameLower = (c.className || '').toLowerCase();
-        let ageId = '4-5';
-        if (nameLower.includes('4') || nameLower.includes('5')) ageId = '4-5';
-        else if (nameLower.includes('6') || nameLower.includes('7')) ageId = '6-7';
-        else if (nameLower.includes('8') || nameLower.includes('9')) ageId = '8-9';
-        else if (nameLower.includes('10') || nameLower.includes('11') || nameLower.includes('12')) ageId = '10-12';
+        const ageId = getAgeId(c.className);
 
         scheduleClasses.push({
           id: String(c.classId || `${venueIdStr}-${dayKey}-${scheduleClasses.length}`),
@@ -162,45 +160,27 @@ export function transformApiVenue(raw) {
     });
   }
 
-  // Pricing structure for PricesModal (for 1, 2, 3 children)
+  // Pricing (1, 2, 3 children)
   const pricing = {};
   const paymentGroup = raw.paymentGroups?.[0] || null;
   const plans = paymentGroup?.paymentPlans || [];
+
   [1, 2, 3].forEach((studentCount) => {
     const p12 = plans.find((p) => p.students === studentCount && p.duration === 12);
     const p6 = plans.find((p) => p.students === studentCount && p.duration === 6);
     const p1 = plans.find((p) => p.students === studentCount && p.duration === 1);
 
-    // 12-Month Calculations
-    const m12PerChild =
-      p12 && p12.price != null
-        ? (Number(p12.price) / 12 / studentCount).toFixed(2)
-        : '-';
-    const m12TotalMonthly =
-      p12 && p12.price != null
-        ? (Number(p12.price) / 12).toFixed(2)
-        : '-';
     const m12TotalPrice = p12 && p12.price != null ? Number(p12.price) : null;
+    const m12PerChild = m12TotalPrice != null ? (m12TotalPrice / 12 / studentCount).toFixed(2) : '-';
+    const m12TotalMonthly = m12TotalPrice != null ? (m12TotalPrice / 12).toFixed(2) : '-';
 
-    // 6-Month Calculations
-    const m6PerChild =
-      p6 && p6.price != null
-        ? (Number(p6.price) / 6 / studentCount).toFixed(2)
-        : '-';
-    const m6TotalMonthly =
-      p6 && p6.price != null
-        ? (Number(p6.price) / 6).toFixed(2)
-        : '-';
     const m6TotalPrice = p6 && p6.price != null ? Number(p6.price) : null;
+    const m6PerChild = m6TotalPrice != null ? (m6TotalPrice / 6 / studentCount).toFixed(2) : '-';
+    const m6TotalMonthly = m6TotalPrice != null ? (m6TotalPrice / 6).toFixed(2) : '-';
 
-    // 1-Month Calculations
     const m1TotalPrice = p1 && p1.price != null ? Number(p1.price) : null;
-    const m1PerChild =
-      p1 && p1.price != null
-        ? (Number(p1.price) / studentCount).toFixed(2)
-        : '-';
+    const m1PerChild = m1TotalPrice != null ? (m1TotalPrice / studentCount).toFixed(2) : '-';
 
-    // Savings compared to rolling 1-month plan over 12 months
     const saveVal =
       m1TotalPrice != null && m12TotalPrice != null
         ? Math.round(m1TotalPrice * 12 - m12TotalPrice)
@@ -222,29 +202,33 @@ export function transformApiVenue(raw) {
     };
   });
 
-  // Starter pack from API
+  // Starter pack (no hardcoded offer price; offerPrice only if API sends it)
   const starterPackItem = raw.starterPacks?.[0];
-  const regularPrice = starterPackItem?.price != null ? Number(starterPackItem.price) : 89.99;
-  const offerPrice = starterPackItem?.offerPrice != null ? Number(starterPackItem.offerPrice) : 49.99;
-  const starterPack = starterPackItem
-    ? {
-        id: starterPackItem.id,
-        title: starterPackItem.title || 'Starter Pack',
-        price: regularPrice.toFixed(2),
-        was: regularPrice.toFixed(2),
-        now: offerPrice.toFixed(2),
-        description: starterPackItem.description || '-',
-        paymentRouting: starterPackItem.paymentRouting || '-',
-        items: Array.isArray(starterPackItem.items) ? starterPackItem.items : []
-      }
-    : null;
+  let starterPack = null;
+  if (starterPackItem) {
+    const regularPrice = starterPackItem.price != null ? Number(starterPackItem.price) : 0;
+    const offerPrice =
+      starterPackItem.offerPrice != null ? Number(starterPackItem.offerPrice) : regularPrice;
 
-  // Term dates from API
+    starterPack = {
+      id: starterPackItem.id,
+      title: starterPackItem.title || 'Starter Pack',
+      price: regularPrice.toFixed(2),
+      was: regularPrice.toFixed(2),
+      now: offerPrice.toFixed(2),
+      hasOffer: offerPrice < regularPrice,
+      description: starterPackItem.description || '-',
+      paymentRouting: starterPackItem.paymentRouting || '-',
+      items: Array.isArray(starterPackItem.items) ? starterPackItem.items : []
+    };
+  }
+
+  // Terms
   const terms = Array.isArray(raw.terms)
     ? raw.terms.map((t) => ({
         id: String(t.id != null ? t.id : (t.name || 'term').toLowerCase()),
         name: t.name ? (t.name.toLowerCase().includes('term') ? t.name : `${t.name} term`) : '-',
-        day: t.day ? t.day.charAt(0).toUpperCase() + t.day.slice(1) : primaryDay,
+        day: t.day ? capFirst(t.day) : primaryDay,
         startDate: t.startDate || null,
         endDate: t.endDate || null,
         start: t.startDate || null,
@@ -255,22 +239,20 @@ export function transformApiVenue(raw) {
       }))
     : [];
 
-  // Parking info
   const parkingInfo = {
     hasParking: Boolean(raw.hasParking),
     parkingNote: raw.parkingNote || '',
     isCongested: Boolean(raw.isCongested)
   };
 
-  const distMiles = typeof raw.distanceMiles === 'number' ? raw.distanceMiles : null;
-  const distDisplay = distMiles != null ? `${distMiles.toLocaleString()} mi` : '-';
-
+  // NOTE: API's distanceMiles is NOT reliable (backend has no user location -> 10000+ mi).
+  // Distance is calculated client side via withDistance().
   return {
     id: venueIdStr,
     venueId: rawId,
     name: formattedName,
-    venueName: raw.venueName || formattedName,
-    area: raw.area || '-',
+    venueName: formattedName,
+    area: formattedArea,
     address: raw.address || '-',
     postcode: raw.postal_code || raw.postcode || '-',
     postal_code: raw.postal_code || raw.postcode || '-',
@@ -280,9 +262,9 @@ export function transformApiVenue(raw) {
     parkingNote: raw.parkingNote || '',
     hasParking: Boolean(raw.hasParking),
     isCongested: Boolean(raw.isCongested),
-    distanceMiles: distMiles,
-    distanceDisplay: distDisplay,
-    mapDistanceDisplay: distDisplay,
+    distanceMiles: null,
+    distanceDisplay: '-',
+    mapDistanceDisplay: '-',
     parkingInfo,
     schedule: {
       day: primaryDay,
@@ -299,9 +281,8 @@ export function transformApiVenue(raw) {
 }
 
 /**
- * Fetch dynamic venues and transform them into FindAClass UI format
- * @param {boolean} forceRefresh
- * @returns {Promise<Array>} List of transformed venues
+ * Fetch dynamic venues and transform them into FindAClass UI format.
+ * Falls back to static VENUES_DATA only if the API fails / is empty.
  */
 export async function fetchDynamicVenues(forceRefresh = false) {
   if (cachedDynamicVenues && !forceRefresh) {
@@ -315,26 +296,27 @@ export async function fetchDynamicVenues(forceRefresh = false) {
       cachedDynamicVenues = transformed;
       return transformed;
     }
+    console.warn('[venueService] API returned 0 venues -> using static VENUES_DATA');
   } catch (error) {
-    console.warn('Falling back to static VENUES_DATA due to fetch error:', error);
+    console.error('[venueService] LIVE API FAILED -> using static VENUES_DATA:', error);
   }
 
   return VENUES_DATA;
 }
 
+/* ------------------------------------------------------------------ */
+/* Grouping / search / distance                                        */
+/* ------------------------------------------------------------------ */
+
 /**
  * Group venues by area for accordion navigation
- * @param {Array} venues - Array of venue objects
- * @returns {Array<{ name: string, count: number, venues: Array }>}
  */
 export function groupVenuesByArea(venues = []) {
   const groups = {};
 
   venues.forEach((venue) => {
-    const area = (venue.area || 'Other Locations').trim();
-    if (!groups[area]) {
-      groups[area] = [];
-    }
+    const area = toTitleCase(venue.area && venue.area !== '-' ? venue.area : 'Other Locations');
+    if (!groups[area]) groups[area] = [];
     groups[area].push(venue);
   });
 
@@ -348,14 +330,13 @@ export function groupVenuesByArea(venues = []) {
 }
 
 /**
- * Search venues by keyword/postcode across venueName, area, address, postal_code
- * @param {Array} venues
- * @param {string} query
- * @returns {Array} Matching venues
+ * Search venues by keyword/postcode across name, area, address, postal_code
+ * (postcode compare ignores spaces: "SW10 0AB" == "sw100ab")
  */
 export function searchVenues(venues = [], query = '') {
   const q = query.trim().toLowerCase();
   if (!q) return venues;
+  const qNoSpace = q.replace(/\s+/g, '');
 
   return venues.filter((venue) => {
     const name = (venue.venueName || venue.name || '').toLowerCase();
@@ -367,16 +348,17 @@ export function searchVenues(venues = [], query = '') {
       name.includes(q) ||
       area.includes(q) ||
       address.includes(q) ||
-      postal.includes(q)
+      postal.includes(q) ||
+      postal.replace(/\s+/g, '').includes(qNoSpace)
     );
   });
 }
 
 /**
- * Calculate distance between two lat/lng points using Haversine formula (in miles)
+ * Haversine distance in miles
  */
 export function getDistanceMiles(lat1, lon1, lat2, lon2) {
-  const R = 3958.8; // Radius of Earth in miles
+  const R = 3958.8;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLon = ((lon2 - lon1) * Math.PI) / 180;
   const a =
@@ -390,11 +372,7 @@ export function getDistanceMiles(lat1, lon1, lat2, lon2) {
 }
 
 /**
- * Find the closest venue to a given lat/lon
- * @param {Array} venues
- * @param {number} userLat
- * @param {number} userLng
- * @returns {Object|null} Nearest venue
+ * Closest venue to a lat/lng
  */
 export function findNearestVenue(venues = [], userLat, userLng) {
   let nearest = null;
@@ -415,16 +393,83 @@ export function findNearestVenue(venues = [], userLat, userLng) {
   return nearest;
 }
 
+/* ------------------------------------------------------------------ */
+/* Postcode helpers (postcodes.io - free, no key, UK only)             */
+/* ------------------------------------------------------------------ */
+
 /**
- * Fetch venue details dynamically by ID or fallback by name.
- * @param {string|number} [venueId=78]
- * @param {string} [venueName]
- * @returns {Promise<Object|null>}
+ * "SW10 0AB" (full) or "W3" (outcode only) -> { lat, lng } | null
+ */
+export async function postcodeToCoords(postcode = '') {
+  const clean = postcode.trim().replace(/\s+/g, ' ');
+  if (!clean) return null;
+
+  const isFull = /\d[A-Za-z]{2}$/.test(clean.replace(/\s/g, ''));
+  const endpoint = isFull ? 'postcodes' : 'outcodes';
+
+  try {
+    const res = await fetch(
+      `https://api.postcodes.io/${endpoint}/${encodeURIComponent(clean.replace(/\s/g, ''))}`
+    );
+    if (!res.ok) return null;
+    const { result } = await res.json();
+    if (!result || result.latitude == null) return null;
+    return { lat: result.latitude, lng: result.longitude };
+  } catch (err) {
+    console.error('postcodeToCoords failed:', err);
+    return null;
+  }
+}
+
+/**
+ * Browser lat/lng -> user's real nearest postcode (string) | null
+ */
+export async function coordsToPostcode(lat, lng) {
+  try {
+    const res = await fetch(`https://api.postcodes.io/postcodes?lon=${lng}&lat=${lat}&limit=1`);
+    if (!res.ok) return null;
+    const { result } = await res.json();
+    return result?.[0]?.postcode || null;
+  } catch (err) {
+    console.error('coordsToPostcode failed:', err);
+    return null;
+  }
+}
+
+/**
+ * Attach real distance from user coords to each venue and sort nearest first.
+ * If coords is null, venues are returned unchanged.
+ */
+export function withDistance(venues = [], coords) {
+  if (!coords) return venues;
+
+  return venues
+    .map((v) => {
+      const d =
+        v.lat != null && v.lng != null
+          ? getDistanceMiles(coords.lat, coords.lng, Number(v.lat), Number(v.lng))
+          : null;
+      const display = d != null ? `${d.toFixed(1)} mi` : '-';
+      return {
+        ...v,
+        distanceMiles: d,
+        distanceDisplay: display,
+        mapDistanceDisplay: display
+      };
+    })
+    .sort((a, b) => (a.distanceMiles ?? Infinity) - (b.distanceMiles ?? Infinity));
+}
+
+/* ------------------------------------------------------------------ */
+/* Other endpoints                                                     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Fetch venue by ID or fallback by name.
  */
 export async function fetchVenueByIdOrName(venueId = 78, venueName = '') {
   const targetId = venueId || 78;
 
-  // 1. Try direct venue endpoint: /api/open/find-class/venue/:id
   try {
     const response = await fetch(`${BASE_URL}/api/open/find-class/venue/${targetId}`, {
       method: 'GET',
@@ -432,15 +477,12 @@ export async function fetchVenueByIdOrName(venueId = 78, venueName = '') {
     });
     if (response.ok) {
       const json = await response.json();
-      if (json?.data) {
-        return json.data;
-      }
+      if (json?.data) return json.data;
     }
   } catch (err) {
-    // fallback
+    // fallback below
   }
 
-  // 2. Fallback to /api/open/find-class list
   const venues = await fetchVenues();
   if (Array.isArray(venues) && venues.length > 0) {
     if (targetId) {
@@ -466,23 +508,40 @@ export async function fetchVenueByIdOrName(venueId = 78, venueName = '') {
 }
 
 /**
+ * Shared JSON POST helper
+ */
+async function postJson(path, body) {
+  const cleanBase = BASE_URL.replace(/\/+$/, '');
+  const url = `${cleanBase}${path}`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    redirect: 'follow'
+  });
+
+  const text = await response.text();
+  let result = null;
+  try {
+    result = JSON.parse(text);
+  } catch (parseErr) {
+    console.error(`Non-JSON response from ${path}:`, text);
+    throw new Error(`Unexpected server response (${response.status}). Please try again.`);
+  }
+
+  return { response, result };
+}
+
+/**
  * Book a free trial: POST /api/open/book-free-trial/create
- * @param {Object} payload
- * @returns {Promise<Object>}
  */
 export async function bookFreeTrial(payload) {
-  const url = `${BASE_URL}/api/open/book-free-trial/create`;
-  const myHeaders = new Headers();
-  myHeaders.append('Content-Type', 'application/json');
-
-  const requestOptions = {
+  const response = await fetch(`${BASE_URL}/api/open/book-free-trial/create`, {
     method: 'POST',
-    headers: myHeaders,
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
     redirect: 'follow'
-  };
-
-  const response = await fetch(url, requestOptions);
+  });
   const result = await response.json();
 
   if (!response.ok || result?.status === false) {
@@ -494,36 +553,16 @@ export async function bookFreeTrial(payload) {
 
 /**
  * Check whether a parent account exists: POST /api/check-parent-email/
- * @param {string} email
- * @returns {Promise<{ exists: boolean, message: string, data?: any }>}
  */
 export async function checkParentEmail(email) {
   if (!email || !email.trim()) {
     throw new Error('Please enter an email address.');
   }
 
-  const cleanBase = BASE_URL.replace(/\/+$/, '');
-  const url = `${cleanBase}/api/check-parent-email/`;
-  const myHeaders = new Headers();
-  myHeaders.append('Content-Type', 'application/json');
-
-  const requestOptions = {
-    method: 'POST',
-    headers: myHeaders,
-    body: JSON.stringify({ email: email.trim().toLowerCase() }),
-    redirect: 'follow'
-  };
-
   try {
-    const response = await fetch(url, requestOptions);
-    let result = null;
-    const text = await response.text();
-    try {
-      result = JSON.parse(text);
-    } catch (parseErr) {
-      console.error('Non-JSON response from check-parent-email:', text);
-      throw new Error(`Unexpected server response (${response.status}). Please try again.`);
-    }
+    const { response, result } = await postJson('/api/check-parent-email/', {
+      email: email.trim().toLowerCase()
+    });
 
     if (!response.ok && response.status !== 400 && response.status !== 404) {
       throw new Error(result?.message || `Failed to verify email (${response.status}).`);
@@ -545,41 +584,17 @@ export async function checkParentEmail(email) {
 }
 
 /**
- * Authenticate existing parent account: POST /api/parent/login/
- * @param {string} email
- * @param {string} password
- * @returns {Promise<Object>}
+ * Parent login: POST /api/parent/login/
  */
 export async function loginParent(email, password) {
-  if (!email || !email.trim()) {
-    throw new Error('Please enter your email address.');
-  }
-  if (!password) {
-    throw new Error('Please enter your password.');
-  }
-
-  const cleanBase = BASE_URL.replace(/\/+$/, '');
-  const url = `${cleanBase}/api/parent/login/`;
-  const myHeaders = new Headers();
-  myHeaders.append('Content-Type', 'application/json');
-
-  const requestOptions = {
-    method: 'POST',
-    headers: myHeaders,
-    body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
-    redirect: 'follow'
-  };
+  if (!email || !email.trim()) throw new Error('Please enter your email address.');
+  if (!password) throw new Error('Please enter your password.');
 
   try {
-    const response = await fetch(url, requestOptions);
-    let result = null;
-    const text = await response.text();
-    try {
-      result = JSON.parse(text);
-    } catch (parseErr) {
-      console.error('Non-JSON response from parent login:', text);
-      throw new Error(`Unexpected server response (${response.status}). Please try again.`);
-    }
+    const { response, result } = await postJson('/api/parent/login/', {
+      email: email.trim().toLowerCase(),
+      password
+    });
 
     if (!response.ok) {
       throw new Error(result?.message || 'Login failed. Please check your credentials.');
@@ -593,33 +608,11 @@ export async function loginParent(email, password) {
 }
 
 /**
- * Create a waiting list entry: POST /api/open/waiting-list/create
- * @param {Object} payload
- * @returns {Promise<Object>}
+ * Create waiting list entry: POST /api/open/waiting-list/create
  */
 export async function createWaitingListBooking(payload) {
-  const cleanBase = BASE_URL.replace(/\/+$/, '');
-  const url = `${cleanBase}/api/open/waiting-list/create`;
-  const myHeaders = new Headers();
-  myHeaders.append('Content-Type', 'application/json');
-
-  const requestOptions = {
-    method: 'POST',
-    headers: myHeaders,
-    body: JSON.stringify(payload),
-    redirect: 'follow'
-  };
-
   try {
-    const response = await fetch(url, requestOptions);
-    let result = null;
-    const text = await response.text();
-    try {
-      result = JSON.parse(text);
-    } catch (parseErr) {
-      console.error('Non-JSON response from waiting-list create:', text);
-      throw new Error(`Unexpected server response (${response.status}). Please try again.`);
-    }
+    const { response, result } = await postJson('/api/open/waiting-list/create', payload);
 
     if (!response.ok || result?.status === false) {
       throw new Error(result?.message || `Waiting list submission failed with status ${response.status}`);
@@ -633,28 +626,17 @@ export async function createWaitingListBooking(payload) {
 }
 
 /**
- * Fetch directions between a user's postal code and a venue:
- * GET /api/open/find-class/directions?venueId=:venueId&postal_code=:postal_code
- * @param {string|number} venueId
- * @param {string} postalCode
- * @returns {Promise<Object>}
+ * Directions: GET /api/open/find-class/directions?venueId=&postal_code=
  */
 export async function fetchDirections(venueId, postalCode) {
-  if (!venueId) {
-    throw new Error('venueId is required to fetch directions.');
-  }
+  if (!venueId) throw new Error('venueId is required to fetch directions.');
 
   const cleanBase = BASE_URL.replace(/\/+$/, '');
   const pCode = postalCode ? encodeURIComponent(postalCode.trim()) : '';
   const url = `${cleanBase}/api/open/find-class/directions?venueId=${venueId}&postal_code=${pCode}`;
 
-  const requestOptions = {
-    method: 'GET',
-    redirect: 'follow'
-  };
-
   try {
-    const response = await fetch(url, requestOptions);
+    const response = await fetch(url, { method: 'GET', redirect: 'follow' });
     if (!response.ok) {
       throw new Error(`Failed to fetch directions: ${response.status} ${response.statusText}`);
     }
@@ -666,6 +648,3 @@ export async function fetchDirections(venueId, postalCode) {
     throw error;
   }
 }
-
-
-

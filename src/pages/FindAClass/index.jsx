@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { MapPin, List, Map as MapIcon, Loader2, RefreshCw } from 'lucide-react';
 import { Container } from '../../components/common/Container';
 import { VENUES_DATA, AGE_GROUPS } from '../../data/findAClassData';
-import { fetchDynamicVenues, fetchClassById, searchVenues } from '../../services/venueService';
 import { FindAClassHero } from './components/FindAClassHero';
 import { VenueCardList } from './components/VenueCardList';
 import { VenueCardCompact } from './components/VenueCardCompact';
@@ -14,7 +13,7 @@ import { DirectionsModal } from './components/DirectionsModal';
 import { ParkingModal } from './components/ParkingModal';
 import { WaitingListModal } from './components/WaitingListModal';
 import './find-a-class-translated.css';
-
+import { fetchDynamicVenues, fetchClassById, searchVenues, postcodeToCoords, withDistance } from '../../services/venueService';
 const INITIAL_VISIBLE = 3;
 
 export function FindAClassPage() {
@@ -26,7 +25,8 @@ export function FindAClassPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
 
-  const [postcode, setPostcode] = useState('SW10 0AB');
+  const [postcode, setPostcode] = useState('');
+  const [coords, setCoords] = useState(null);
   const [selectedAges, setSelectedAges] = useState(['4-5', '6-7']);
   const [viewMode, setViewMode] = useState('list'); // 'list' | 'map'
   const [selectedVenueId, setSelectedVenueId] = useState('5');
@@ -36,8 +36,8 @@ export function FindAClassPage() {
   const [activeModalVenue, setActiveModalVenue] = useState(null);
   const [activeModalClass, setActiveModalClass] = useState(null);
   const [modalType, setModalType] = useState(null);
-  const list_active='https://webstepdev.com/demo/syncoWebsiteImages/find-a-class/list_2.png';
-  const list_2= 'https://webstepdev.com/demo/syncoWebsiteImages/find-a-class/list_blue.png';
+  const list_active = 'https://webstepdev.com/demo/syncoWebsiteImages/find-a-class/list_2.png';
+  const list_2 = 'https://webstepdev.com/demo/syncoWebsiteImages/find-a-class/list_blue.png';
   const map_2 = 'https://webstepdev.com/demo/syncoWebsiteImages/find-a-class/map_2.png';
   const map_active = 'https://webstepdev.com/demo/syncoWebsiteImages/find-a-class/map_white.png';
   const pin = 'https://webstepdev.com/demo/syncoWebsiteImages/find-a-class/pin_blue.png';
@@ -63,7 +63,17 @@ export function FindAClassPage() {
       setIsLoading(false);
     }
   };
-
+  useEffect(() => {
+    let cancelled = false;
+    const t = setTimeout(async () => {
+      const c = postcode.trim() ? await postcodeToCoords(postcode) : null;
+      if (!cancelled) setCoords(c);
+    }, 400);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
+  }, [postcode]);
   useEffect(() => {
     loadVenues();
   }, []);
@@ -90,26 +100,22 @@ export function FindAClassPage() {
 
   // Filter venues by search query and age groups
   const filteredVenues = useMemo(() => {
-    let list = venues;
+    let list = coords ? withDistance(venues, coords) : venues;
 
-    if (postcode && postcode.trim()) {
+    // Coords nahi mile (invalid/partial postcode) to text search fallback
+    if (!coords && postcode.trim()) {
       const searched = searchVenues(list, postcode.trim());
-      if (searched.length > 0) {
-        list = searched;
-      }
+      if (searched.length > 0) list = searched;
     }
 
-    // Filter by selected ages
     if (selectedAges.length > 0 && selectedAges.length < AGE_GROUPS.length) {
-      list = list.filter((venue) => {
-        const classes = venue.schedule?.classes || [];
-        return classes.some((c) => selectedAges.includes(c.ageId));
-      });
+      list = list.filter((venue) =>
+        (venue.schedule?.classes || []).some((c) => selectedAges.includes(c.ageId))
+      );
     }
 
     return list;
-  }, [venues, selectedAges, postcode]);
-
+  }, [venues, selectedAges, postcode, coords]);
   // Filter ya venues change hone par wapas default 3 pe reset
   useEffect(() => {
     setVisibleCount(INITIAL_VISIBLE);
@@ -191,8 +197,8 @@ export function FindAClassPage() {
           type="button"
           onClick={() => setViewMode(id)}
           className={`h-9 sm:h-10 px-3.5 sm:px-4 rounded-full text-[12px] sm:text-[14px] font-bold flex items-center gap-1.5 transition-all cursor-pointer ${viewMode === id
-              ? 'bg-[#042C89] text-white shadow-xs'
-              : 'text-[#042C89] hover:bg-slate-100'
+            ? 'bg-[#042C89] text-white shadow-xs'
+            : 'text-[#042C89] hover:bg-slate-100'
             }`}
         >
           <img
@@ -216,8 +222,7 @@ export function FindAClassPage() {
           {isLoading && <Loader2 className="w-4 h-4 text-[#00A3E0] animate-spin inline-block" />}
         </h2>
         <p className="text-[#797A88] text-[12px] sm:text-[14px] font-medium md:font-normal mt-0.5">
-          Near {postcode} · Nearest first
-        </p>
+          Near {postcode || 'you'} · {coords ? 'Nearest first' : 'All venues'}        </p>
       </div>
       {ViewToggle}
     </div>
@@ -305,8 +310,8 @@ export function FindAClassPage() {
                               )
                             }
                             className={`flex-1 h-11 text-[13px] font-bold rounded-full border transition-all cursor-pointer ${active
-                                ? 'bg-[#0B2A8A] text-white border-[#0B2A8A]'
-                                : 'bg-white border-slate-200 text-[#061838]'
+                              ? 'bg-[#0B2A8A] text-white border-[#0B2A8A]'
+                              : 'bg-white border-slate-200 text-[#061838]'
                               }`}
                           >
                             {g.label}
