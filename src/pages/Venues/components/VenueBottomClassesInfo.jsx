@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowRight, Navigation } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Container } from '../../../components/common/Container';
 import { useVenue } from '../VenueContext';
 import { useModal } from '../../../context/ModalContext';
@@ -8,6 +9,7 @@ import { CleanVenueMap } from '../../../components/common/CleanVenueMap';
 const ICON_BASE = 'https://webstepdev.com/demo/syncoWebsiteImages/icons/';
 
 export function VenueBottomClassesInfo() {
+  const navigate = useNavigate();
   const { venue, venueName } = useVenue();
   const { openModal } = useModal();
 
@@ -15,17 +17,20 @@ export function VenueBottomClassesInfo() {
     ? venue.parkingNote && venue.parkingNote.toLowerCase() !== 'yes'
       ? venue.parkingNote
       : 'Parking available on site.'
-    : venue
-    ? 'No dedicated parking on site.'
-    : 'Free on-street parking on Saturdays.';
+    : venue?.parkingNote
+    ? venue.parkingNote
+    : 'No dedicated parking on site.';
 
   const station = venue?.nearestStation || venue?.station || venue?.nearbyStation;
+  const fullAddress = venue?.address
+    ? `${venue.address}${venue.postal_code ? `, ${venue.postal_code}` : ''}`
+    : 'Lots Road, London SW10 0AB';
 
   const infoList = [
     {
       title: 'Address',
       icon: 'pinblue.png',
-      value: venue?.address || 'Lots Road, London SW10 0AB',
+      value: fullAddress,
     },
     {
       title: 'Parking',
@@ -57,16 +62,18 @@ export function VenueBottomClassesInfo() {
     const query =
       lat && lng
         ? `${lat},${lng}`
-        : encodeURIComponent(venue?.address || venueName || '');
+        : encodeURIComponent(fullAddress || venueName || '');
     window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank', 'noopener,noreferrer');
   };
 
   const handleBook = () => {
-    openModal('booking', { venueName });
+    const targetClass = venue?.classList?.find((c) => c.allowFreeTrial) || venue?.classList?.[0];
+    const cId = targetClass?.classId ? `&classId=${targetClass.classId}` : '';
+    navigate(`/book-trial?venue=${venue?.venueId || venue?.id || '5'}${cId}`);
   };
 
   return (
-    <section className="py-12 sm:py-20 bg-white relative overflow-hidden">
+    <section id="parking" className="py-12 sm:py-20 bg-white relative overflow-hidden">
       <Container className="relative z-10">
         <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12 max-w-[1200px] mx-auto">
           {/* Left: Map 600 x 500 */}

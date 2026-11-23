@@ -245,6 +245,29 @@ export function transformApiVenue(raw) {
     isCongested: Boolean(raw.isCongested)
   };
 
+  // Derive age range from classes: min age to max age (e.g. "4–5" or "4–12")
+  const allAges = [];
+  scheduleClasses.forEach((c) => {
+    const nums = (String(c.className || c.ageGroup).match(/\d+/g) || []).map(Number);
+    nums.forEach((n) => allAges.push(n));
+  });
+  const minAge = allAges.length ? Math.min(...allAges) : 4;
+  const maxAge = allAges.length ? Math.max(...allAges) : 12;
+  const ageRange = minAge === maxAge ? `${minAge}` : `${minAge}–${maxAge}`;
+
+  // Day index: Sunday=0, Monday=1, Tuesday=2, Wednesday=3, Thursday=4, Friday=5, Saturday=6
+  const DAY_NAME_TO_INDEX = {
+    sunday: 0,
+    monday: 1,
+    tuesday: 2,
+    wednesday: 3,
+    thursday: 4,
+    friday: 5,
+    saturday: 6
+  };
+  const primaryDayLower = (primaryDay || '').toLowerCase();
+  const dayIndex = DAY_NAME_TO_INDEX[primaryDayLower] != null ? DAY_NAME_TO_INDEX[primaryDayLower] : 6;
+
   // NOTE: API's distanceMiles is NOT reliable (backend has no user location -> 10000+ mi).
   // Distance is calculated client side via withDistance().
   return {
@@ -258,6 +281,8 @@ export function transformApiVenue(raw) {
     postal_code: raw.postal_code || raw.postcode || '-',
     lat: Number(raw.latitude) || null,
     lng: Number(raw.longitude) || null,
+    latitude: Number(raw.latitude) || null,
+    longitude: Number(raw.longitude) || null,
     facility: raw.facility || '-',
     parkingNote: raw.parkingNote || '',
     hasParking: Boolean(raw.hasParking),
@@ -270,6 +295,18 @@ export function transformApiVenue(raw) {
       day: primaryDay,
       classes: scheduleClasses
     },
+    primaryDay,
+    dayIndex,
+    ageRange,
+    classes: raw.classes,
+    classList: scheduleClasses,
+    venueManager: raw.venueManager || null,
+    coaches: raw.coaches || [],
+    creator: raw.creator || null,
+    managerName: raw.venueManager?.fullName || raw.venueManager?.firstName || null,
+    managerFirstName: raw.venueManager?.firstName || (raw.venueManager?.fullName ? raw.venueManager.fullName.split(' ')[0] : null),
+    managerImage: raw.venueManager?.profile || raw.venueManager?.image || null,
+    ratingData: raw.rating || null,
     pricing,
     starterPack,
     starterPacks: raw.starterPacks || [],
@@ -467,23 +504,27 @@ export function withDistance(venues = [], coords) {
 /**
  * Fetch venue by ID or fallback by name.
  */
-export async function fetchVenueByIdOrName(venueId = 78, venueName = '') {
-  const targetId = venueId || 78;
+export async function fetchVenueByIdOrName(venueId = null, venueName = '') {
+  const targetId = venueId;
 
-  try {
-    const response = await fetch(`${BASE_URL}/api/open/find-class/venue/${targetId}`, {
-      method: 'GET',
-      redirect: 'follow'
-    });
-    if (response.ok) {
-      const json = await response.json();
-      if (json?.data) return json.data;
+  if (targetId) {
+    try {
+      const response = await fetch(`${BASE_URL}/api/open/find-class/venue/${targetId}`, {
+        method: 'GET',
+        redirect: 'follow'
+      });
+      if (response.ok) {
+        const json = await response.json();
+        if (json?.status === true && json?.data) {
+          return transformApiVenue(json.data);
+        }
+      }
+    } catch (err) {
+      // fallback below
     }
-  } catch (err) {
-    // fallback below
   }
 
-  const venues = await fetchVenues();
+  const venues = await fetchDynamicVenues();
   if (Array.isArray(venues) && venues.length > 0) {
     if (targetId) {
       const match = venues.find(
@@ -501,7 +542,7 @@ export async function fetchVenueByIdOrName(venueId = 78, venueName = '') {
       );
       if (match) return match;
     }
-    return venues.find((v) => String(v.venueId) === '78') || venues[0];
+    return venues[0];
   }
 
   return null;

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Clock, ArrowRight, MapPin } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Clock, ArrowRight, MapPin, Compass } from 'lucide-react';
 
 // "Saturday 7:15 AM - 8:15 AM" -> "Saturday 7:15 - 8:15 am" (am/pm lowercase)
 const formatTimeRange = (range = '') => {
@@ -41,9 +42,11 @@ export function VenueCardCompact({
   onJoinWaitingList,
   onOpenDetails
 }) {
+  const navigate = useNavigate();
   const schedule = venue.schedule || {};
   const classes = schedule.classes || [];
   const isFullyBooked = classes.length > 0 && classes.every((c) => c.statusType === 'full');
+  const vId = venue.venueId || venue.id;
 
   const trialClass = classes.find((c) => c.allowFreeTrial === true && c.statusType !== 'full');
   const hasFreeTrial = Boolean(trialClass);
@@ -68,9 +71,27 @@ export function VenueCardCompact({
       >
         {/* Top Header: Venue Name & Distance Badge */}
         <div className="flex items-center justify-between gap-2 mb-3">
-          <h3 className="poppins text-[16px] sm:text-[18px] font-bold text-[#042C89] tracking-tight">
-            {areaTitle}
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/venues?id=${vId}`);
+              }}
+              className="poppins text-[16px] sm:text-[18px] font-bold text-[#042C89] tracking-tight hover:underline hover:text-[#0DD180] transition-colors"
+              title="Click to view venue page"
+            >
+              {areaTitle}
+            </h3>
+            <span
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/venues?id=${vId}`);
+              }}
+              className="text-[#00A6E3] hover:text-[#042C89] text-[11px] font-bold flex items-center gap-0.5"
+            >
+              (view &rarr;)
+            </span>
+          </div>
           <span className="bg-[#E6F4FB] text-[#042C89] font-bold text-[12px] px-2.5 py-0.5 rounded-full shrink-0">
             {distanceStr}
           </span>
@@ -147,7 +168,13 @@ export function VenueCardCompact({
 
         {/* Top Header: Venue Name & Distance Badge */}
         <div className="flex items-center justify-between gap-2 mb-1">
-          <h3 className="poppins text-[18px] font-bold text-[#042C89] tracking-tight">
+          <h3
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/venues?id=${vId}`);
+            }}
+            className="poppins text-[18px] font-bold text-[#042C89] tracking-tight hover:underline hover:text-[#0DD180] transition-colors"
+          >
             {venueTitle}
           </h3>
           <span className="bg-[#E6F4FB] text-[#042C89] font-bold text-[13px] px-3 py-1 rounded-full shrink-0">

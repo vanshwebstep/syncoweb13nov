@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   MapPin,
   Calendar,
@@ -217,8 +218,10 @@ export function VenueCardList({
   onJoinWaitingList,
   onBookMembership
 }) {
+  const navigate = useNavigate();
   const schedule = venue.schedule || {};
   const allClasses = schedule.classes || [];
+  const vId = venue.venueId || venue.id;
 
   // Age filter (selectedAges was never used before)
   const classes = useMemo(
@@ -256,7 +259,11 @@ export function VenueCardList({
         <div className="bg-[#0B2A8A] p-4 md:px-8 md:pt-5 md:pb-4 text-white flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="poppins text-[18px] sm:text-[21px] font-bold text-white leading-tight">
+              <h3
+                onClick={() => navigate(`/venues?id=${vId}`)}
+                className="poppins text-[18px] sm:text-[21px] font-bold text-white leading-tight cursor-pointer hover:underline hover:text-[#FFDE14] transition-colors"
+                title="Click to view venue page"
+              >
                 {venueTitle}
               </h3>
               {distanceStr && (
@@ -278,6 +285,15 @@ export function VenueCardList({
           </div>
 
           <div className="flex items-center gap-1.5 flex-wrap">
+            <button
+              type="button"
+              onClick={() => navigate(`/venues?id=${vId}`)}
+              className="bg-white/[0.14] hover:bg-white/20 text-[#FFDE14] font-bold text-[13px] px-3.5 py-1.5 rounded-full min-h-[40px] flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap"
+            >
+              <Compass className="w-3.5 h-3.5 text-[#FFDE14]" />
+              <span>View venue</span>
+            </button>
+
             <button type="button" onClick={() => onOpenPrices(venue)} className={pillBtn}>
               <img src={pound} className="h-3" alt="" />
               <span>Prices</span>
@@ -413,7 +429,10 @@ export function VenueCardList({
         {/* Header */}
         <div className="bg-[#042C89] p-4 py-5 text-white flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <h3 className="poppins text-[19px] font-bold text-white leading-tight truncate">
+            <h3
+              onClick={() => navigate(`/venues?id=${vId}`)}
+              className="poppins text-[19px] font-bold text-white leading-tight truncate cursor-pointer hover:underline hover:text-[#FFDE14] transition-colors"
+            >
               {venueTitle}
             </h3>
 

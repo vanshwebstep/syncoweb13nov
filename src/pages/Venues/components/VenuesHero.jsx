@@ -1,7 +1,9 @@
-import React from 'react';
-import { ArrowRight, Check, Star } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowRight, Check, Star, ChevronDown, MapPin } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Container } from '../../../components/common/Container';
 import { useModal } from '../../../context/ModalContext';
+import { useVenue } from '../VenueContext';
 
 const BASE = 'https://webstepdev.com/demo/syncoWebsiteImages';
 const VENUE_BG = `${BASE}/venues/venuemainbg.png`;
@@ -10,67 +12,76 @@ const DEFAULT_VENUE_IMG = `${BASE}/venues/venuemainimg.png`;
 const WHITELINE = `${BASE}/roadtorio/whiteline.png`;
 const icon = (name) => `${BASE}/icons/${name}.png`;
 
-/* ====== Dynamic fields (API se aane wale). Missing ho to default dikhega ====== */
-const DEFAULT_VENUE = {
-  name: 'Chelsea', // heading: "Football classes in {name}."
-  address: 'Lots Road, SW10', // label + trial card
-  venueName: 'Chelsea Academy', // trial card
-  dayLabel: 'Saturdays', // pill
-  dayName: 'Saturday', // subtitle: "every {dayName}"
-  ages: '4–12', // pill + subtitle
-  venueType: 'Indoor sports hall', // pill
-  nextTrialDate: '2026-11-07', // ISO date
-  image: DEFAULT_VENUE_IMG,
-  rating: '4.8',
-  ratingNote: 'From hundreds of parents',
-  sinceYear: 2009,
-  childrenCount: '20,000+',
-};
-
 const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-const formatTrialDate = (value) => {
-  if (!value) return '';
-  const d = new Date(value);
-  if (isNaN(d.getTime())) return String(value); // already formatted string
-  return `${WEEKDAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}`;
+const getNextDateForDay = (dayIndex = 6) => {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  const diff = (dayIndex - d.getDay() + 7) % 7;
+  d.setDate(d.getDate() + (diff === 0 ? 7 : diff));
+  return d;
 };
 
-export function VenuesHero({ venue = {}, onBookTrial, onSeeTimes }) {
+export function VenuesHero({ venue: propVenue, onBookTrial, onSeeTimes }) {
+  const navigate = useNavigate();
   const { openModal } = useModal();
-  const v = { ...DEFAULT_VENUE, ...venue };
+  const venueCtx = useVenue();
 
-  const trialDate = formatTrialDate(v.nextTrialDate);
-  const yearsOfSamba = Math.max(new Date().getFullYear() - Number(v.sinceYear || 0), 0);
+  const venue = propVenue || venueCtx?.venue || {};
+  const allVenues = venueCtx?.allVenues || [];
+  const changeVenue = venueCtx?.changeVenue;
+
+  const areaName = venue.area && venue.area !== '-' ? venue.area : (venue.venueName || 'Chelsea');
+  const venueName = venue.venueName || venue.name || 'Chelsea Academy';
+  const fullAddress = venue.address ? `${venue.address}${venue.postal_code ? `, ${venue.postal_code}` : ''}` : 'Lots Road, SW10 0AB';
+
+  // Day & index
+  const dayName = venue.primaryDay || (venue.schedule?.day) || 'Saturday';
+  const dayLabel = `${dayName}s`;
+  const dayIndex = Number.isInteger(venue.dayIndex) ? venue.dayIndex : 6;
+
+  // Next trial date
+  const nextDateObj = getNextDateForDay(dayIndex);
+  const trialDate = `${WEEKDAYS[nextDateObj.getDay()]} ${nextDateObj.getDate()} ${MONTHS[nextDateObj.getMonth()]}`;
+
+  // Age range
+  const ages = venue.ageRange || '4–12';
+  const facility = venue.facility && venue.facility !== '-' ? `${venue.facility} sports facility` : 'Indoor sports hall';
+
+  const sinceYear = 2009;
+  const rating = '4.8';
+  const ratingNote = 'From hundreds of parents';
+  const childrenCount = '20,000+';
+  const yearsOfSamba = Math.max(new Date().getFullYear() - sinceYear, 0);
 
   const handleBook = () => {
-    if (onBookTrial) return onBookTrial(v);
-    const el = document.getElementById('samba-application');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-    else openModal('booking', { venue: v.venueName });
+    if (onBookTrial) return onBookTrial(venue);
+    const targetClass = venue.classList?.find((c) => c.allowFreeTrial) || venue.classList?.[0];
+    const cId = targetClass?.classId ? `&classId=${targetClass.classId}` : '';
+    navigate(`/book-trial?venue=${venue.venueId || venue.id || '5'}${cId}`);
   };
 
   const handleSeeTimes = () => {
-    if (onSeeTimes) return onSeeTimes(v);
+    if (onSeeTimes) return onSeeTimes(venue);
     const el = document.getElementById('class-times');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
   const pills = [
-    { icon: 'calyellow', text: v.dayLabel },
-    { icon: 'usersyellow', text: `Ages ${v.ages}` },
-    { icon: 'homeyellow', text: v.venueType },
+    { icon: 'calyellow', text: dayLabel },
+    { icon: 'usersyellow', text: `Ages ${ages}` },
+    { icon: 'homeyellow', text: facility },
   ].filter((p) => p.text);
 
   const stats = [
-    { icon: 'starblue', tint: '#E3F8EE', title: `${v.rating} on Google`, sub: v.ratingNote },
-    { icon: 'calblue', tint: '#E6F4FB', title: `Since ${v.sinceYear}`, sub: `${yearsOfSamba}+ years of Samba` },
-    { icon: 'usersblue', tint: '#E3F8EE', title: `${v.childrenCount} children`, sub: 'Coached across the UK' },
+    { icon: 'starblue', tint: '#E3F8EE', title: `${rating} on Google`, sub: ratingNote },
+    { icon: 'calblue', tint: '#E6F4FB', title: `Since ${sinceYear}`, sub: `${yearsOfSamba}+ years of Samba` },
+    { icon: 'usersblue', tint: '#E3F8EE', title: `${childrenCount} children`, sub: 'Coached across the UK' },
     { icon: 'shieldblue', tint: '#E6F4FB', title: 'DBS-checked', sub: 'Every coach trained' },
   ];
 
-  /* Buttons + note: desktop pe left column me, mobile pe photo ke neeche (same JSX 2 jagah render hota hai) */
+  /* Buttons + note: desktop pe left column me, mobile pe photo ke neeche */
   const cta = (
     <>
       <div className="flex flex-col items-stretch gap-3 lg:flex-row lg:flex-wrap lg:items-center">
@@ -115,11 +126,38 @@ export function VenuesHero({ venue = {}, onBookTrial, onSeeTimes }) {
         />
 
         <Container className="relative z-10 pt-10 pb-20 lg:pt-[60px] lg:pb-[210px]">
+          {/* Venue Switcher dropdown */}
+          {allVenues && allVenues.length > 1 && (
+            <div className="mb-6 flex items-center gap-2 flex-wrap">
+              <span className="poppins text-xs font-semibold text-white/80 flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-[#FFDE14]" /> Choose Venue:
+              </span>
+              <div className="relative inline-block">
+                <select
+                  value={venue.venueId || venue.id || ''}
+                  onChange={(e) => changeVenue && changeVenue(e.target.value)}
+                  className="poppins appearance-none bg-[#0F3FA8] hover:bg-[#1449BD] text-white border border-white/20 font-bold text-[12px] lg:text-[13px] px-4 py-2 pr-8 rounded-full cursor-pointer focus:outline-none shadow-sm transition-colors"
+                >
+                  {allVenues.map((item) => (
+                    <option
+                      key={item.venueId || item.id}
+                      value={item.venueId || item.id}
+                      className="bg-[#042C89] text-white"
+                    >
+                      {item.venueName || item.name} ({item.area || item.postal_code})
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-white/80 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-6 items-center">
             {/* ===== Left ===== */}
             <div className="lg:col-span-6">
               <p className="poppins font-bold text-[#FFDE14] text-[10.5px] lg:text-[13px] tracking-[0.04em] uppercase">
-                Samba {v.name} · {v.address}
+                Samba {areaName} · {fullAddress}
               </p>
 
               <h1 className="mt-3 lg:mt-4 leading-[1.1]">
@@ -127,16 +165,16 @@ export function VenuesHero({ venue = {}, onBookTrial, onSeeTimes }) {
                   Football classes
                 </span>
                 <span className="gasoek relative inline-block text-[#FFDE14] text-[42px] sm:text-[54px] lg:text-[78px] mt-1">
-                  in {v.name}.
+                  in {areaName}.
                   <img src={WHITELINE} alt="" aria-hidden="true" className="absolute left-0 -bottom-2 w-full h-auto pointer-events-none select-none" />
                 </span>
               </h1>
 
               <p className="poppins mt-6 lg:mt-8 max-w-[520px] text-white text-[15px] sm:text-[16px] lg:text-[19px] leading-relaxed">
-                Brazilian-inspired weekly football for ages {v.ages}.{' '}
+                Brazilian-inspired weekly football for ages {ages}.{' '}
                 <span className="font-bold lg:font-normal">
                   <span className="lg:hidden">Skills, confidence and flair.</span>
-                  <span className="hidden lg:inline">Skills, confidence and flair, every {v.dayName}.</span>
+                  <span className="hidden lg:inline">Skills, confidence and flair, every {dayName}.</span>
                 </span>
               </p>
 
@@ -164,14 +202,14 @@ export function VenuesHero({ venue = {}, onBookTrial, onSeeTimes }) {
                 <span aria-hidden="true" className="absolute inset-0 left-3 top-3 lg:left-0 lg:top-0 lg:translate-x-[14px] lg:translate-y-[14px] rounded-[24px] lg:rounded-[28px] bg-[#FFDE14]" />
 
                 <img
-                  src={v.image}
-                  alt={`Samba ${v.name} football class`}
+                  src={DEFAULT_VENUE_IMG}
+                  alt={`Samba ${venueName} football class`}
                   className="relative w-full aspect-[345/330] lg:aspect-auto lg:h-[560px] object-cover rounded-[24px] lg:rounded-[28px]"
                 />
 
                 {/* Rating card */}
                 <div className="absolute -top-4 right-5 lg:-top-5 lg:-right-8 bg-white rounded-[16px] shadow-xl px-4 py-3 flex items-center gap-3 z-10">
-                  <span className="poppins font-bold text-[#042C89] text-[24px] lg:text-[30px] leading-none">{v.rating}</span>
+                  <span className="poppins font-bold text-[#042C89] text-[24px] lg:text-[30px] leading-none">{rating}</span>
                   <div>
                     <div className="flex gap-0.5">
                       {[...Array(5)].map((_, i) => (
@@ -192,8 +230,8 @@ export function VenuesHero({ venue = {}, onBookTrial, onSeeTimes }) {
                         <img src={icon('pinblue')} alt="" className="w-[14px] h-[14px] object-contain" />
                       </span>
                       <div className="min-w-0">
-                        <p className="poppins font-bold text-[#042C89] text-[12px] lg:text-[13px] leading-tight">{v.venueName}</p>
-                        <p className="poppins text-[#797A88] text-[10.5px] lg:text-[11.5px] mt-0.5">{v.address}</p>
+                        <p className="poppins font-bold text-[#042C89] text-[12px] lg:text-[13px] leading-tight truncate">{venueName}</p>
+                        <p className="poppins text-[#797A88] text-[10.5px] lg:text-[11.5px] mt-0.5 truncate">{fullAddress}</p>
                       </div>
                     </div>
                   </div>

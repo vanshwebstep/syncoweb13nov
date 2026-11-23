@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { ArrowRight, Info } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Container } from '../../../components/common/Container';
 import { useModal } from '../../../context/ModalContext';
 import { useVenue } from '../VenueContext';
@@ -10,7 +11,7 @@ const SWOOSH = `${BASE}/roadtorio/Swoosh.png`;
 const STARTER_BOX = `${BASE}/venues/${encodeURIComponent('Starter pack box')}.png`;
 const RECT_BG = `${BASE}/venues/rectanglebg.png`;
 
-/* ====== Defaults (venue / API se na aaye to ye dikhega) ====== */
+/* ====== Defaults (venue / API se na aaye to fallback) ====== */
 const DEFAULT_CLASSES = [
   { time: '7:15 – 8:15am', ages: '4–5 Years', level: 'Beginner', spotsLeft: 4 },
   { time: '8:15 – 9:15am', ages: '6–7 Years', level: 'Intermediate', spotsLeft: 12 },
@@ -34,7 +35,8 @@ const nextDates = (dayIndex = 6, count = 4) => {
   const out = [];
   const d = new Date();
   d.setHours(0, 0, 0, 0);
-  d.setDate(d.getDate() + ((dayIndex - d.getDay() + 7) % 7));
+  const diff = (dayIndex - d.getDay() + 7) % 7;
+  d.setDate(d.getDate() + (diff === 0 ? 7 : diff));
   for (let i = 0; i < count; i++) {
     out.push(new Date(d));
     d.setDate(d.getDate() + 7);
@@ -50,17 +52,20 @@ const STATUS = {
 
 // Class object ko normalize karo (API ke alag field names ke liye)
 const normalizeClass = (c) => {
-  const spots = c.spotsLeft ?? c.placesLeft ?? c.availableSpots;
+  const spots = c.spotsLeft ?? c.placesLeft ?? c.spacesLeft ?? (c.totalCapacity != null && c.capacity != null ? Math.max(0, c.totalCapacity - c.capacity) : 10);
   const status = c.status || (spots === 0 ? 'full' : spots > 0 && spots <= 5 ? 'few' : 'available');
   const statusText =
-    c.statusText || (status === 'few' ? `Only ${spots ?? ''} places left`.replace('  ', ' ') : status === 'full' ? 'Fully booked' : 'Spaces available');
+    c.statusText || (status === 'few' ? `Only ${spots} place${spots === 1 ? '' : 's'} left` : status === 'full' ? 'Fully booked' : 'Spaces available');
   return {
     time: c.time || [c.startTime, c.endTime].filter(Boolean).join(' – '),
-    ages: c.ages || c.ageGroup || '',
+    ages: c.ages || c.ageSimple || c.className || c.ageGroup || '',
     level: c.level || '',
+    spotsLeft: spots,
     status,
     statusText,
-    raw: c,
+    allowFreeTrial: c.allowFreeTrial !== false,
+    classId: c.classId || c.id,
+    raw: c.rawClass || c.raw || c,
   };
 };
 
@@ -68,22 +73,56 @@ const normalizeClass = (c) => {
    1. CLASSES AT {VENUE}
    ===================================================================== */
 export function VenueClassesInfo({ onBookMembership, onBookTrial, onJoinWaitingList }) {
+  const navigate = useNavigate();
   const { venue, venueName } = useVenue();
   const { openModal } = useModal();
 
   const name = venue?.venueName || venueName || 'Chelsea Academy';
-  const address = venue?.address || 'Lots Road, London SW10 0AB';
+  const address = venue?.address ? `${venue.address}${venue.postal_code ? `, ${venue.postal_code}` : ''}` : 'Lots Road, London SW10 0AB';
   const dayIndex = Number.isInteger(venue?.dayIndex) ? venue.dayIndex : 6;
 
   const dates = useMemo(() => {
-    const list = Array.isArray(venue?.trialDates) && venue.trialDates.length ? venue.trialDates.map(parseDate) : nextDates(dayIndex);
-    return list.slice(0, 4);
+    if (Array.isArray(venue?.trialDates) && venue.trialDates.length) {
+      return venue.trialDates.map(parseDate).slice(0, 4);
+    }
+    return nextDates(dayIndex, 4);
   }, [venue, dayIndex]);
 
-  const classes = useMemo(
-    () => (Array.isArray(venue?.classes) && venue.classes.length ? venue.classes : DEFAULT_CLASSES).map(normalizeClass),
-    [venue]
-  );
+  const classes = useMemo(() => {
+    if (Array.isArray(venue?.classList) && venue.classList.length > 0) {
+      return venue.classList.map(normalizeClass);
+    }
+    if (Array.isArray(venue?.schedule?.classes) && venue.schedule.classes.length > 0) {
+      return venue.schedule.classes.map(normalizeClass);
+    }
+    if (venue?.classes && typeof venue.classes === 'object') {
+      const list = [];
+      Object.entries(venue.classes).forEach(([day, dayClasses]) => {
+        if (Array.isArray(dayClasses)) {
+          dayClasses.forEach((c) => {
+            const cap = Number(c.capacity) || 0;
+            const total = Number(c.totalCapacity) || 20;
+            const spotsLeft = Math.max(0, total - cap);
+            const status = spotsLeft === 0 ? 'full' : spotsLeft <= 5 ? 'few' : 'available';
+            const statusText = spotsLeft === 0 ? 'Fully booked' : spotsLeft <= 5 ? `Only ${spotsLeft} place${spotsLeft === 1 ? '' : 's'} left` : 'Spaces available';
+            list.push({
+              time: c.time || '-',
+              ages: c.className || c.level || '-',
+              level: c.level || '',
+              spotsLeft,
+              status,
+              statusText,
+              allowFreeTrial: c.allowFreeTrial !== false,
+              classId: c.classId,
+              raw: c
+            });
+          });
+        }
+      });
+      if (list.length > 0) return list;
+    }
+    return DEFAULT_CLASSES.map(normalizeClass);
+  }, [venue]);
 
   const [activeDate, setActiveDate] = useState(0);
   const selected = dates[activeDate] || dates[0];
@@ -92,9 +131,25 @@ export function VenueClassesInfo({ onBookMembership, onBookTrial, onJoinWaitingL
   const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${name} ${address}`)}`;
   const scrollTo = (id) => () => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
-  const handleMembership = (c) => (onBookMembership ? onBookMembership(c.raw, selected) : openModal('booking', { type: 'membership', venue: name, class: c.raw }));
-  const handleTrial = (c) => (onBookTrial ? onBookTrial(c.raw, selected) : openModal('booking', { type: 'trial', venue: name, class: c.raw, date: selected }));
-  const handleWaiting = (c) => (onJoinWaitingList ? onJoinWaitingList(c.raw) : openModal('booking', { type: 'waiting-list', venue: name, class: c.raw }));
+  const venueIdVal = venue?.venueId || venue?.id || '5';
+
+  const handleMembership = (c) => {
+    if (onBookMembership) return onBookMembership(c.raw, selected);
+    const cId = c.classId || c.raw?.classId;
+    navigate(`/book-membership?venue=${venueIdVal}${cId ? `&classId=${cId}` : ''}`);
+  };
+
+  const handleTrial = (c) => {
+    if (onBookTrial) return onBookTrial(c.raw, selected);
+    const cId = c.classId || c.raw?.classId;
+    navigate(`/book-trial?venue=${venueIdVal}${cId ? `&classId=${cId}` : ''}`);
+  };
+
+  const handleWaiting = (c) => {
+    if (onJoinWaitingList) return onJoinWaitingList(c.raw);
+    const cId = c.classId || c.raw?.classId;
+    navigate(`/waiting-list?venue=${venueIdVal}${cId ? `&classId=${cId}` : ''}`);
+  };
 
   const chipCls =
     'poppins inline-flex items-center gap-1.5 lg:gap-2 rounded-full bg-white/15 hover:bg-white/25 text-white font-bold text-[11.5px] lg:text-[13px] px-3.5 lg:px-4 py-2 transition-colors cursor-pointer whitespace-nowrap';
@@ -179,7 +234,7 @@ export function VenueClassesInfo({ onBookMembership, onBookTrial, onJoinWaitingL
                 const st = STATUS[c.status] || STATUS.available;
                 return (
                   <div
-                    key={`${c.time}-${c.ages}`}
+                    key={`${c.time}-${c.ages}-${c.classId || ''}`}
                     className="bg-[#F4F6FB] rounded-[18px] p-4 sm:px-6 lg:py-5 grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-3 lg:grid-cols-[210px_160px_170px_1fr] lg:gap-4"
                   >
                     {/* Time */}
@@ -268,19 +323,21 @@ const STEPS = [
 ];
 
 export function VenueFirstSession({ onBookTrial }) {
+  const navigate = useNavigate();
   const { venue } = useVenue();
   const { openModal } = useModal();
 
-  // Dynamic: starter pack prices venue/API se aa sakte hain
-  const offerPrice = venue?.starterPackPrice || '£49.99';
-  const normalPrice = venue?.starterPackNormalPrice || '£89.99';
+  // Dynamic starter pack prices from venue
+  const starterItem = venue?.starterPacks?.[0];
+  const normalPrice = starterItem?.price ? `£${Number(starterItem.price).toFixed(2)}` : '£89.99';
+  const offerPrice = starterItem?.offerPrice ? `£${Number(starterItem.offerPrice).toFixed(2)}` : '£49.99';
   const holdHours = venue?.starterPackHoldHours || 24;
 
   const handleBook = () => {
     if (onBookTrial) return onBookTrial(venue);
-    const el = document.getElementById('class-times');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-    else openModal('booking', { type: 'trial' });
+    const targetClass = venue?.classList?.find((c) => c.allowFreeTrial) || venue?.classList?.[0];
+    const cId = targetClass?.classId ? `&classId=${targetClass.classId}` : '';
+    navigate(`/book-trial?venue=${venue?.venueId || venue?.id || '5'}${cId}`);
   };
 
   return (
@@ -337,8 +394,8 @@ export function VenueFirstSession({ onBookTrial }) {
                 </h3>
                 <p className="poppins mt-2 text-white/85 text-[12.5px] lg:text-[15px] leading-relaxed">
                   Their place is held for {holdHours} hours and the starter pack is{' '}
-                  <span translate="no" className="notranslate">{offerPrice}</span> instead of{' '}
-                  <span translate="no" className="notranslate">{normalPrice}</span>.
+                  <span translate="no" className="notranslate font-bold text-[#FFDE14]">{offerPrice}</span> instead of{' '}
+                  <span translate="no" className="notranslate font-bold">{normalPrice}</span>.
                 </p>
               </div>
 

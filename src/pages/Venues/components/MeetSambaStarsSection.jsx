@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowRight, Check } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Container } from '../../../components/common/Container';
 import { useModal } from '../../../context/ModalContext';
 import coachPortrait from 'https://webstepdev.com/demo/syncoWebsiteImages/venues/imreggie.png';
@@ -10,30 +11,50 @@ const WHITELINE = `${BASE}/roadtorio/whiteline.png`;
 const COACH_BG = `${BASE}/venues/coachbg.png`;
 
 export function MeetSambaStarsSection({ onBookTrial }) {
+  const navigate = useNavigate();
   const { venue, venueName } = useVenue();
   const { openModal } = useModal();
 
-  /* ====== Dynamic fields (venue / API se). Na mile to default dikhega ====== */
-  const managerName =
+  /* ====== Dynamic fields ====== */
+  const venueManager = venue?.venueManager || venue?.raw?.venueManager;
+  const rawManagerName =
     venue?.managerName ||
-    (venue?.admins?.firstName ? `${venue.admins.firstName} ${venue.admins.lastName || ''}`.trim() : 'Reggie');
-  const firstName = managerName.split(' ')[0];
-  const venueLabel = venue?.venueName || venueName || 'Chelsea Academy'; // "Chelsea Academy" (paragraph)
-  const areaName = venue?.areaName || venue?.name || (venueName ? venueName.split(' ')[0] : 'Chelsea'); // "Samba Chelsea"
-  const dayName = venue?.dayName || 'Saturday'; // "See you Saturday!"
-  const yearsWithSamba = venue?.managerYears || 5;
-  const photo = venue?.managerImage || coachPortrait;
+    venueManager?.fullName ||
+    (venueManager?.firstName ? `${venueManager.firstName} ${venueManager.lastName || ''}`.trim() : null) ||
+    (venue?.admins?.firstName ? `${venue.admins.firstName} ${venue.admins.lastName || ''}`.trim() : null);
+
+  const managerName = rawManagerName || 'Reggie';
+  const firstName =
+    venue?.managerFirstName ||
+    venueManager?.firstName ||
+    (rawManagerName ? rawManagerName.split(' ')[0] : 'Reggie');
+
+  const venueLabel = venue?.venueName || venueName || 'Chelsea Academy';
+  const areaName = venue?.area && venue?.area !== '-' ? venue.area : (venueName ? venueName.split(' ')[0] : 'Chelsea');
+  const dayName = venue?.primaryDay || venue?.schedule?.day || 'Saturday';
+
+  const experienceYears = venueManager?.recruitmentDetails?.footballExperience
+    ? parseInt(venueManager.recruitmentDetails.footballExperience, 10)
+    : null;
+  const yearsWithSamba = experienceYears || venue?.managerYears || 5;
+
+  const photo = venue?.managerImage || venueManager?.profile || coachPortrait;
   const bio =
     venue?.managerBio ||
     `I look after every class at ${venueLabel}, from your child’s first session to their Copa de Samba. Every week I make sure each class is fun, safe and run the Samba way.`;
 
-  const pills = venue?.managerBadges || ['DBS checked', 'First aid trained', 'FA qualified', `${yearsWithSamba} years at Samba`];
+  const pills = venue?.managerBadges || [
+    'DBS checked',
+    'First aid trained',
+    'FA qualified',
+    `${yearsWithSamba} years at Samba`
+  ];
 
   const handleBook = () => {
     if (onBookTrial) return onBookTrial(venue);
-    const el = document.getElementById('class-times');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-    else openModal('booking', { type: 'trial' });
+    const targetClass = venue?.classList?.find((c) => c.allowFreeTrial) || venue?.classList?.[0];
+    const cId = targetClass?.classId ? `&classId=${targetClass.classId}` : '';
+    navigate(`/book-trial?venue=${venue?.venueId || venue?.id || '5'}${cId}`);
   };
 
   return (
@@ -52,7 +73,16 @@ export function MeetSambaStarsSection({ onBookTrial }) {
           <div className="w-full max-w-[400px] lg:w-[400px] shrink-0">
             <div className="bg-[#FFDE14] rounded-[28px] lg:rounded-[34px] p-3 lg:p-5 lg:h-[460px] flex flex-col">
               <div className="rounded-[20px] lg:rounded-[22px] overflow-hidden lg:w-[360px] lg:h-[350px] aspect-[360/340] lg:aspect-auto bg-[#1B4DB8]">
-                <img src={photo} alt={`${managerName} - Venue Manager`} className="w-full h-full object-cover object-top" />
+                <img
+                  src={photo}
+                  alt={`${managerName} - Venue Manager`}
+                  onError={(e) => {
+                    if (e.currentTarget.src !== coachPortrait) {
+                      e.currentTarget.src = coachPortrait;
+                    }
+                  }}
+                  className="w-full h-full object-cover object-top"
+                />
               </div>
 
               <div className="mt-auto pt-3 pb-1 px-1 text-[#042C89]">

@@ -1,7 +1,9 @@
 import React from 'react';
 import { ArrowRight, Star } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Container } from '../../../components/common/Container';
 import { useModal } from '../../../context/ModalContext';
+import { useVenue } from '../VenueContext';
 
 import cardImg1 from 'https://webstepdev.com/demo/syncoWebsiteImages/venues/clip1.png';
 import cardImg2 from 'https://webstepdev.com/demo/syncoWebsiteImages/venues/clip2.png';
@@ -54,12 +56,14 @@ const LEVELS = [
 const BAR_COLORS = ['#0DD180', '#00A6E3', '#FFDE14', '#042C89'];
 
 export function RightChallengeSection() {
+  const navigate = useNavigate();
+  const { venue } = useVenue();
   const { openModal } = useModal();
 
   const handleBook = () => {
     const el = document.getElementById('class-times');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
-    else openModal('booking', { type: 'trial' });
+    else navigate(`/book-trial?venue=${venue?.venueId || venue?.id || '5'}`);
   };
 
   /* "Not sure" card + button: desktop pe left column me, mobile pe cards ke neeche (2 jagah render hota hai) */

@@ -27,7 +27,8 @@ export function FindAClassPage() {
 
   const [postcode, setPostcode] = useState('');
   const [coords, setCoords] = useState(null);
-  const [selectedAges, setSelectedAges] = useState(['4-5', '6-7']);
+  const ageParam = searchParams.get('age');
+  const [selectedAges, setSelectedAges] = useState(ageParam ? [ageParam] : []);
   const [viewMode, setViewMode] = useState('list'); // 'list' | 'map'
   const [selectedVenueId, setSelectedVenueId] = useState('5');
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);

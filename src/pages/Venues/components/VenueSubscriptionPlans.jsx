@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Check, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useModal } from '../../../context/ModalContext';
 import { useVenue } from '../VenueContext';
 
@@ -7,147 +8,160 @@ const STARTER_PACK_IMG = 'https://webstepdev.com/demo/syncoWebsiteImages/venues/
 
 const fmt = (n) => `£${Number(n).toFixed(2)}`;
 
-// Sibling multiplier when venue has no explicit plan for that student count
-const getMultiplier = (n) => (n <= 1 ? 1 : n === 2 ? 1.85 : 1 + (n - 1) * 0.825);
+function stripHtml(html) {
+  if (!html) return '';
+  return html
+    .replace(/<br\s*[\/]?>/gi, '|||')
+    .replace(/<\/?li>/gi, '|||')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function parsePerks(html) {
+  if (!html) return [];
+  const text = stripHtml(html);
+  return text
+    .split(/\|\|\||\+/)
+    .map((s) => s.trim().replace(/^[-•*]\s*/, '').replace(/\.$/, ''))
+    .filter(Boolean);
+}
 
 const childLabel = (n) => `${n} ${n === 1 ? 'child' : 'children'}`;
 
 export function VenueSubscriptionPlans() {
+  const navigate = useNavigate();
   const { venue, venueName } = useVenue();
   const { openModal } = useModal();
 
   const [studentCount, setStudentCount] = useState(1);
 
-  // First class / term kept for modal payload
-  const activeClass = useMemo(() => {
-    if (!venue?.classes || typeof venue.classes !== 'object') return null;
-    for (const [day, list] of Object.entries(venue.classes)) {
-      if (Array.isArray(list) && list.length > 0) {
-        return { ...list[0], day: day.charAt(0).toUpperCase() + day.slice(1) };
-      }
-    }
-    return null;
+  const rawPlans = useMemo(() => {
+    return (
+      venue?.paymentGroups?.[0]?.paymentPlans ||
+      venue?.raw?.paymentGroups?.[0]?.paymentPlans ||
+      venue?.paymentPlans ||
+      []
+    );
   }, [venue]);
 
-  const activeTerm = useMemo(
-    () => (Array.isArray(venue?.terms) && venue.terms.length > 0 ? venue.terms[0] : null),
-    [venue]
-  );
-
-  const rawPlans = venue?.paymentGroups?.[0]?.paymentPlans;
-
-  // Toggle options (always 1-3, plus anything configured in API)
+  // Toggle options (1, 2, 3 children)
   const studentOptions = useMemo(() => {
-    const counts = Array.isArray(rawPlans)
-      ? rawPlans.map((p) => Number(p.students)).filter(Boolean)
-      : [];
+    const counts = rawPlans.map((p) => Number(p.students)).filter(Boolean);
     return [...new Set([...counts, 1, 2, 3])].sort((a, b) => a - b);
   }, [rawPlans]);
 
-  // Base plans -> one per duration/students combo
-  const basePlans = useMemo(() => {
-    if (Array.isArray(rawPlans) && rawPlans.length > 0) {
-      const byDuration = new Map();
-      rawPlans.forEach((p) => {
-        const duration = Number(p.duration) || (/12/.test(p.title || '') ? 12 : /6/.test(p.title || '') ? 6 : 1);
-        const students = Number(p.students) || 1;
-        const key = `${duration}-${students}`;
-        byDuration.set(key, { ...p, duration, students });
+  // Find plans for selected studentCount
+  const matchedPlans = useMemo(() => {
+    const forStudents = rawPlans.filter((p) => Number(p.students) === studentCount);
+    const p12 = forStudents.find((p) => Number(p.duration) === 12);
+    const p6 = forStudents.find((p) => Number(p.duration) === 6);
+
+    const plansList = [];
+
+    if (p12) {
+      const totalPrice = Number(p12.price) || 540;
+      const monthly = totalPrice / 12;
+      const perSession = Number(p12.priceLesson) || (monthly / 4);
+      plansList.push({
+        id: p12.id || '12m',
+        title: p12.title || '12 Month Membership',
+        duration: 12,
+        monthly,
+        perSession,
+        sessions: 38,
+        joiningFee: Number(p12.joiningFee) || 0,
+        raw: p12,
+        isFeatured: true
       });
-      return [...byDuration.values()];
+    } else {
+      plansList.push({
+        id: '12m',
+        title: '12 Month Membership',
+        duration: 12,
+        monthly: 45 * studentCount,
+        perSession: 11.25,
+        sessions: 38,
+        joiningFee: 0,
+        raw: null,
+        isFeatured: true
+      });
     }
-    return [
-      { id: '12m', title: '12-month plan', duration: 12, students: 1, price: 51.99 * 12, sessions: 38, joiningFee: 0 },
-      { id: '6m', title: '6-month plan', duration: 6, students: 1, price: 61.99 * 6, sessions: 19, joiningFee: 0 }
-    ];
-  }, [rawPlans]);
 
-  // Build a plan card model for n students
-  const buildPlan = (duration, n) => {
-    const explicit = basePlans.find((p) => p.duration === duration && p.students === n);
-    const base =
-      explicit ||
-      basePlans.find((p) => p.duration === duration && p.students === 1) ||
-      basePlans.find((p) => p.duration === duration);
-    if (!base) return null;
+    if (p6) {
+      const totalPrice = Number(p6.price) || 300;
+      const monthly = totalPrice / 6;
+      const perSession = Number(p6.priceLesson) || (monthly / 4);
+      plansList.push({
+        id: p6.id || '6m',
+        title: p6.title || '6 Month Membership',
+        duration: 6,
+        monthly,
+        perSession,
+        sessions: 19,
+        joiningFee: Number(p6.joiningFee) || 0,
+        raw: p6,
+        isFeatured: false
+      });
+    } else {
+      plansList.push({
+        id: '6m',
+        title: '6 Month Membership',
+        duration: 6,
+        monthly: 50 * studentCount,
+        perSession: 12.5,
+        sessions: 19,
+        joiningFee: 15 * studentCount,
+        raw: null,
+        isFeatured: false
+      });
+    }
 
-    const mult = explicit ? 1 : getMultiplier(n);
-    const total = Number(base.price) * mult;
-    const monthly = total / duration;
-    const sessions =
-      Number(base.sessions || base.totalSessions || base.totalLessons) ||
-      Math.round(duration * 4 * 0.79);
-    const perSession = base.priceLesson
-      ? Number(base.priceLesson) * mult
-      : total / ((sessions * (explicit ? 1 : n)) || 1);
-    const joiningFee = Number(base.joiningFee) || 0;
+    return plansList;
+  }, [rawPlans, studentCount]);
 
-    return {
-      id: base.id,
-      title: base.title || `${duration}-month plan`,
-      duration,
-      monthly,
-      perSession,
-      sessions,
-      joiningFee: joiningFee * n,
-      raw: base
-    };
+  // Starter pack from venue
+  const starter = venue?.starterPacks?.[0];
+  const starterPrice = (Number(starter?.price) || 89.99) * studentCount;
+  const starterOld = starterPrice > 49.99 * studentCount ? 89.99 * studentCount : null;
+  const starterDesc = starter?.description || 'Includes uniform, skills ball, Skills Tracker Book & Drawstring bag';
+  const starterItems = starter?.items || ['Samba kit', 'Road to Rio Skills Tracker', 'Skills Ball', 'Drawstring bag'];
+
+  const noJoiningFee = matchedPlans.every((p) => !p.joiningFee);
+
+  const venueIdVal = venue?.venueId || venue?.id || '5';
+
+  const handleBookTrial = () => {
+    navigate(`/book-trial?venue=${venueIdVal}`);
   };
 
-  const durations = useMemo(
-    () => [...new Set(basePlans.map((p) => p.duration))].sort((a, b) => b - a).slice(0, 2),
-    [basePlans]
-  );
-
-  const plans = useMemo(
-    () => durations.map((d) => buildPlan(d, studentCount)).filter(Boolean),
-    [durations, studentCount, basePlans]
-  );
-
-  // Footer: show prices for 2 children (or selected count if > 1)
-  const footerCount = studentCount > 1 ? studentCount : 2;
-  const footerPrices = useMemo(
-    () => durations.map((d) => buildPlan(d, footerCount)).filter(Boolean),
-    [durations, footerCount, basePlans]
-  );
-
-  const noJoiningFee = plans.every((p) => !p.joiningFee);
-
-  // Starter pack
-  const starter = venue?.starterPacks?.[0];
-  const starterPrice = (Number(starter?.price) || 49.99) * studentCount;
-  const starterOld =
-    (Number(starter?.originalPrice || starter?.mrp || starter?.comparePrice) || 89.99) * (starter?.originalPrice || starter?.mrp || starter?.comparePrice ? studentCount : studentCount);
-  const starterDesc = starter?.description || 'Kit, skills ball, Skills Tracker + bag';
-
-  const openBooking = (plan) =>
-    openModal('booking', {
-      venueName,
-      planName: plan?.title,
-      planPrice: plan ? fmt(plan.monthly) : undefined,
-      className: activeClass?.className,
-      classTitle: activeClass?.className,
-      level: activeClass?.level,
-      time: activeClass?.time,
-      day: activeClass?.day,
-      termName: activeTerm?.name,
-      students: childLabel(studentCount)
-    });
+  const handleBookMembership = (plan) => {
+    const planIdParam = plan?.raw?.id ? `&planId=${plan.raw.id}` : '';
+    navigate(`/book-membership?venue=${venueIdVal}${planIdParam}&students=${studentCount}`);
+  };
 
   const featuresFor = (plan, isFeatured) => {
     const list = [`${plan.sessions} weekly sessions`];
-    if (isFeatured) {
-      list.push('£20 holiday camp credit', 'First pick of camps', 'Monthly by Direct Debit');
+
+    if (plan.raw?.membershipPackageDetails) {
+      const parsed = parsePerks(plan.raw.membershipPackageDetails);
+      parsed.forEach((item) => list.push(item));
+    } else if (isFeatured) {
+      list.push('Full Week Free Holiday Camp Pass', '20% Member Discount on all Camps');
     } else {
-      list.push('Shorter commitment', 'Monthly by Direct Debit');
-      list.push(plan.joiningFee ? `${fmt(plan.joiningFee)} joining fee` : 'No joining fee');
+      list.push('3 Days Free Holiday Camp Pass', '15% Member Discount on all Camps');
     }
+
+    list.push('Monthly by Direct Debit');
+    list.push(plan.joiningFee === 0 ? 'No joining fee (£0)' : `${fmt(plan.joiningFee)} joining fee`);
+
     return list;
   };
 
   return (
-    <section className="py-12 sm:py-16 bg-white text-[#042C89] font-sans">
-      <div className="max-w-[1000px] mx-auto px-4">
+    <section id="prices" className="py-12 sm:py-16 bg-white text-[#042C89] font-sans">
+      <div className="max-w-[1050px] mx-auto px-4">
         {/* Heading */}
         <div className="text-center">
           <span className="block text-[13px] font-semibold uppercase tracking-wider text-[#0A6BD6]">
@@ -164,7 +178,7 @@ export function VenueSubscriptionPlans() {
             <span className="gasoek relative text-[38px] sm:text-[50px] leading-tight text-[#0DD180]">
               {noJoiningFee
                 ? 'No joining fee.'
-                : `Joining fee ${fmt(Math.min(...plans.map((p) => p.joiningFee)))}`}
+                : `Joining fee from ${fmt(Math.min(...matchedPlans.map((p) => p.joiningFee)))}`}
             </span>
           </div>
           <p className="poppins text-[15px] sm:text-[17px] text-slate-600 mt-5">
@@ -172,7 +186,7 @@ export function VenueSubscriptionPlans() {
           </p>
         </div>
 
-        {/* Child toggle */}
+        {/* Child count toggle */}
         <div className="flex justify-center mt-6">
           <div className="inline-flex items-center bg-white border border-slate-200 rounded-full p-1.5 shadow-sm">
             {studentOptions.map((n) => (
@@ -181,7 +195,7 @@ export function VenueSubscriptionPlans() {
                 type="button"
                 onClick={() => setStudentCount(n)}
                 className={`poppins px-6 sm:px-8 py-2.5 rounded-full text-[14.5px] font-semibold transition-all cursor-pointer ${
-                  studentCount === n ? 'bg-[#042C89] text-white' : 'text-[#042C89] hover:bg-slate-50'
+                  studentCount === n ? 'bg-[#042C89] text-white shadow-xs' : 'text-[#042C89] hover:bg-slate-50'
                 }`}
               >
                 {childLabel(n)}
@@ -192,11 +206,11 @@ export function VenueSubscriptionPlans() {
 
         {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-8 items-stretch">
-          {plans.map((plan, idx) => {
-            const featured = idx === 0;
+          {matchedPlans.map((plan) => {
+            const featured = plan.isFeatured;
             return (
               <div
-                key={plan.id || idx}
+                key={plan.id}
                 className={`poppins rounded-[28px] p-6 flex flex-col justify-between ${
                   featured
                     ? 'bg-[#042C89] text-white shadow-xl md:-my-3'
@@ -233,73 +247,94 @@ export function VenueSubscriptionPlans() {
 
                   <ul className="space-y-3">
                     {featuresFor(plan, featured).map((f, i) => (
-                      <li key={i} className="flex items-center gap-2.5 text-[14.5px] font-medium">
-                        <Check className="w-4 h-4 shrink-0 text-[#0DD180]" strokeWidth={3} />
+                      <li key={i} className="flex items-start gap-2.5 text-[14px] font-medium leading-snug">
+                        <Check className="w-4 h-4 shrink-0 text-[#0DD180] mt-0.5" strokeWidth={3} />
                         <span>{f}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => openBooking(plan)}
-                  className={`mt-7 w-full py-3.5 rounded-full text-[15px] font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                    featured
-                      ? 'bg-[#0DD180] hover:bg-[#0bb86f] text-[#042C89]'
-                      : 'bg-white border-2 border-[#042C89] text-[#042C89] hover:bg-[#042C89] hover:text-white'
-                  }`}
-                >
-                  Start with a FREE trial
-                  {featured && <ArrowRight className="w-4 h-4" />}
-                </button>
+                <div className="mt-7 space-y-2.5">
+                  <button
+                    type="button"
+                    onClick={handleBookTrial}
+                    className={`w-full py-3.5 rounded-full text-[15px] font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                      featured
+                        ? 'bg-[#0DD180] hover:bg-[#0bb86f] text-[#042C89]'
+                        : 'bg-[#042C89] hover:bg-[#031f63] text-white'
+                    }`}
+                  >
+                    Start with a FREE trial
+                    {featured && <ArrowRight className="w-4 h-4" />}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleBookMembership(plan)}
+                    className={`w-full py-2.5 rounded-full text-[13.5px] font-semibold flex items-center justify-center transition-all cursor-pointer ${
+                      featured
+                        ? 'border border-white/30 text-white hover:bg-white/10'
+                        : 'border border-[#042C89] text-[#042C89] hover:bg-[#042C89]/5'
+                    }`}
+                  >
+                    Book membership directly
+                  </button>
+                </div>
               </div>
             );
           })}
 
-          {/* Starter pack */}
-          <div className="poppins rounded-[28px] p-6 bg-white border border-slate-200 shadow-sm flex flex-col">
-            <h3 className="gasoek text-[20px] leading-tight text-[#042C89]">Starter pack</h3>
-            <p className="text-[13px] text-slate-500 mt-1">{starterDesc}</p>
+          {/* Starter pack card */}
+          <div className="poppins rounded-[28px] p-6 bg-white border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="gasoek text-[20px] leading-tight text-[#042C89]">Starter Pack</h3>
+                <span className="bg-[#E6F4FB] text-[#042C89] text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                  Official Kit
+                </span>
+              </div>
+              <p className="text-[13px] text-slate-500 mt-2">{starterDesc}</p>
 
-            <div className="flex-1 flex items-center justify-center py-4 min-h-[160px]">
-              <img
-                src={STARTER_PACK_IMG}
-                alt="Starter pack box"
-                className="max-h-48 w-auto object-contain"
-                loading="lazy"
-              />
+              <div className="flex items-center justify-center py-4 my-2">
+                <img
+                  src={STARTER_PACK_IMG}
+                  alt="Starter pack box"
+                  className="max-h-40 w-auto object-contain drop-shadow-md"
+                  loading="lazy"
+                />
+              </div>
+
+              <div className="space-y-1.5 mb-4">
+                {starterItems.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-2 text-xs text-slate-700 font-medium">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#0DD180]" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="flex items-baseline gap-2">
-              <span className="gasoek text-[32px] leading-none text-[#042C89]">{fmt(starterPrice)}</span>
-              {starterOld > starterPrice && (
-                <span className="text-[14px] text-slate-400 line-through">{fmt(starterOld)}</span>
-              )}
+            <div className="pt-3 border-t border-slate-100">
+              <div className="flex items-baseline gap-2">
+                <span className="gasoek text-[32px] leading-none text-[#042C89]">{fmt(starterPrice)}</span>
+                {starterOld && (
+                  <span className="text-[14px] text-slate-400 line-through">{fmt(starterOld)}</span>
+                )}
+              </div>
+              <p className="text-[12px] font-semibold text-[#0A9F5F] mt-1.5">
+                Included with membership when you join after your trial.
+              </p>
             </div>
-            <p className="text-[13px] font-semibold text-[#0A9F5F] mt-2">
-              When you join within 24 hours of your FREE trial.
-            </p>
           </div>
         </div>
 
         {/* Footer note */}
         <p className="poppins text-center text-[12px] text-slate-500 mt-8">
-          First month is pro-rata. Then monthly by Direct Debit on the 1st.{' '}
-          {footerPrices.length > 0 && (
-            <>
-              {footerCount} children:{' '}
-              {footerPrices.map((p, i) => (
-                <span key={p.id || i}>
-                  {fmt(p.monthly)} ({p.duration} months)
-                  {i < footerPrices.length - 1 ? ' or ' : ''}
-                </span>
-              ))}
-              .
-            </>
-          )}
+          First month is pro-rata. Then monthly by Direct Debit on the 1st of every month. Sibling and family bundles available.
         </p>
       </div>
     </section>
   );
 }
+
+export default VenueSubscriptionPlans;
