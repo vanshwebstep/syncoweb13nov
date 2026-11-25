@@ -2,10 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Container } from '../../../components/common/Container';
 import { useModal } from '../../../context/ModalContext';
-import playBg from 'https://webstepdev.com/demo/syncoWebsiteImages/home/cta.png';
+import playBg from 'https://webstepdev.com/demo/syncoWebsiteImages/home/bg-yellow-green-texture.svg';
 import ctaMobileBg from 'https://webstepdev.com/demo/syncoWebsiteImages/home/ctamobile.png';
-import playImgLeft from 'https://webstepdev.com/demo/syncoWebsiteImages/home/picture_2.png';
-import playImgRight from 'https://webstepdev.com/demo/syncoWebsiteImages/home/picture.png';
+import playImgLeft from 'https://webstepdev.com/demo/syncoWebsiteImages/home/picture_2.svg';
+import playImgRight from 'https://webstepdev.com/demo/syncoWebsiteImages/home/picture.svg';
 import yellow from 'https://webstepdev.com/demo/syncoWebsiteImages/yellow.png';
 
 const steps = [

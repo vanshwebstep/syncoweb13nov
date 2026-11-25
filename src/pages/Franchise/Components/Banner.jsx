@@ -48,13 +48,13 @@ export function HeroBanner() {
           />
 
           {/* Sub-heading */}
-          <h2 className="gasoek uppercase text-[24px] sm:text-[32px] lg:text-[44px] leading-[1.15] my-4 md:my-5">
-            <span className="block text-[#2A1B6B]">Bring back the</span>
+          <h2 className="gasoek uppercase text-[24px] sm:text-[32px] lg:text-[44px] leading-[1.15] my-4 md:my-6">
+            <span className="block text-[#152A8A]">Bring back the</span>
             <span className="block text-[#FFD93D]">Beautiful game.</span>
           </h2>
 
           {/* Paragraph */}
-          <p className="poppins text-white text-[14px] sm:text-[17px] lg:text-[19px] leading-[1.55] mb-6 md:mb-8 max-w-[520px]">
+          <p className="poppins font-semibold text-white text-[14px] sm:text-[17px] lg:text-[19px] leading-[1.55] mb-6 md:mb-8 max-w-[520px]">
             Love coaching, but tired of it not paying? Build a Samba business of
             your own: a full-time living from the game you love.
           </p>
@@ -63,7 +63,7 @@ export function HeroBanner() {
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4">
             <button
               onClick={handleEnquire}
-              className="poppins inline-flex items-center justify-center gap-2 bg-[#FFDE14] md:bg-[#FFD93D] text-[#2A1B6B] font-bold text-[15px] lg:text-[17px] w-full sm:w-auto px-7 py-3.5 rounded-full hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+              className="poppins inline-flex items-center justify-center gap-2 bg-[#FFDE14] md:bg-[#FFD93D] text-[#152A8A] font-bold text-[15px] lg:text-[17px] w-full sm:w-auto px-7 py-3.5 rounded-full hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
             >
               Book a discovery call
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -73,7 +73,7 @@ export function HeroBanner() {
 
             <button
               onClick={handleProspectus}
-              className="poppins inline-flex items-center justify-center border border-white text-white hover:bg-white/10 font-semibold text-[15px] lg:text-[17px] w-full sm:w-auto px-7 py-3.5 rounded-full hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+              className="poppins inline-flex items-center justify-center border border-2 border-white text-white hover:bg-white/10 font-semibold text-[15px] lg:text-[17px] w-full sm:w-auto px-7 py-3.5 rounded-full hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
             >
               Download the prospectus
             </button>

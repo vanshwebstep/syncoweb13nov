@@ -3,7 +3,7 @@ import { Container } from "../../../components/common/Container";
 
 const BASE = "https://webstepdev.com/demo/syncoWebsiteImages/franchise";
 
-const BG_IMAGE = `${BASE}/ownbusinessbg.png`;
+const BG_IMAGE = `${BASE}/ownbusinessbg.svg`;
 const BG_IMAGE_MOBILE = `${BASE}/four_mb.png`;
 const FOOTBALL_IMAGE = `${BASE}/throwingfootball.png`;
 

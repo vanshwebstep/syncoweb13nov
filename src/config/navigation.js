@@ -6,6 +6,7 @@ export const TOPBAR_CONFIG = {
   phoneFormatted: "020 7205 2723",
   location: "UK",
   googleMapsUrl: "https://maps.app.goo.gl/QvzZpJrmoQo79WJFA",
+  ratingurl: "https://www.google.com/maps/place/?q=place_id:ChIJafINar4PdkgRiqEM52XuP-I",
   email: "admin@sambasoccerschools.com",
   memberPortalUrl: "https://parent-dash.netlify.app/"
 };
@@ -13,9 +14,9 @@ export const TOPBAR_CONFIG = {
 export const NAV_LINKS = [
   { label: "Home", path: "/" },
   { label: "Find a Class", path: "/find-a-class" },
-  { label: "Programmes", path: "/road-to-rio", hasArrow: true },
+  { label: "Programmes", path: "/road-to-rio", hasArrow: true, hasDropdown: true },
   { label: "Why Samba", path: "/why-samba" },
-  { label: "Franchise", path: "/franchise", hasArrow: true },
+  { label: "Franchise", path: "/franchise" },
   { label: "Contact", path: "/contact" }
 ];
 
@@ -28,7 +29,7 @@ export const FOOTER_LINKS = {
     { label: "One-to-One", path: "/one-to-one" }
   ],
   aboutUs: [
-    { label: "We Samba", path: "/why-samba" },
+    { label: "Why Samba", path: "/why-samba" },
     { label: "Franchise", path: "/contact?type=franchise" },
     { label: "Work With Us", path: "/venue-managers" },
     { label: "Blog", path: "/blog" }
@@ -49,7 +50,7 @@ export const MOBILE_FOOTER_LINKS = {
     { label: "One-to-One", path: "/one-to-one" }
   ],
   aboutUs: [
-    { label: "We Samba", path: "/why-samba" },
+    { label: "Why Samba", path: "/why-samba" },
     { label: "Franchise", path: "/contact?type=franchise" },
     { label: "Work With Us", path: "/venue-managers" },
     { label: "Blog", path: "/blog" }

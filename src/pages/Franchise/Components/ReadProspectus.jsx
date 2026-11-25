@@ -3,7 +3,7 @@ import { Container } from "../../../components/common/Container";
 import { useToast } from "../../../components/common/Toaster";
 
 const BASE = "https://webstepdev.com/demo/syncoWebsiteImages/franchise";
-const BG_IMAGE = `${BASE}/prospectusbg.png`;
+const BG_IMAGE = `https://webstepdev.com/demo/syncoWebsiteImages/coaching.png`;
 const BOOK_IMAGE = `${BASE}/prospectusmainpic.png`;
 
 export function ReadProspectus() {

@@ -51,7 +51,7 @@ export function RoadToRioAdventure() {
                     <img
                       src={BLUE_LINE}
                       alt=""
-                      className="adventure-blue-line absolute -bottom-3 left-0 w-full h-auto pointer-events-none"
+                      className="adventure-blue-line absolute -bottom-8 left-0 w-full h-auto pointer-events-none"
                     />
                   </span>
                 </h2>

@@ -3,7 +3,7 @@ import { Container } from "../../../components/common/Container";
 import { useToast } from "../../../components/common/Toaster";
 
 const BASE = "https://webstepdev.com/demo/syncoWebsiteImages/franchise";
-const BG_IMAGE = `${BASE}/ownershipbg.png`;
+const BG_IMAGE = `${BASE}/ownershipbg.svg`;
 const ROUND_CHECK = `${BASE}/greenroundcheck.png`;
 
 const inputClass =
@@ -256,10 +256,10 @@ export function RoadToOwnershipForm() {
             {step !== 5 && (
               <div className="flex bg-[#F6F8FC] rounded-full p-1.5 mb-6">
                 <div
-                  className={` md:flex-1 md:flex hidden text-center poppins font-bold text-[13px] md:text-[15px] py-2.5 rounded-full transition-colors ${
-                    tab1Active ? "bg-[#042C89] text-white" : "text-[#7A8AA8]"
-                  }`}
-                >
+  className={`md:flex-1 md:flex hidden items-center justify-center text-center poppins font-bold text-[13px] md:text-[15px] py-2.5 rounded-full transition-colors ${
+    tab1Active ? "bg-[#042C89] text-white" : "text-[#7A8AA8]"
+  }`}
+>
                   1. Your application
                 </div>
                 <div

@@ -3,7 +3,7 @@ import { Container } from "../../../components/common/Container";
 import { useModal } from "../../../context/ModalContext";
 
 const BASE = "https://webstepdev.com/demo/syncoWebsiteImages/franchise";
-const BG_IMAGE = `${BASE}/abusinessoftheirownbg.png`;
+const BG_IMAGE = `${BASE}/abusinessoftheirownbg.svg`;
 const BG_IMAGE_MOBILE = `${BASE}/fourbg_mb.png`;
 
 // DEMO IMAGES (replace with original coach photos later)

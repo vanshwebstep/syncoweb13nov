@@ -4,7 +4,7 @@ import { useModal } from '../../../context/ModalContext';
 
 // Images
 import partyStartedImg from 'https://webstepdev.com/demo/syncoWebsiteImages/birthday-party/party_started.png';
-import partyStartedImgbg from 'https://webstepdev.com/demo/syncoWebsiteImages/final-cta.png';
+import partyStartedImgbg from 'https://webstepdev.com/demo/syncoWebsiteImages/final-bg-yellow-green-texture.svg';
 
 export function ReadyToStart() {
   const { openModal } = useModal();

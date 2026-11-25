@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Check } from 'lucide-react';
+import { ChevronRight, Check, Mail, Send } from 'lucide-react';
 import { Container } from '../../../components/common/Container';
-import { useToast } from '../../../components/common/Toaster';
 
 const BASE = 'https://webstepdev.com/demo/syncoWebsiteImages';
 const bgTexture = `${BASE}/birthday-party/what_happend_banner.png`;
@@ -26,7 +25,7 @@ const Ico = ({ name, className = '' }) => (
 /* ====== DATA ====== */
 // Links apne routes ke hisaab se badal lena
 const TOPICS = [
-  { icon: 'cal', tint: '#FFDE14', title: 'Book a FREE trial', desc: 'Find a class near you and book online.', cta: 'Find a class', to: '/venues' },
+  { icon: 'cal', tint: '#FFDE14', title: 'Book a FREE trial', desc: 'Find a class near you and book online.', cta: 'Find a class', to: '/find-a-class' },
   { icon: 'card', tint: '#E3F8EE', title: 'Memberships and payments', desc: 'Manage your plan, payments and kit in Samba Connect.', cta: 'Log in', to: '#' },
   { icon: 'sun', tint: '#E6F4FB', title: 'Holiday camps', desc: 'Dates, prices and booking for the next camp.', cta: 'See camps', to: '/holiday-camps' },
   { icon: 'cake', tint: '#FFF1E3', title: 'Birthday parties', desc: 'Plan a Samba party. We come to you.', cta: 'Enquire', to: '/birthday-party' },
@@ -48,16 +47,15 @@ const MAP_SRC = 'https://www.google.com/maps?q=60+St+Martin%27s+Lane+Covent+Gard
 const MAP_LINK = 'https://www.google.com/maps/search/?api=1&query=60+St+Martin%27s+Lane+Covent+Garden+London+WC2N+4JS';
 
 /* ====== STYLES ====== */
-const labelCls = "poppins mb-1.5 flex items-center justify-between font-bold text-[#042C89] text-[12px] lg:text-[13px]";
+const labelCls = "poppins mb-2 flex items-center justify-between font-bold text-[#042C89] text-[13px] sm:text-[14px]";
 const inputCls = (err) =>
-  `poppins w-full rounded-[12px] bg-[#F4F6FB] border px-3.5 py-3 text-[13px] lg:text-[14.5px] text-[#042C89] placeholder-[#9AA3B5] outline-none transition-all ${
-    err ? 'border-red-500' : 'border-[#E8ECF5] focus:border-[#00A6E3] focus:bg-white'
+  `poppins w-full h-[50px] sm:h-[52px] rounded-xl bg-[#F4F6FB] border px-4 text-[14px] sm:text-[15px] text-[#042C89] placeholder-[#94A3B8] outline-none transition-all ${
+    err ? 'border-red-400 focus:border-red-500' : 'border-[#E2E8F0] focus:border-[#00A6E3] focus:bg-white'
   }`;
 
-const Req = () => <span className="text-red-500 ms-1">*</span>;
+const Req = () => <span className="text-red-500 font-bold ms-1">*</span>;
 
 export function LocationSection() {
-  const toast = useToast();
   const [formData, setFormData] = useState({
     topic: '',
     name: '',
@@ -69,6 +67,7 @@ export function LocationSection() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const set = (name, value) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -102,6 +101,7 @@ export function LocationSection() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitError('');
     const errs = validateForm();
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
@@ -143,24 +143,26 @@ export function LocationSection() {
       }
 
       if (response.ok && data?.status !== false) {
-        toast.success(data?.message || 'Thank you! Your message has been sent successfully.');
         setSubmitted(true);
         setFormData({ topic: '', name: '', phone: '', email: '', child: '', message: '' });
         setErrors({});
-        setTimeout(() => setSubmitted(false), 5000);
+        // Focus user on the success message
+        const el = document.getElementById('contact-form');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       } else {
-        toast.error(data?.message || 'Something went wrong. Please try again.');
+        const msg = data?.message || 'Something went wrong. Please try again.';
+        setSubmitError(msg);
       }
     } catch (error) {
       console.error('Contact form submission error:', error);
-      toast.error('Something went wrong. Please try again.');
+      setSubmitError('Something went wrong. Please check your network and try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const Err = ({ field }) =>
-    errors[field] ? <p className="poppins mt-1 text-[12px] text-red-500">{errors[field]}</p> : null;
+    errors[field] ? <p className="poppins mt-1.5 text-[12px] font-medium text-red-500">{errors[field]}</p> : null;
 
   return (
     <div id="location-section" className="w-full">
@@ -218,53 +220,92 @@ export function LocationSection() {
         <Container>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 max-w-[1100px] mx-auto items-start">
             {/* ===== Form ===== */}
-            <div id="contact-form" className="lg:col-span-7 bg-white rounded-[24px] p-6 sm:p-8 lg:p-9 border border-[#E8ECF5] shadow-[0_10px_40px_rgba(0,0,0,0.04)]">
+            <div id="contact-form" className="lg:col-span-7 bg-white rounded-[32px] sm:rounded-[36px] p-7 sm:p-10 lg:p-12 border border-[#E9EFF8] shadow-[0_12px_40px_rgba(4,44,137,0.05)]">
               {submitted ? (
-                <div className="bg-[#E8FBF2] border border-[#0DD180] text-[#042C89] rounded-2xl p-6 text-center my-8 poppins">
-                  <div className="w-12 h-12 bg-[#0DD180] text-white rounded-full flex items-center justify-center mx-auto mb-3 font-bold text-xl">✓</div>
-                  <h4 className="font-bold text-lg mb-1">Message Sent!</h4>
-                  <p className="text-sm text-gray-600">Thank you for reaching out. Our team will get back to you shortly.</p>
+                <div className="py-10 sm:py-14 text-center poppins">
+                  <div className="w-16 h-16 bg-[#0DD180] text-[#042C89] rounded-full flex items-center justify-center mx-auto mb-5 shadow-sm">
+                    <Check className="w-8 h-8 stroke-[3.5]" />
+                  </div>
+                  <h4 className="font-bold text-[22px] sm:text-[26px] text-[#042C89] mb-3">
+                    Message Sent!
+                  </h4>
+                  <p className="text-[15px] sm:text-[16px] text-[#475569] max-w-md mx-auto leading-relaxed">
+                    Thank you for your message. Our team will be in touch within one working day.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSubmitted(false);
+                      setFormData({ topic: '', name: '', phone: '', email: '', child: '', message: '' });
+                    }}
+                    className="mt-8 inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-[#042C89] hover:bg-[#061838] text-white font-bold text-[15px] transition-all cursor-pointer shadow-sm active:scale-[0.99]"
+                  >
+                    Send another message
+                  </button>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} noValidate>
-                  <h3 className="poppins font-bold text-[#042C89] text-[18px] lg:text-[22px] leading-tight">Send us a message</h3>
-                  <p className="poppins mt-1 text-[#797A88] text-[12px] lg:text-[13px]">We’ll get back to you by email or phone.</p>
+                  <h3 className="poppins font-bold text-[#042C89] text-[24px] sm:text-[28px] tracking-tight leading-tight">
+                    Send us a message
+                  </h3>
+                  <p className="poppins mt-1.5 text-[#797A88] text-[14px] sm:text-[15px]">
+                    We’ll get back to you by email or phone.
+                  </p>
 
                   {/* Topic chips */}
-                  <p className="poppins mt-6 mb-2 font-bold text-[#042C89] text-[12px] lg:text-[13px]">What’s it about?</p>
-                  <div className="flex flex-wrap gap-2.5">
-                    {ABOUT_OPTIONS.map((o) => {
-                      const active = formData.topic === o;
-                      return (
-                        <button
-                          key={o}
-                          type="button"
-                          onClick={() => set('topic', active ? '' : o)}
-                          className={`poppins inline-flex items-center gap-1.5 rounded-full border px-4 py-2 font-bold text-[11px] lg:text-[12px] cursor-pointer transition-all ${
-                            active ? 'bg-[#042C89] border-[#042C89] text-white' : 'bg-white border-[#E8ECF5] text-[#042C89] hover:border-[#C9D3F0]'
-                          }`}
-                        >
-                          {active && <Check className="w-3 h-3 text-[#FFDE14] stroke-[3.5]" />}
-                          {o}
-                        </button>
-                      );
-                    })}
+                  <div className="mt-7 sm:mt-8">
+                    <p className="poppins font-bold text-[#042C89] text-[13px] sm:text-[14px] mb-3">
+                      What’s it about?
+                    </p>
+                    <div className="flex flex-wrap gap-2 sm:gap-2.5">
+                      {ABOUT_OPTIONS.map((o) => {
+                        const active = formData.topic === o;
+                        return (
+                          <button
+                            key={o}
+                            type="button"
+                            onClick={() => set('topic', active ? '' : o)}
+                            className={`poppins inline-flex items-center gap-1.5 rounded-full border px-4 sm:px-4.5 py-2 text-[13px] sm:text-[14px] cursor-pointer transition-all ${
+                              active
+                                ? 'bg-[#042C89] border-[#042C89] text-white font-bold shadow-xs'
+                                : 'bg-white border-[#D0DBEA] text-[#042C89] font-medium hover:border-[#042C89]'
+                            }`}
+                          >
+                            {active && <Check className="w-3.5 h-3.5 text-[#FFDE14] stroke-[3.5]" />}
+                            {o}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
 
-                  <div className="mt-5 space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Form fields with generous open spacing */}
+                  <div className="mt-7 sm:mt-8 space-y-5 sm:space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                       <div>
                         <label className={labelCls}>
                           <span>Your name<Req /></span>
                         </label>
-                        <input type="text" placeholder="First and last name" value={formData.name} onChange={(e) => set('name', e.target.value)} className={inputCls(errors.name)} />
+                        <input
+                          type="text"
+                          placeholder="Sarah Smith"
+                          value={formData.name}
+                          onChange={(e) => set('name', e.target.value)}
+                          className={inputCls(errors.name)}
+                        />
                         <Err field="name" />
                       </div>
                       <div>
                         <label className={labelCls}>
                           <span>Phone<Req /></span>
                         </label>
-                        <input type="tel" placeholder="07…" value={formData.phone} onChange={(e) => set('phone', e.target.value)} className={inputCls(errors.phone)} />
+                        <input
+                          type="tel"
+                          placeholder="07.."
+                          value={formData.phone}
+                          onChange={(e) => set('phone', e.target.value)}
+                          className={inputCls(errors.phone)}
+                        />
                         <Err field="phone" />
                       </div>
                     </div>
@@ -274,8 +315,14 @@ export function LocationSection() {
                         <span>Email<Req /></span>
                       </label>
                       <div className="relative">
-                        <Ico name="mail" className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" />
-                        <input type="email" placeholder="you@email.com" value={formData.email} onChange={(e) => set('email', e.target.value)} className={`${inputCls(errors.email)} pl-10`} />
+                        <Mail className="w-4 h-4 text-[#8A95A5] absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        <input
+                          type="email"
+                          placeholder="you@email.com"
+                          value={formData.email}
+                          onChange={(e) => set('email', e.target.value)}
+                          className={`${inputCls(errors.email)} pl-11`}
+                        />
                       </div>
                       <Err field="email" />
                     </div>
@@ -283,41 +330,68 @@ export function LocationSection() {
                     <div>
                       <label className={labelCls}>
                         <span>Child’s name and venue</span>
-                        <span className="font-semibold text-[#797A88] text-[10.5px] lg:text-[11.5px]">Optional</span>
+                        <span className="font-semibold text-[#8A95A5] text-[12px]">Optional</span>
                       </label>
-                      <input type="text" placeholder="e.g. Leo, Chelsea Academy" value={formData.child} onChange={(e) => set('child', e.target.value)} className={inputCls(false)} />
+                      <input
+                        type="text"
+                        placeholder="e.g. Leo, Chelsea Academy"
+                        value={formData.child}
+                        onChange={(e) => set('child', e.target.value)}
+                        className={inputCls(false)}
+                      />
                     </div>
 
                     <div>
                       <label className={labelCls}>
                         <span>Message<Req /></span>
                       </label>
-                      <textarea rows={5} placeholder="How can we help?" value={formData.message} onChange={(e) => set('message', e.target.value)} className={`${inputCls(errors.message)} resize-none`} />
+                      <textarea
+                        rows={4}
+                        placeholder="How can we help?"
+                        value={formData.message}
+                        onChange={(e) => set('message', e.target.value)}
+                        className={`${inputCls(errors.message)} min-h-[115px] sm:min-h-[125px] resize-none py-3.5`}
+                      />
                       <Err field="message" />
                     </div>
                   </div>
 
+                  {submitError && (
+                    <div className="mt-5 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm font-medium text-center poppins">
+                      {submitError}
+                    </div>
+                  )}
+
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className={`poppins mt-6 w-full inline-flex items-center justify-center gap-2 bg-[#0DD180] hover:bg-[#0bb86f] text-[#042C89] font-bold text-[14px] lg:text-[16px] py-4 rounded-full transition-all duration-200 active:scale-[0.99] cursor-pointer ${
+                    className={`poppins mt-7 w-full h-[52px] sm:h-[56px] inline-flex items-center justify-center gap-2 bg-[#0DD180] hover:bg-[#00c853] text-[#042C89] font-bold text-[16px] sm:text-[17px] rounded-full transition-all duration-200 active:scale-[0.99] cursor-pointer shadow-sm ${
                       isSubmitting ? 'opacity-75 cursor-not-allowed' : ''
                     }`}
                   >
-                    <Ico name="send" className="w-4 h-4" />
-                    {isSubmitting ? 'Sending...' : 'Send message'}
+                    <Send className="w-4 h-4 text-[#042C89] fill-[#042C89]" />
+                    <span>{isSubmitting ? 'Sending...' : 'Send message'}</span>
                   </button>
 
-                  <p className="poppins mt-3 text-center text-[#797A88] text-[11px] lg:text-[12.5px]">We’ll only use your details to reply to you.</p>
+                  <p className="poppins mt-3.5 text-center text-[#797A88] text-[12px] sm:text-[13px]">
+                    We’ll only use your details to reply to you.
+                  </p>
                 </form>
               )}
             </div>
 
             {/* ===== Sidebar ===== */}
-            <div className="lg:col-span-5 space-y-5">
+        <div className="lg:col-span-5 space-y-5">
               {/* Prefer to talk */}
-              <div className="relative overflow-hidden rounded-[24px] bg-[#042C89] p-6 lg:p-7">
-                <span className="absolute -bottom-14 -right-10 w-[170px] h-[170px] rounded-full bg-[#0DD180]" aria-hidden="true" />
+              <div
+                className="relative overflow-hidden rounded-[24px] p-6 lg:p-7"
+                style={{
+                  backgroundImage: "url('https://webstepdev.com/demo/syncoWebsiteImages/contact/prefertotalkbg.png')",
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'bottom',
+                  backgroundRepeat: 'no-repeat',
+                }}
+              >
                 <h3 className="poppins relative z-10 font-bold text-white text-[18px] lg:text-[20px]">Prefer to talk?</h3>
 
                 <ul className="relative z-10 mt-5 space-y-5">

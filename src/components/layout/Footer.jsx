@@ -3,12 +3,11 @@ import { Link } from 'react-router-dom';
 import { Smartphone, MapPin, Mail, ChevronDown } from 'lucide-react';
 import { FOOTER_LINKS, MOBILE_FOOTER_LINKS, TOPBAR_CONFIG } from '../../config/navigation';
 import { Container } from '../common/Container';
-import { useToast } from '../common/Toaster';
 import './footer-translated.css';
 
 const sssLogo = 'https://webstepdev.com/demo/syncoWebsiteImages/footerLogo.png';
 const sssLogo2 = 'https://webstepdev.com/demo/syncoWebsiteImages/sss-logo.png';
-const coaching = 'https://webstepdev.com/demo/syncoWebsiteImages/coaching.png';
+const coaching = 'https://webstepdev.com/demo/syncoWebsiteImages/Footer.png';
 
 const facebookIcon = 'https://webstepdev.com/demo/syncoWebsiteImages/Facebook.png';
 const instagramIcon = 'https://webstepdev.com/demo/syncoWebsiteImages/Instagram.png';
@@ -19,23 +18,24 @@ const linkedinIcon = 'https://webstepdev.com/demo/syncoWebsiteImages/LinkendIn.p
 const ENDPOINT = '/api/open/join-our-mailing-list';
 
 export function Footer() {
-  const toast = useToast();
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [subscribeStatus, setSubscribeStatus] = useState(null); // { type: 'success' | 'error', message: string }
   const [isProgrammesOpen, setIsProgrammesOpen] = useState(true);
   const [isMobileProgrammesOpen, setIsMobileProgrammesOpen] = useState(true);
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
+    setSubscribeStatus(null);
 
     const trimmedEmail = email.trim();
     if (!trimmedEmail) {
-      toast.error('Email is required');
+      setSubscribeStatus({ type: 'error', message: 'Please enter your email address' });
       return;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-      toast.error('Enter a valid email address');
+      setSubscribeStatus({ type: 'error', message: 'Please enter a valid email address' });
       return;
     }
 
@@ -62,15 +62,18 @@ export function Footer() {
       }
 
       if (response.ok && data?.status !== false) {
-        toast.success(data?.message || 'Thank you for joining our mailing list!');
+        setSubscribeStatus({
+          type: 'success',
+          message: 'Thank you for subscribing to our mailing list'
+        });
         setEmail('');
       } else {
         const errorMsg = data?.message || 'Something went wrong. Please try again.';
-        toast.error(errorMsg);
+        setSubscribeStatus({ type: 'error', message: errorMsg });
       }
     } catch (error) {
       console.error('Mailing list subscription error:', error);
-      toast.error('Something went wrong. Please try again.');
+      setSubscribeStatus({ type: 'error', message: 'Something went wrong. Please try again.' });
     } finally {
       setIsSubmitting(false);
     }
@@ -223,32 +226,47 @@ export function Footer() {
             </div>
 
             {/* Mailing List Banner */}
-            <form
-              onSubmit={handleSubscribe}
-              className="bg-[#e1ecff33] rounded-[24px] xl:rounded-full px-4 sm:px-6 py-3.5 xl:py-5 flex flex-wrap min-[1180px]:flex-nowrap items-center justify-between gap-3 max-w-full"
-            >
-              <span className="text-white font-extrabold text-[17px] min-[1180px]:text-[18px] xl:text-[22px] recline px-1 xl:px-2 shrink min-w-0">
-                Join our Mailing List
-              </span>
+            <div className="space-y-2">
+              <form
+                onSubmit={handleSubscribe}
+                className="bg-[#e1ecff33] rounded-[24px] xl:rounded-full px-4 sm:px-6 py-3.5 xl:py-5 flex flex-wrap min-[1180px]:flex-nowrap items-center justify-between gap-3 max-w-full"
+              >
+                <span className="text-white font-extrabold text-[17px] min-[1180px]:text-[18px] xl:text-[22px] recline px-1 xl:px-2 shrink min-w-0">
+                  Join our Mailing List
+                </span>
 
-              <div className="flex items-center poppins gap-2 shrink-0 max-w-full">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your Email"
-                  className="bg-white text-slate-800 placeholder:text-[#9E9FAA] text-[13px] sm:text-[14px] xl:text-[15px] poppins rounded-full px-4 py-2.5 xl:py-3 outline-none w-[170px] sm:w-[200px] xl:w-[250px] 2xl:w-[280px] shadow-inner"
-                />
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className={`bg-[#0DD180] hover:bg-[#00c853] text-white font-bold text-[13px] sm:text-[14px] xl:text-[15px] px-5 xl:px-6 py-2.5 xl:py-3 rounded-full transition-all shadow-md shrink-0 cursor-pointer whitespace-nowrap ${isSubmitting ? 'opacity-75 cursor-not-allowed' : ''
-                    }`}
+                <div className="flex items-center poppins gap-2 shrink-0 max-w-full">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (subscribeStatus) setSubscribeStatus(null);
+                    }}
+                    placeholder="Enter your Email"
+                    className="bg-white text-slate-800 placeholder:text-[#9E9FAA] text-[13px] sm:text-[14px] xl:text-[15px] poppins rounded-full px-4 py-2.5 xl:py-3 outline-none w-[170px] sm:w-[200px] xl:w-[250px] 2xl:w-[280px] shadow-inner"
+                  />
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className={`bg-[#0DD180] hover:bg-[#00c853] text-white font-bold text-[13px] sm:text-[14px] xl:text-[15px] px-5 xl:px-6 py-2.5 xl:py-3 rounded-full transition-all shadow-md shrink-0 cursor-pointer whitespace-nowrap ${isSubmitting ? 'opacity-75 cursor-not-allowed' : ''
+                      }`}
+                  >
+                    {isSubmitting ? 'Subscribing...' : 'Subscribe'}
+                  </button>
+                </div>
+              </form>
+
+              {subscribeStatus && (
+                <p
+                  className={`text-[14px] xl:text-[15px] font-semibold poppins px-3 transition-all ${
+                    subscribeStatus.type === 'success' ? 'text-[#0DD180]' : 'text-red-300'
+                  }`}
                 >
-                  {isSubmitting ? 'Subscribing...' : 'Subscribe'}
-                </button>
-              </div>
-            </form>
+                  {subscribeStatus.message}
+                </p>
+              )}
+            </div>
 
             {/* Social Icons */}
             <div className="flex items-center gap-3.5 sm:gap-4">
@@ -419,33 +437,48 @@ export function Footer() {
           </div>
 
           {/* 6. Join our Mailing List Card */}
-          <form
-            onSubmit={handleSubscribe}
-            className="bg-[#fefefe1f] rounded-[20px] md:rounded-full p-5 sm:p-6 md:py-3.5 md:px-6 space-y-3.5 md:space-y-0 md:flex md:items-center md:justify-between md:gap-4 mt-4"
-          >
-            <h3 className="text-white font-bold text-[20px] xl:text-[22px] recline whitespace-nowrap">
-              Join our Mailing List
-            </h3>
+          <div className="mt-4 space-y-2">
+            <form
+              onSubmit={handleSubscribe}
+              className="bg-[#fefefe1f] rounded-[20px] md:rounded-full p-5 sm:p-6 md:py-3.5 md:px-6 space-y-3.5 md:space-y-0 md:flex md:items-center md:justify-between md:gap-4"
+            >
+              <h3 className="text-white font-bold text-[20px] xl:text-[22px] recline whitespace-nowrap">
+                Join our Mailing List
+              </h3>
 
-            <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full md:w-auto">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your Email"
-                className="bg-[#F0F2F5] text-slate-800 placeholder:text-[#9E9FAA] text-[15px] poppins rounded-full px-5 py-3.5 w-full sm:w-[260px] outline-none"
-              />
+              <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full md:w-auto">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (subscribeStatus) setSubscribeStatus(null);
+                  }}
+                  placeholder="Enter your Email"
+                  className="bg-[#F0F2F5] text-slate-800 placeholder:text-[#9E9FAA] text-[15px] poppins rounded-full px-5 py-3.5 w-full sm:w-[260px] outline-none"
+                />
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className={`w-full sm:w-auto bg-[#0DD180] hover:bg-[#00c853] text-white font-bold text-[16px] px-6 py-3.5 rounded-full transition-all shadow-md text-center cursor-pointer whitespace-nowrap ${isSubmitting ? 'opacity-75 cursor-not-allowed' : ''
-                  }`}
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className={`w-full sm:w-auto bg-[#0DD180] hover:bg-[#00c853] text-white font-bold text-[16px] px-6 py-3.5 rounded-full transition-all shadow-md text-center cursor-pointer whitespace-nowrap ${isSubmitting ? 'opacity-75 cursor-not-allowed' : ''
+                    }`}
+                >
+                  {isSubmitting ? 'Subscribing...' : 'Subscribe'}
+                </button>
+              </div>
+            </form>
+
+            {subscribeStatus && (
+              <p
+                className={`text-[14px] font-semibold poppins px-3 text-center md:text-left transition-all ${
+                  subscribeStatus.type === 'success' ? 'text-[#0DD180]' : 'text-red-300'
+                }`}
               >
-                {isSubmitting ? 'Subscribing...' : 'Subscribe'}
-              </button>
-            </div>
-          </form>
+                {subscribeStatus.message}
+              </p>
+            )}
+          </div>
 
         </div>
 

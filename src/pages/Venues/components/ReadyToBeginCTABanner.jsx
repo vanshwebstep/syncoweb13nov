@@ -2,7 +2,7 @@ import React from 'react';
 import { Container } from '../../../components/common/Container';
 import { useModal } from '../../../context/ModalContext';
 import ctaPhoto from 'https://webstepdev.com/demo/syncoWebsiteImages/venues/ready.png';
-import final_cta from 'https://webstepdev.com/demo/syncoWebsiteImages/final-cta.png';
+import final_cta from 'https://webstepdev.com/demo/syncoWebsiteImages/final-bg-yellow-green-texture.svg';
 import { useVenue } from '../VenueContext';
 
 export function ReadyToBeginCTABanner() {

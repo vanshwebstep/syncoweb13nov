@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Container } from '../../../components/common/Container';
 import { useModal } from '../../../context/ModalContext';
-import playBg from 'https://webstepdev.com/demo/syncoWebsiteImages/programs/10. Final Trial CTA.png';
+import playBg from 'https://webstepdev.com/demo/syncoWebsiteImages/programs/10. Final Trial bg-yellow-green-texture.svg';
 import playImgLeft from 'https://webstepdev.com/demo/syncoWebsiteImages/programs/picture_blue.png';
 import playImgRight from 'https://webstepdev.com/demo/syncoWebsiteImages/programs/picture_blue2.png';
 

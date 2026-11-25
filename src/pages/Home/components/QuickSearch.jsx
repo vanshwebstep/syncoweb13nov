@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Select from 'react-select';
+import { useNavigate } from 'react-router-dom';
 import { Container } from '../../../components/common/Container';
 import { useModal } from '../../../context/ModalContext';
 import findNearestBg from 'https://webstepdev.com/demo/syncoWebsiteImages/home/find-nearest.png';
@@ -12,6 +13,7 @@ export function QuickSearch() {
   const [venuesList, setVenuesList] = useState([]);
   const [loadingVenues, setLoadingVenues] = useState(true);
   const { openModal } = useModal();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchVenues()
@@ -25,27 +27,38 @@ export function QuickSearch() {
   }, []);
 
   const venueOptions = useMemo(() => {
-    if (venuesList.length > 0) {
-      return venuesList.map((v) => ({
-        value: v.venueName,
-        label: `${v.venueName}${v.area ? ` (${v.area.trim()})` : ''}`,
-        venueId: v.venueId,
-        venueData: v
-      }));
-    }
-    return [
-      { value: 'Central London', label: 'Central London' },
-      { value: 'North London', label: 'North London' },
-      { value: 'South London', label: 'South London' },
-      { value: 'West London & Surrey', label: 'West London & Surrey' }
-    ];
-  }, [venuesList]);
+  if (venuesList.length > 0) {
+    return venuesList.map((v) => ({
+      value: v.venueName,
+      venueId: v.venueId,
+      venueName: v.venueName,
+      area: v.area?.trim() || '',
+      address: v.address?.trim() || '',
+      postalCode: v.postal_code || '',
+      label: v.venueName, // control me yehi dikhega
+      searchText: [v.venueName, v.area, v.address, v.postal_code].filter(Boolean).join(' ').toLowerCase(),
+      venueData: v
+    }));
+  }
+  return [
+    { value: 'Central London', label: 'Central London', venueName: 'Central London' },
+    { value: 'North London', label: 'North London', venueName: 'North London' },
+    { value: 'South London', label: 'South London', venueName: 'South London' },
+    { value: 'West London & Surrey', label: 'West London & Surrey', venueName: 'West London & Surrey' }
+  ];
+}, [venuesList]);
 
   const handleSearch = (e) => {
     e.preventDefault();
+    const cleanPostcode = postcode?.trim();
+    if (cleanPostcode) {
+      navigate(`/find-a-class?postcode=${encodeURIComponent(cleanPostcode.toUpperCase())}`);
+      return;
+    }
     openModal('venue', {
-      postcode,
-      venue: selectedVenue?.value || ''
+      postcode: '',
+      venue: selectedVenue?.value || '',
+      venueId: selectedVenue?.venueId || null
     });
   };
 
@@ -71,15 +84,16 @@ export function QuickSearch() {
       }
     }),
     valueContainer: (base) => ({
-      ...base,
-      padding: '0 8px 0 16px',
-      height: '52px',
-      display: 'flex',
-      alignItems: 'center',
-      flex: '1 1 auto',
-      minWidth: 0,
-      overflow: 'hidden'
-    }),
+  ...base,
+  display: 'grid',            // flex hata ke grid hi rakho
+  alignItems: 'center',
+  padding: '0 8px 0 16px',
+  height: '52px',
+  flex: '1 1 auto',
+  minWidth: 0,
+  overflow: 'hidden'
+}),
+
     placeholder: (base) => ({
       ...base,
       color: '#5F5F6D',
@@ -92,26 +106,27 @@ export function QuickSearch() {
       overflow: 'hidden',
       textOverflow: 'ellipsis'
     }),
-    singleValue: (base) => ({
-      ...base,
-      color: '#334155',
-      fontFamily: 'Poppins, sans-serif',
-      fontSize: '0.875rem',
-      fontWeight: 400,
-      margin: 0,
-      maxWidth: '100%',
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis'
-    }),
-    input: (base) => ({
-      ...base,
-      color: '#1e293b',
-      fontFamily: 'Poppins, sans-serif',
-      fontSize: '1rem',
-      margin: 0,
-      padding: 0
-    }),
+   singleValue: (base) => ({
+  ...base,
+  color: '#334155',
+  fontFamily: 'Poppins, sans-serif',
+  fontSize: '0.875rem',
+  fontWeight: 400,
+  margin: 0,
+  maxWidth: '100%',
+  minWidth: 0,
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis'
+}),
+   input: (base) => ({
+  ...base,
+  color: '#1e293b',
+  fontFamily: 'Poppins, sans-serif',
+  fontSize: '0.875rem',
+  margin: 0,
+  padding: 0
+}),
     indicatorsContainer: (base) => ({
       ...base,
       height: '52px',
@@ -232,7 +247,7 @@ export function QuickSearch() {
 
             {/* Right White Form Box */}
             <div className="bg-white rounded-[30px] p-4 sm:py-10 sm:px-8 md:py-7 md:px-6 lg:py-8 lg:px-7 xl:py-9 xl:px-7 2xl:py-10 2xl:px-8 shadow-2xl w-full md:w-[410px] min-[900px]:w-[550px]  min-[1100px]:w-[700px] xl:max-w-[560px] 2xl:max-w-[602px] border border-slate-100 shrink-0">
-              <h3 className="text-[#042C89] text-center md:text-[20px] lg:text-[21px] xl:text-[24px] text-[20px] recline mb-4 md:mb-4 lg:mb-5">
+              <h3 className="text-[#042C89] md:text-center md:text-[20px] lg:text-[21px] xl:text-[24px] text-[20px] recline mb-4 md:mb-4 lg:mb-5">
                 Enter your postcode or choose a venue.
               </h3>
 
@@ -249,7 +264,12 @@ export function QuickSearch() {
                       spellCheck="false"
                       placeholder="Enter your postcode"
                       value={postcode}
-                      onChange={(e) => setPostcode(e.target.value)}
+                      onChange={(e) => {
+                        setPostcode(e.target.value);
+                        if (e.target.value.trim() && selectedVenue) {
+                          setSelectedVenue(null);
+                        }
+                      }}
                       className="w-full h-[52px] bg-[#F1F4F9] poppins placeholder:text-[#5F5F6D] text-slate-800 placeholder-slate-400 text-[16px] sm:text-sm font-normal rounded-[9px] px-4 border-none outline-none focus:outline-none transition-shadow"
                     />
                   </div>
@@ -257,25 +277,49 @@ export function QuickSearch() {
                   {/* Venue Dropdown */}
                   <div className="w-full">
                     <Select
-                      value={selectedVenue}
-                      onChange={(option) => setSelectedVenue(option)}
-                      options={venueOptions}
-                      placeholder="Or choose a venue"
-                      isClearable
-                      isSearchable
-                      isLoading={loadingVenues}
-                      menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
-                      menuPosition="fixed"
-                      styles={customSelectStyles}
-                      aria-label="Choose a venue"
-                    />
+  value={selectedVenue}
+  onChange={(option) => {
+    setSelectedVenue(option);
+    if (option && postcode) {
+      setPostcode('');
+    }
+  }}
+  options={venueOptions}
+  placeholder="Or choose a venue"
+  isClearable
+  isSearchable
+  isLoading={loadingVenues}
+  menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
+  menuPosition="fixed"
+  styles={customSelectStyles}
+  aria-label="Choose a venue"
+  filterOption={(option, input) =>
+    !input || (option.data.searchText || option.label.toLowerCase()).includes(input.toLowerCase())
+  }
+  formatOptionLabel={(option, { context }) => {
+    if (context === 'value') return option.venueName || option.label;
+    const subtitle = [option.area, option.postalCode].filter(Boolean).join(' • ');
+    return (
+      <div>
+        <div style={{ color: '#042C89', fontWeight: 600, fontSize: '14px', lineHeight: 1.3, textTransform: 'capitalize' }}>
+          {option.venueName}
+        </div>
+        {subtitle && (
+          <div style={{ color: '#6B7280', fontSize: '12px', lineHeight: 1.3, marginTop: 2 }}>
+            {subtitle}
+          </div>
+        )}
+      </div>
+    );
+  }}
+/>
                   </div>
                 </div>
 
                 {/* Mint Green Search Button */}
                 <button
                   type="submit"
-                  className="w-full bg-[#90f2cb] hover:bg-[#73eab6] text-white font-bold text-[18px] md:text-[16px] lg:text-[18px] poppins py-2 md:py-2.5  rounded-full shadow-sm transition-all cursor-pointer text-center block"
+                  className="w-full bg-[#90f2cb] hover:bg-[#0dd17f] text-white font-bold text-[18px] md:text-[16px] lg:text-[18px] poppins py-2 md:py-2.5  rounded-full shadow-sm transition-all cursor-pointer text-center block"
                 >
                   Search
                 </button>

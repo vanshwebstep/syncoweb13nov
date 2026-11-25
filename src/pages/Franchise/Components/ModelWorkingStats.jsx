@@ -2,7 +2,7 @@ import React from "react";
 import { Container } from "../../../components/common/Container";
 
 const BASE = "https://webstepdev.com/demo/syncoWebsiteImages/franchise";
-const BG_IMAGE = `${BASE}/alreadyworkingbannerbg.png`;
+const BG_IMAGE = `${BASE}/alreadyworkingbannerbg.svg`;
 const BG_IMAGE_MOBILE = `${BASE}/years_of_proud.png`;
 
 const statsData = [

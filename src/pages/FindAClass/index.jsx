@@ -25,7 +25,8 @@ export function FindAClassPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
 
-  const [postcode, setPostcode] = useState('');
+  const postcodeParam = searchParams.get('postcode') || searchParams.get('search') || '';
+  const [postcode, setPostcode] = useState(postcodeParam);
   const [coords, setCoords] = useState(null);
   const ageParam = searchParams.get('age');
   const [selectedAges, setSelectedAges] = useState(ageParam ? [ageParam] : []);
@@ -33,6 +34,12 @@ export function FindAClassPage() {
   const [selectedVenueId, setSelectedVenueId] = useState('5');
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
   const [showEditSearchCard, setShowEditSearchCard] = useState(false);
+
+  useEffect(() => {
+    if (postcodeParam) {
+      setPostcode(postcodeParam);
+    }
+  }, [postcodeParam]);
 
   const [activeModalVenue, setActiveModalVenue] = useState(null);
   const [activeModalClass, setActiveModalClass] = useState(null);
@@ -121,6 +128,13 @@ export function FindAClassPage() {
   useEffect(() => {
     setVisibleCount(INITIAL_VISIBLE);
   }, [selectedAges, venues]);
+
+  useEffect(() => {
+    if (coords && filteredVenues.length > 0) {
+      const topId = String(filteredVenues[0].id || filteredVenues[0].venueId || '');
+      if (topId) setSelectedVenueId(topId);
+    }
+  }, [coords]);
 
   const visibleVenues = useMemo(
     () => filteredVenues.slice(0, visibleCount),

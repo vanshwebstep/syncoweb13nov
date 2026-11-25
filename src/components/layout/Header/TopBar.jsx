@@ -5,7 +5,7 @@ import { TOPBAR_CONFIG } from '../../../config/navigation';
 import { Container } from '../../common/Container';
 import { useLanguage, LANGUAGES } from '../../../context/LanguageContext';
 
-const sssLogo = 'https://webstepdev.com/demo/syncoWebsiteImages/topbar.png';
+const sssLogo = 'https://webstepdev.com/demo/syncoWebsiteImages/TopNavMain.png';
 const phone = 'https://webstepdev.com/demo/syncoWebsiteImages/phone.png';
 const map = 'https://webstepdev.com/demo/syncoWebsiteImages/locate.png';
 const user = 'https://webstepdev.com/demo/syncoWebsiteImages/user.png';
@@ -63,16 +63,18 @@ export function TopBar() {
         backgroundPosition: 'center',
         backgroundBlendMode: 'soft-light'
       }}
-      className="text-white text-xs py-3 sm:py-2 relative z-[60]"
+      className="text-white text-xs py-3 sm:py-2 relative "
     >
       <Container>
         <div className="flex justify-between items-center gap-2">
 
           {/* Left: Star Rating */}
           <div className="flex items-center gap-1.5 font-sans shrink-0">
+            <a href={TOPBAR_CONFIG.ratingurl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:opacity-90 transition-all">
             <Star className="w-3.5 h-3.5 xl:w-4 xl:h-4 mb-[5px] me-0.5 text-[#FFDE14] fill-[#FFDE14] recline" />
             <span dir="ltr" translate="no" className="notranslate font-extrabold text-[#FFDE14] recline text-[15px] xl:text-[17px]">{TOPBAR_CONFIG.rating}</span>
             <span className="text-white text-[10px] sm:text-[12px] poppins font-semibold whitespace-nowrap">{TOPBAR_CONFIG.ratingText}</span>
+            </a>
           </div>
 
           {/* Center: Tagline Announcement */}
@@ -86,10 +88,12 @@ export function TopBar() {
             <a
               href={`tel:${TOPBAR_CONFIG.phone}`}
               dir="ltr"
-              className="md:flex hidden items-center gap-1.5 hover:text-white/80 transition-colors text-white font-medium"
+              className="md:inline-flex hidden items-baseline justify-center gap-1.5 hover:opacity-90 transition-all text-white font-medium"
             >
-              <img src={phone} alt="Phone" className="w-2.5 xl:w-[10px] object-contain" />
-              <span dir="ltr" translate="no" className="notranslate recline text-[12px] xl:text-[14px] tracking-[6%] whitespace-nowrap leading-none">{TOPBAR_CONFIG.phone}</span>
+              <span className="w-4 h-4 xl:w-[18px] xl:h-[18px] rounded-full  flex items-center justify-center shrink-0">
+                <img src={phone} alt="Phone" className="w-2.5 xl:w-[10px] object-contain block" />
+              </span>
+              <span dir="ltr" translate="no" className="notranslate recline text-[12px] xl:text-[14px] tracking-[6%] whitespace-nowrap leading-none flex items-center">{TOPBAR_CONFIG.phone}</span>
             </a>
 
             <Link

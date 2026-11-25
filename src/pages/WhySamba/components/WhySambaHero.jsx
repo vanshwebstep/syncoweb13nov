@@ -50,7 +50,7 @@ export function WhySambaHero() {
           </div>
 
           {/* Paragraph copy */}
-          <p className="poppins text-[#042C89] font-semibold text-[14px] md:text-[15.5px] lg:text-[17px] xl:text-[22px] leading-[1.4] md:max-w-[340px] lg:max-w-[460px] xl:max-w-[50%]">
+          <p className="poppins text-[#042C89] font-semibold text-[14px] md:text-[15.5px] lg:text-[17px] xl:text-[22px] leading-[1.4] md:max-w-[340px] lg:max-w-[500px] xl:max-w-[55%]">
             Somewhere along the way, children’s football lost a little <br className='hidden lg:block' /> of what made so many of us fall in love with it.
           </p>
 

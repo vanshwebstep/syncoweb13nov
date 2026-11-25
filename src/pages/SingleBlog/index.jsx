@@ -9,6 +9,7 @@ import { Faq } from './components/Faq';
 import { MorePosts } from './components/Morepost';
 import textureBg from 'https://webstepdev.com/demo/syncoWebsiteImages/texture.png';
 import { FooterBottom } from '../Contact/components';
+import { PageMeta } from '../../components/common/PageMeta';
 import './single-blog-translated.css';
 
 export function SingleBlog() {
@@ -83,6 +84,12 @@ export function SingleBlog() {
 
   return (
     <VenueProvider>
+      <PageMeta 
+        title={blog?.title ? `${blog.title} | Samba Soccer Schools` : "Blog Article | Samba Soccer Schools"}
+        description={blog?.excerpt || blog?.summary || blog?.description || (blog?.title ? `Read ${blog.title} on Samba Soccer Schools blog.` : undefined)}
+        keywords={blog?.tags?.join(', ') || "samba soccer blog, kids football coaching"}
+        ogType="article"
+      />
       <div className="single-blog-page-container" style={{
         backgroundImage: `url(${textureBg})`,
         backgroundSize: 'cover',

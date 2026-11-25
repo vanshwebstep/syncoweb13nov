@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Container } from '../../../components/common/Container';
-import waveBg from 'https://webstepdev.com/demo/syncoWebsiteImages/final-cta.png';
+import waveBg from 'https://webstepdev.com/demo/syncoWebsiteImages/final-bg-yellow-green-texture.svg';
 import expPhoto from 'https://webstepdev.com/demo/syncoWebsiteImages/why-samba/exp_it.png';
 import kidsPhoto from 'https://webstepdev.com/demo/syncoWebsiteImages/why-samba/experienceboys.png';
 

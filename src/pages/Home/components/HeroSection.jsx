@@ -5,6 +5,7 @@ import { useModal } from '../../../context/ModalContext';
 import { useLanguage } from '../../../context/LanguageContext';
 import heroFutsalImg from 'https://webstepdev.com/demo/syncoWebsiteImages/home/HeroHome.png';
 import map from 'https://webstepdev.com/demo/syncoWebsiteImages/Location2.png';
+import { ArrowRight, MapPin } from 'lucide-react';
 
 const ANIMATED_WORDS_BY_LANG = {
   en: ["passion", "skills", "flair", "beautiful game"],
@@ -17,7 +18,7 @@ const ANIMATED_WORDS_BY_LANG = {
   bn: ["আবেগ", "দক্ষতা", "প্রতিভা", "সুন্দর খেলা"],
 };
 
-function AnimatedHeroWord() {
+function AnimatedHeroWord({ mobile = false }) {
   const { selectedLanguage } = useLanguage();
   const lang = (selectedLanguage?.langCode || 'en').toLowerCase();
   const words = ANIMATED_WORDS_BY_LANG[lang] || ANIMATED_WORDS_BY_LANG.en;
@@ -26,7 +27,6 @@ function AnimatedHeroWord() {
   const [displayedText, setDisplayedText] = useState(words[0]);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // When language switches, start with the first word of the new language
   useEffect(() => {
     setWordIndex(0);
     setDisplayedText(words[0]);
@@ -44,9 +44,7 @@ function AnimatedHeroWord() {
         }, 110);
       } else {
         const pauseTime = (wordIndex % words.length) === words.length - 1 ? 3200 : 1800;
-        timer = setTimeout(() => {
-          setIsDeleting(true);
-        }, pauseTime);
+        timer = setTimeout(() => setIsDeleting(true), pauseTime);
       }
     } else {
       if (displayedText.length > 0) {
@@ -62,9 +60,22 @@ function AnimatedHeroWord() {
     return () => clearTimeout(timer);
   }, [displayedText, isDeleting, wordIndex, words]);
 
+  // Mobile: chhota word = bada font (screenshot jesa), lamba word = chhota font taaki ek line me aaye
+  if (mobile) {
+    const fullWord = words[wordIndex % words.length];
+    const sizeClass = fullWord.length <= 9 ? 'text-[62px]' : 'text-[36px]';
+    return (
+      <div className="home-hero-animated-word notranslate h-[72px] flex items-center" translate="no">
+        <span className={`gasoek text-[#FFDE14] tracking-[2.5%] block ${sizeClass} leading-none capitalize whitespace-nowrap`}>
+          {displayedText || '\u00A0'}
+        </span>
+      </div>
+    );
+  }
+
   return (
-    <div className="home-hero-animated-word notranslate lg:h-[110px] h-[50px] flex items-center" translate="no">
-      <span className="gasoek text-[#FFDE14] tracking-[2.5%] block lg:text-[111px] capitalize items-baseline shrink-0">
+    <div className="home-hero-animated-word notranslate lg:h-[110px] h-[80px] flex items-center" translate="no">
+      <span className="gasoek text-[#FFDE14] tracking-[2.5%] block text-[62px] lg:text-[88px] capitalize items-baseline shrink-0">
         <span>{displayedText || '\u00A0'}</span>
       </span>
     </div>
@@ -76,8 +87,7 @@ export function HeroSection() {
 
   return (
     <section id="home" className="relative w-full overflow-hidden">
-      
-      {/* Background Video with Fallback (Anchored to top to show more upper scene) */}
+      {/* Background Video */}
       <video
         autoPlay
         loop
@@ -99,43 +109,86 @@ export function HeroSection() {
 
       {/* Hero Banner Content */}
       <Container className="home-hero-container relative z-10 lg:py-[80px] xl:py-[80px] 2xl:py-[120px] md:py-[80px] py-[50px] px-4 sm:px-6 lg:px-8 xl:px-8 2xl:px-0 my-auto">
-        <div className="home-hero-content md:space-y-4 pt-[30px] lg:pt-[40px] xl:pt-[30px] pb-[70px] lg:pb-[80px] xl:pb-[120px] text-left">
-          
-          {/* Rotating Headline: Kept on a single line on desktop and mobile with stable vertical height */}
-          <div className="home-hero-title-box min-h-[38px] xs:min-h-[44px] sm:min-h-[56px] md:min-h-[64px] lg:min-h-[76px] xl:min-h-[92px] 2xl:min-h-[104px] flex items-center md:mb-0 mb-3">
-            <h1 className="home-hero-heading whitespace-nowrap items-baseline leading-none text-[38px] min-[360px]:text-[40px] min-[390px]:text-[22px] sm:text-[34px] md:text-[42px] lg:text-[54px] xl:text-[64px]">
-              <span className="home-hero-title-prefix recline text-white font-normal tracking-wide mr-1.5 sm:mr-3 shrink-0">
+
+               {/* ================= MOBILE ONLY ================= */}
+        <div className="md:hidden pt-[40px] pb-[120px] text-left">
+          <h1 className="leading-none">
+            <span className="block recline text-white font-normal tracking-wide text-[33px] mb-2">
+              Bring back the
+            </span>
+            <AnimatedHeroWord mobile />
+          </h1>
+
+          {/* Subtitle: exact 3 lines */}
+          <p className="poppins text-white text-[15px] font-semibold leading-[1.45] mt-6">
+            <span className="block whitespace-nowrap">Brazilian-inspired football coaching for</span>
+            <span className="block whitespace-nowrap">kids aged 4–12. Building skills,</span>
+            <span className="block whitespace-nowrap">confidence and freedom to play.</span>
+          </p>
+
+          <div className="flex flex-col gap-3.5 mt-7">
+            <Link
+              to="/find-a-class"
+              className="w-full bg-[#0DD180] hover:bg-[#00c853] text-[#042C89] poppins font-bold text-[16px] py-[15px] rounded-full inline-flex items-center justify-center gap-2 transition-all whitespace-nowrap"
+            >
+              Book a FREE trial
+              <ArrowRight className="w-[18px] h-[18px]" />
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => openModal('venue')}
+              className="w-full bg-transparent border-[1.5px] border-white text-white poppins font-bold text-[16px] py-[15px] rounded-full inline-flex items-center justify-center gap-2 transition-all cursor-pointer whitespace-nowrap"
+            >
+              <MapPin className="w-[18px] h-[18px] shrink-0" />
+              <span>Our venues</span>
+            </button>
+          </div>
+
+          <p className="poppins text-white text-[12.5px] font-medium text-center mt-4">
+            137 venues across the UK. First session free.
+          </p>
+        </div>
+
+        {/* ================= DESKTOP / TABLET (unchanged) ================= */}
+        <div className="hidden md:block home-hero-content md:space-y-4 pt-[30px] lg:pt-[40px] xl:pt-[30px] pb-[70px] lg:pb-[80px] xl:pb-[120px] text-left">
+          <div className="home-hero-title-box md:min-h-[64px] lg:min-h-[76px] xl:min-h-[92px] 2xl:min-h-[104px] flex items-center">
+            <h1 className="home-hero-heading whitespace-nowrap items-baseline leading-none md:text-[42px] lg:text-[54px] xl:text-[58px]">
+              <span className="home-hero-title-prefix recline text-white font-normal tracking-wide mr-3 shrink-0">
                 Bring back the
               </span>
               <AnimatedHeroWord />
             </h1>
           </div>
 
-          {/* Line 3: Subtitle */}
-          <p className="home-hero-subtitle text-white text-[16px] sm:text-[18px] poppins lg:text-[18px] xl:text-[22px] font-semibold leading-relaxed pt-1 sm:pt-1">
-            Brazilian-inspired football coaching for kids aged 4–12. Building the skills to master <br className="hidden lg:block" /> the ball, the confidence to try things and the freedom to play <br className="md:hidden block" />their own way.
+          <p className="home-hero-subtitle text-white text-[18px] poppins font-semibold leading-relaxed pt-1">
+            Brazilian-inspired football coaching for kids aged 4–12. <br /> Building the skills to master the ball, the confidence to try <br className="hidden lg:block" /> things and the freedom to play their own way.
           </p>
 
-          {/* Line 4: Dual Action Buttons */}
-          <div className="home-hero-buttons flex flex-wrap items-center gap-3 pt-4 sm:pt-5">
-            {/* Dark Blue Pill Button */}
+          <div className="home-hero-buttons flex flex-wrap items-center gap-3 pt-5">
             <Link
               to="/find-a-class"
-              className="home-hero-btn-find bg-[#042C89] poppins text-white w-full md:w-max font-bold sm:text-[20px] lg:text-[18px] xl:text-[24px] text-[18px] px-6 lg:px-6 xl:px-7 md:py-3.5 lg:py-3.5 xl:py-4 py-3.5 justify-center md:justify-normal rounded-full inline-flex items-center gap-2 border border-white/20 hover:scale-105 transition-all cursor-pointer"
+              className="home-hero-btn-find bg-[#0DD180] hover:bg-[#00c853] text-[#042C89] poppins w-max font-bold text-[16px] lg:text-[18px] px-6 lg:px-7 py-3.5 rounded-full inline-flex items-center justify-center gap-2 transition-all hover:scale-105 cursor-pointer whitespace-nowrap"
             >
-              <img src={map} alt="Futsal Session" className="w-[20px] me-1" />
-              <span>Find your child’s class</span>
+              <span className="inline-flex items-center justify-center gap-1.5">
+                Book a FREE trial
+                <ArrowRight className="w-5 h-5" />
+              </span>
             </Link>
 
-            {/* Solid Green Pill Button */}
-            <Link
-              to="/book-trial"
-              className="home-hero-btn-book bg-[#0DD180] hover:bg-[#00c853] w-full md:w-max poppins text-white font-bold text-[18px] lg:text-[18px] xl:text-[20px] px-6 lg:px-6 xl:px-7 md:py-3.5 lg:py-3.5 xl:py-4 py-3.5 rounded-full hover:scale-105 transition-all cursor-pointer whitespace-nowrap text-center inline-block"
+            <button
+              type="button"
+              onClick={() => openModal('venue')}
+              className="home-hero-btn-book bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/70 w-max poppins text-white font-bold text-[16px] lg:text-[18px] px-6 lg:px-7 py-3.5 rounded-full inline-flex items-center justify-center gap-2 transition-all hover:scale-105 cursor-pointer whitespace-nowrap"
             >
-              Book a FREE trial
-            </Link>
+              <MapPin className="w-5 h-5 text-white shrink-0" />
+              <span>Our venues</span>
+            </button>
           </div>
 
+          <p className="home-hero-subtitle text-white text-[14px] poppins font-medium leading-relaxed pt-1">
+            137 venues across the UK. Try your first session free.
+          </p>
         </div>
       </Container>
     </section>

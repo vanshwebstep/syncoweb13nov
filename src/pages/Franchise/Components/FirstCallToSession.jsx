@@ -3,7 +3,7 @@ import { Container } from "../../../components/common/Container";
 
 const BASE = "https://webstepdev.com/demo/syncoWebsiteImages/franchise";
 const SECTION_BG = `${BASE}/franchisepartnerbg.png`;
-const BOX_BG = `${BASE}/firstcalltosessionbg.png`;
+const BOX_BG = `https://webstepdev.com/demo/syncoWebsiteImages/home/bg-yellow-green-texture.svg`;
 const GREEN_CHECK = `${BASE}/greenchek.png`;
 const BLUE_CHECK = `${BASE}/bluechek.png`;
 const steps = [
@@ -162,7 +162,7 @@ export function FirstCallToSession() {
 >
           {/* White inner card */}
           <div
-            className="md:bg-white rounded-[28px] sm:rounded-[36px] px-5 sm:px-10 lg:px-12 pt-10 sm:pt-12 pb-10 sm:pb-14 text-center"
+            className="md:bg-white rounded-[28px] sm:rounded-[36px] px-5 sm:px-10 lg:px-6 pt-10 sm:pt-12 pb-10 sm:pb-14 text-center"
             style={{ backgroundImage: `url(${SECTION_BG})` }}
           >
             {/* Mobile label */}

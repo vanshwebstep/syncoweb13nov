@@ -43,18 +43,14 @@ export function HeroSection() {
       <img
         src={bannerLayer}
         alt=""
-        className="contact-hero-wave-large hidden md:block absolute top-0 right-0 2xl:w-[38%] w-[50%] object-contain pointer-events-none select-none z-[1]"
+        className="contact-hero-wave-large hidden md:block absolute top-0 right-0 2xl:w-[38%] w-[45%] object-contain pointer-events-none select-none z-[1]"
       />
       <img
         src={bannerLayerSmallMobile}
         alt=""
         className="contact-hero-wave-mobile block md:hidden absolute top-0 right-0 w-[100%] object-contain pointer-events-none select-none z-[1]"
       />
-      <img
-        src={bannerLayerSmall}
-        alt=""
-        className="contact-hero-wave-small hidden md:block absolute top-0 left-0 w-[15%] object-contain pointer-events-none select-none z-[1]"
-      />
+      
 
       {/* Hero Content */}
       <Container className="relative z-10 w-full ">
@@ -71,7 +67,7 @@ export function HeroSection() {
           </h1>
 
           {/* Subtitle */}
-          <p className="poppins mt-8 font-medium text-[#042C89] text-[14px] sm:text-[16px] md:text-[14px] lg:text-[17px] leading-[1.6]">
+          <p className="poppins mt-8 font-semibold text-[#042C89] text-[14px] sm:text-[16px] md:text-[14px] lg:text-[17px] leading-[1.6]">
             Classes, memberships, camps or anything else Samba.
             <br className="hidden sm:block" />
             Send us a message and our team will get back to you.
@@ -89,7 +85,7 @@ export function HeroSection() {
             <a
               href="tel:02072052723"
               dir="ltr"
-              className="poppins inline-flex items-center justify-center gap-2 border-[1.5px] border-white text-white hover:bg-white hover:text-[#042C89] font-bold text-[13px] lg:text-[15px] px-7 lg:px-9 py-3.5 lg:py-4 rounded-full transition-all duration-300 whitespace-nowrap"
+              className="poppins inline-flex items-center justify-center gap-2 border-[2px] border-white text-white hover:bg-white hover:text-[#042C89] font-bold text-[13px] lg:text-[15px] px-7 lg:px-9 py-3.5 lg:py-4 rounded-full transition-all duration-300 whitespace-nowrap"
             >
               <Phone className="w-4 h-4" /> 020 7205 2723
             </a>
@@ -98,7 +94,7 @@ export function HeroSection() {
       <img
         src={bannerDesktopLayer}
         alt="Samba Soccer Players Desktop"
-        className="contact-hero-kids lg:absolute bottom-0 lg:right-0 lg:max-w-[420px] xl:max-w-[640px] xl:-right-[2%] 2xl:max-w-[600px] 2xl:-mb-[10px] xl:-mb-[40px] z-[2] pointer-events-none select-none"
+        className="contact-hero-kids lg:absolute bottom-0 lg:right-0 lg:max-w-[420px] xl:max-w-[540px] xl:-right-[2%] 2xl:max-w-[500px] 2xl:-mb-[10px] xl:-mb-[40px] z-[2] pointer-events-none select-none"
       />
       </Container>
     </section>

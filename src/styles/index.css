@@ -354,7 +354,7 @@
 }
 @media (max-width: 767px) {
   .accelerate-banner {
-    background-image: url("https://webstepdev.com/demo/syncoWebsiteImages/holiday-camps/final_cta.png");
+    background-image: url("https://webstepdev.com/demo/syncoWebsiteImages/holiday-camps/final_bg-yellow-green-texture.svg");
   }
   .bgImageNone{
     background-position: bottom !important;
@@ -452,3 +452,59 @@ html[lang]:not([lang="en"]) br {
 }
 
 
+
+
+/* ==========================================================================
+   Global Hover Grey Backing & Highlight Removal
+   ========================================================================== */
+
+/* Completely eliminate Google Translate hover highlight & tooltips */
+.goog-text-highlight,
+.goog-text-highlight:hover,
+.goog-text-highlight:focus,
+.goog-text-highlight:active,
+[class*="goog-text-highlight"],
+font,
+font:hover,
+font:focus,
+font:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+}
+
+#goog-gt-tt,
+#goog-gt-tt *,
+.goog-te-balloon-frame,
+.goog-tooltip,
+.goog-tooltip:hover,
+.VIpgJd-ZVi9od-aZ2wjd-Ond6De,
+.VIpgJd-ZVi9od-aZ2wjd-Ond6De *,
+.VIpgJd-ZVi9od-aZ2wjd-Ond6De-OooUFe,
+.VIpgJd-ZVi9od-aZ2wjd-Ond6De-OooUFe *,
+.VIpgJd-ZVi9od-xl07Ob-lTBxed {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Remove tap/touch and focus grey overlays across the site */
+* {
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+*:focus:not(:focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+
+/* Ensure sticky navigation functions properly without overflow issues */
+html, body {
+  overflow-x: clip;
+}

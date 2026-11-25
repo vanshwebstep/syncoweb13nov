@@ -7,6 +7,8 @@ import { ModalContainer } from './components/modals';
 import { Header } from './components/layout/Header/Header';
 import { Footer } from './components/layout/Footer';
 import { AppRoutes } from './routes/AppRoutes';
+import { RouteMetaTracker } from './components/common/RouteMetaTracker';
+import { ScrollToTop } from './components/common/ScrollToTop';
 
 function AppContent() {
   const location = useLocation();
@@ -18,6 +20,12 @@ function AppContent() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Route change scroll-to-top handler */}
+      <ScrollToTop />
+
+      {/* Dynamic Route-level Meta Titles & SEO */}
+      <RouteMetaTracker />
+
       {/* Sticky Header (suppressed on dedicated booking flow) */}
       {!isBookingFlow && <Header />}
 

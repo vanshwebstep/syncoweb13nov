@@ -5,8 +5,8 @@ import { Container } from '../../../components/common/Container';
 
 const sssLogo = 'https://webstepdev.com/demo/syncoWebsiteImages/samba-soccer-schools-logo.png';
 const sssLogo2 = 'https://webstepdev.com/demo/syncoWebsiteImages/sss-logo-2.png';
-const topbarBg = 'https://webstepdev.com/demo/syncoWebsiteImages/topbar.png';
-const bottomNavBg = 'https://webstepdev.com/demo/syncoWebsiteImages/bottomNav.png';
+const topbarBg = 'https://webstepdev.com/demo/syncoWebsiteImages/TopNavMain.png';
+const bottomNavBg = 'https://webstepdev.com/demo/syncoWebsiteImages/MenuNavDesktopMain.png';
 
 export function BookingHeader({ onExit }) {
   const navigate = useNavigate();

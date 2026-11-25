@@ -13,25 +13,29 @@ export function Header() {
   const { isOpen, toggle, close } = useMobileMenu();
 
   return (
-    <header className="sticky top-0 z-50 w-full  md:border-none transition-all duration-300">
-      {/* Top utility bar */}
+    <>
+      {/* Top utility bar - Normal document flow, NOT sticky (scrolls off-screen with page) */}
       <TopBar />
 
-      {/* Main navigation container */}
-      <div 
-       style={{
-              backgroundImage: `url(${bg})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundBlendMode: 'soft-light'
-            }}  className=''
-        
+      {/* Main navigation header - STICKY at top-0, stays pinned when scrolling across the entire page */}
+      <header
+        className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+          isScrolled ? 'shadow-xl' : ''
+        }`}
+        style={{
+          backgroundImage: `url(${bg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
       >
         <Navbar onMobileMenuToggle={toggle} isScrolled={isScrolled} />
-      </div>
+      </header>
 
       {/* Mobile drawer navigation */}
       <MobileNav isOpen={isOpen} onClose={close} />
-    </header>
+    </>
   );
 }
+
+export default Header;
