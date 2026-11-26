@@ -112,11 +112,11 @@ function InfoCard({ card }) {
 }
 export function FirstCallToSession() {
   return (
-   <section
-  className="relative bg-[#F6F8FC] pb-0 w-full py-16 md:py-24 bg-[#F6F6F6] bg-cover bg-center bg-no-repeat overflow-hidden
+    <section
+      className="relative bg-[#F6F8FC] pb-0 w-full py-16 md:py-24 bg-[#F6F6F6] bg-cover bg-center bg-no-repeat overflow-hidden
              sm:bg-[image:var(--section-bg)]"
-  style={{ "--section-bg": `url(${SECTION_BG})` }}
->
+      style={{ "--section-bg": `url(${SECTION_BG})` }}
+    >
       <Container>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 mb-16 md:mb-40 items-start">
           {/* Left */}
@@ -155,11 +155,11 @@ export function FirstCallToSession() {
           </div>
         </div>
         {/* Blue-green textured frame */}
-     <div
-  className="rounded-[36px] sm:rounded-[44px] p-4 sm:p-6 lg:p-7  bg-cover bg-center
+        <div
+          className="rounded-[36px] sm:rounded-[44px] p-4 sm:p-6 lg:p-7  bg-cover bg-center
              sm:bg-[image:var(--box-bg)]"
-  style={{ "--box-bg": `url(${BOX_BG})` }}
->
+          style={{ "--box-bg": `url(${BOX_BG})` }}
+        >
           {/* White inner card */}
           <div
             className="md:bg-white rounded-[28px] sm:rounded-[36px] px-5 sm:px-10 lg:px-6 pt-10 sm:pt-12 pb-10 sm:pb-14 text-center"
@@ -207,9 +207,8 @@ export function FirstCallToSession() {
                   return (
                     <div
                       key={s.num}
-                      className={`h-[100px]  flex items-center gap-3 ${
-                        isRight ? "flex-row-reverse text-right" : "text-left"
-                      }`}
+                      className={`h-[100px]  flex items-center gap-3 ${isRight ? "flex-row-reverse text-right" : "text-left"
+                        }`}
                     >
                       <div
                         className="w-[56px] h-[56px] shrink-0 rounded-full flex items-center justify-center border-4 border-white shadow-[0_4px_10px_rgba(4,44,137,0.2)]"
@@ -236,16 +235,16 @@ export function FirstCallToSession() {
               </div>
             </div>
 
-            {/* ================= SM+ timeline (original) ================= */}
+            {/* ================= SM+ timeline ================= */}
             <div className="hidden sm:block relative">
               <svg
-                className="hidden lg:block absolute top-3 left-0 w-full h-[90px] z-0"
-                viewBox="0 0 600 90"
+                className="hidden lg:block absolute top-3 left-0 w-full h-[130px] z-0"
+                viewBox="0 0 600 130"
                 preserveAspectRatio="none"
                 fill="none"
               >
                 <path
-                  d="M0 20 L50 20 C100 20 100 70 150 70 C200 70 200 20 250 20 C300 20 300 70 350 70 C400 70 400 20 450 20 C500 20 500 70 550 70"
+                  d="M0 22 L50 22 C100 22 100 112 150 112 C200 112 200 22 250 22 C300 22 300 112 350 112 C400 112 400 22 450 22 C500 22 500 112 550 112"
                   stroke="#FFDE14"
                   strokeWidth="4"
                   strokeLinecap="round"
@@ -260,9 +259,8 @@ export function FirstCallToSession() {
                   return (
                     <div
                       key={s.num}
-                      className={`flex flex-col items-center text-center ${
-                        isDown ? "lg:mt-[50px]" : ""
-                      }`}
+                      className={`flex flex-col items-center text-center ${isDown ? "lg:mt-[90px]" : ""
+                        }`}
                     >
                       <div
                         className="w-[70.24px] h-[68px] rounded-full flex items-center border border-4  border-white justify-center mb-3"
@@ -279,7 +277,7 @@ export function FirstCallToSession() {
                         {s.title}
                       </h3>
 
-                      <p className="poppins text-[#475569] text-[14px] font-semibold leading-[1.4] max-w-[165px]">
+                      <p className="poppins text-[#475569] text-[14px] font-semibold leading-[1.4] max-w-[180px]">
                         {s.desc}
                       </p>
                     </div>

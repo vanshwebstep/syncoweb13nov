@@ -41,58 +41,58 @@ export function FootballSchoolSection() {
         className=" block md:hidden absolute inset-0 left-0 w-full h-full object-top object-cover pointer-events-none z-0"
       />
       <Container className="relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 xl:gap-14 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-4 xl:gap-0 items-center">
 
           {/* Left Column: Heading & Story Copy */}
-          <div className="md:col-span-7 lg:col-span-7 space-y-3 lg:space-y-4 max-w-[640px]">
+          <div className="md:col-span-6 lg:col-span-6 space-y-3 lg:space-y-4 max-w-[640px]">
 
             {/* Main Headings */}
             <div>
               <h2 className="recline text-white font-bold text-[38px] md:text-[38px] lg:text-[48px] xl:text-[61px] leading-tight">
                 The football school {' '}
-                <span className="gasoek text-[#FFDE14] font-normal md:block text-[36px] md:text-[36px] lg:text-[48px] xl:text-[61px] leading-[1.05] mt-1 mb-3 lg:mb-6">
+                <span className="gasoek text-[#FFDE14] font-normal md:block text-[36px] md:text-[36px] lg:text-[48px] xl:text-[61px] leading-[1.05] -mt-2 mb-3 lg:mb-6">
                   I wish I'd had
                 </span>
               </h2>
             </div>
 
             {/* Paragraph 1 */}
-            <p className="poppins text-slate-100 lg:text-[18px] text-[13px] md:text-[13.5px]">
+            <p className="poppins font-medium text-slate-100 lg:text-[18px] text-[13px] md:text-[13.5px]">
               As a child, I loved football. Nothing was more exciting to me than the skilful, creative, attack-minded game played by the Brazilians.
             </p>
 
             {/* Highlight 1 - Yellow */}
-            <p className="poppins text-[#FFDE14] font-medium lg:text-[18px] text-[13px] md:text-[13.5px] pt-1">
+            <p className="poppins text-[#FFDE14] font-semibold lg:text-[18px] text-[13px] md:text-[13.5px] pt-1">
               My dream was to make it. Until I got coached out of it.
             </p>
 
             {/* Paragraph 2 */}
-            <p className="poppins text-slate-100 lg:text-[18px] text-[13px] md:text-[13.5px] pt-1">
+            <p className="poppins font-medium text-slate-100 lg:text-[18px] text-[13px] md:text-[13.5px] pt-1">
               Ronaldinho was my hero. I tried to play like him. The tricks. The flair. The freedom. Spectators enjoyed it. My parents loved it. And most importantly, I was having the time of my life.
             </p>
 
             {/* Paragraph 3 */}
-            <p className="poppins text-slate-100 lg:text-[18px] text-[13px] md:text-[13.5px] pt-1">
+            <p className="poppins font-medium  text-slate-100 lg:text-[18px] text-[13px] md:text-[13.5px] pt-1">
               But my coaches saw things differently. Try something creative and the shouting started.
             </p>
 
             {/* Quote Line - Green */}
-            <p className="poppins text-[#0DD180] font-bold italic lg:text-[18px] text-[13px] md:text-[13.5px] py-1">
+            <p className="poppins text-[#0DD180] font-semibold italic lg:text-[18px] text-[13px] md:text-[13.5px] py-1">
               “Go long!” “Get rid of it!” “Box it in!”
             </p>
 
             {/* Paragraph 4 */}
-            <p className="poppins text-slate-100 lg:text-[18px] text-[13px] md:text-[13.5px]">
+            <p className="poppins font-medium text-slate-100 lg:text-[18px] text-[13px] md:text-[13.5px]">
               Results mattered more than development. Training became predictable. Mistakes were punished. So I learned to play safe.
             </p>
 
             {/* Paragraph 5 */}
-            <p className="poppins text-slate-100 lg:text-[18px] text-[13px] md:text-[13.5px] pt-1">
+            <p className="poppins font-medium text-slate-100 lg:text-[18px] text-[13px] md:text-[13.5px] pt-1">
               My confidence dropped. I started doubting myself. Eventually, I quit.
             </p>
 
             {/* Paragraph 6 */}
-            <p className="poppins text-slate-100 lg:text-[18px] text-[13px] md:text-[13.5px] pt-1">
+            <p className="poppins font-medium text-slate-100 lg:text-[18px] text-[13px] md:text-[13.5px] pt-1">
               As I got older, I realised it wasn’t just me. Football was becoming more structured, more predictable and more afraid of mistakes.
             </p>
 
@@ -109,8 +109,8 @@ export function FootballSchoolSection() {
           </div>
 
           {/* Right Column: Circular Overlapping Coach Photo Collage */}
-          <div className="md:col-span-5 lg:col-span-5 flex justify-center lg:justify-end items-center relative">
-            <div className="w-full max-w-[340px] sm:max-w-[400px] lg:max-w-[540px]">
+          <div className="md:pl-4 md:col-span-6 lg:col-span-6 flex justify-center lg:justify-end items-center relative">
+            <div className="w-full max-w-[340px] sm:max-w-[400px] lg:max-w-[740px]">
               <img
                 src={coachCollageImg}
                 alt="Samba Soccer Schools Coaches and Kids"

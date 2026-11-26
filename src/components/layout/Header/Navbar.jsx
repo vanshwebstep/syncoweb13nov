@@ -103,7 +103,7 @@ export function Navbar({ onMobileMenuToggle }) {
   return (
     <nav 
       ref={navContainerRef}
-      className="relative z-40 py-6 sm:py-4 xl:py-[20px] transition-all duration-300"
+      className="relative z-[999] py-6 sm:py-4 xl:py-[20px] transition-all duration-300"
       onMouseLeave={handleMouseLeave}
     >
       <Container>
