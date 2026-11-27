@@ -23,6 +23,7 @@ import Terms from '../pages/Terms';
 import  PrivacyPolicy from '../pages/PrivacyPolicy';
 import SafeguardingPolicy from '../pages/Safeguarding';
 import AccessibilityStatement from '../pages/Accessibility';
+import ResetPasswordPage from '../pages/ResetPassword';
 export function AppRoutes() {
   return (
     <Routes>
@@ -49,14 +50,21 @@ export function AppRoutes() {
       <Route path="/birthday-parties" element={<Navigate to="/birthday-party" replace />} />
       <Route path="/holiday-camps" element={<HolidayCampsPage />} />
       <Route path="/contact" element={<ContactPage />} />
+      <Route path="/contact-us" element={<Navigate to="/contact" replace />} />
       <Route path="/one-to-one" element={<OnetoOne />} />
       <Route path="/coaches" element={<CoachPage />} />
       <Route path="/venue-managers" element={<VenueManagersPage />} />
       <Route path="/franchise" element={<Franchise />} />
       <Route path="/terms" element={<Terms />} />
- <Route path='/privacy' element={<PrivacyPolicy />} />
- <Route path='/safeguarding' element={<SafeguardingPolicy />} />
- <Route path="/accessibility" element={<AccessibilityStatement />} />
+      <Route path="/terms-and-conditions" element={<Navigate to="/terms" replace />} />
+      <Route path="/privacy" element={<PrivacyPolicy />} />
+      <Route path="/privacy-policy" element={<Navigate to="/privacy" replace />} />
+      <Route path="/safeguarding" element={<SafeguardingPolicy />} />
+      <Route path="/safeguarding-policy" element={<Navigate to="/safeguarding" replace />} />
+      <Route path="/accessibility" element={<AccessibilityStatement />} />
+      <Route path="/accessibility-statement" element={<Navigate to="/accessibility" replace />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
+      <Route path="/password/reset" element={<ResetPasswordPage />} />
 
       <Route
         path="*"

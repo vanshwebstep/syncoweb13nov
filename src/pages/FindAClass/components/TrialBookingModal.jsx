@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { X, Calendar, Clock, CheckCircle2, Trophy, Sparkles, MapPin, ArrowRight, Loader2 } from 'lucide-react';
+import { X, Calendar, Clock, CheckCircle2, Trophy, Sparkles, MapPin, ArrowRight, Loader2, ChevronDown } from 'lucide-react';
 import { bookFreeTrial } from '../../../services/venueService';
+import { COUNTRY_CODES } from './Book a Membership/SambaLoginModal';
 
 export function TrialBookingModal({ isOpen, onClose, venue, selectedClass }) {
   const [formData, setFormData] = useState({
@@ -8,6 +9,7 @@ export function TrialBookingModal({ isOpen, onClose, venue, selectedClass }) {
     childAge: '5',
     experience: 'Beginner',
     parentName: '',
+    dialCode: '44',
     parentPhone: '',
     parentEmail: '',
     consent: true
@@ -46,17 +48,29 @@ export function TrialBookingModal({ isOpen, onClose, venue, selectedClass }) {
       nextDate.setDate(nextDate.getDate() + ((6 - nextDate.getDay() + 7) % 7 || 7));
       const trialDate = nextDate.toISOString().split('T')[0];
 
-      let phone = formData.parentPhone.trim();
-      let dialCode = '44';
-      if (phone.startsWith('+')) {
-        if (phone.startsWith('+91')) {
+      let rawPhone = (formData.parentPhone || '').trim();
+      let dialCode = formData.dialCode || '44';
+      let cleanPhone = rawPhone;
+      if (cleanPhone.startsWith('+')) {
+        if (cleanPhone.startsWith('+91')) {
           dialCode = '91';
-          phone = phone.slice(3);
-        } else if (phone.startsWith('+44')) {
+          cleanPhone = cleanPhone.slice(3).trim();
+        } else if (cleanPhone.startsWith('+44')) {
           dialCode = '44';
-          phone = phone.slice(3);
+          cleanPhone = cleanPhone.slice(3).trim();
+        } else {
+          cleanPhone = cleanPhone.replace(/^\+/, '').trim();
         }
       }
+
+      const digits = cleanPhone.replace(/\D/g, '');
+      let localDigits = digits;
+      if (localDigits.startsWith('0')) {
+        localDigits = localDigits.slice(1);
+      } else if (localDigits.startsWith(dialCode) && localDigits.length > 10) {
+        localDigits = localDigits.slice(dialCode.length);
+      }
+      const formattedPhoneNumber = localDigits ? `+${dialCode}${localDigits}` : `+${dialCode}7700900123`;
 
       const ageNum = Number(formData.childAge) || 5;
       const birthYear = new Date().getFullYear() - ageNum;
@@ -83,7 +97,7 @@ export function TrialBookingModal({ isOpen, onClose, venue, selectedClass }) {
             parentFirstName,
             parentLastName,
             parentEmail: formData.parentEmail,
-            parentPhoneNumber: phone,
+            parentPhoneNumber: formattedPhoneNumber,
             dialCode,
             relationToChild: 'mother',
             howDidYouHear: 'Website',
@@ -261,14 +275,30 @@ export function TrialBookingModal({ isOpen, onClose, venue, selectedClass }) {
                 <label className="text-xs font-bold text-slate-700 block mb-1">
                   Mobile Number (for SMS confirmation) *
                 </label>
-                <input
-                  type="tel"
-                  required
-                  placeholder="07123 456789"
-                  value={formData.parentPhone}
-                  onChange={(e) => setFormData({ ...formData, parentPhone: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm text-[#061838] focus:border-[#00A3E0] focus:bg-white outline-none"
-                />
+                <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl overflow-hidden focus-within:border-[#00A3E0] focus-within:bg-white">
+                  <div className="relative flex items-center pl-3 pr-2 border-r border-slate-200 bg-white h-full shrink-0">
+                    <select
+                      value={formData.dialCode || '44'}
+                      onChange={(e) => setFormData({ ...formData, dialCode: e.target.value })}
+                      className="appearance-none bg-transparent pr-4 text-xs font-bold text-[#061838] outline-none cursor-pointer"
+                    >
+                      {COUNTRY_CODES.map((c) => (
+                        <option key={c.code} value={c.code}>
+                          +{c.code}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="w-3 h-3 text-slate-400 absolute right-0.5 pointer-events-none" />
+                  </div>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="07123 456789"
+                    value={formData.parentPhone}
+                    onChange={(e) => setFormData({ ...formData, parentPhone: e.target.value })}
+                    className="flex-1 px-3 py-2 text-sm text-[#061838] outline-none bg-transparent"
+                  />
+                </div>
               </div>
 
               <div>

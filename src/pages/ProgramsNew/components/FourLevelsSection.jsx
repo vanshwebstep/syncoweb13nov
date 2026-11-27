@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container } from '../../../components/common/Container';
 import { useModal } from '../../../context/ModalContext';
-import textureBg from 'https://webstepdev.com/demo/syncoWebsiteImages/programs/Four-Levels-2.png';
+import textureBg from 'https://webstepdev.com/demo/syncoWebsiteImages/programs/Four-Levels-2.svg';
 import textureBgMobile from 'https://webstepdev.com/demo/syncoWebsiteImages/bluetexturebg.png';
 import layer from 'https://webstepdev.com/demo/syncoWebsiteImages/programs/yellow-layer-mobile.png';
 
@@ -62,7 +62,7 @@ export function FourLevelSection() {
         src={textureBg}
         alt=""
         aria-hidden="true"
-        className="hidden md:block absolute inset-0 w-full h-full object-cover object-top pointer-events-none z-0"
+        className="hidden md:block absolute inset-0 w-full h-full object-cover object-bottom pointer-events-none z-0"
       />
 
 

@@ -2,7 +2,7 @@ import React from "react";
 import { ArrowRight, Star } from "lucide-react";
 import { Container } from "../../../components/common/Container";
 import { useModal } from "../../../context/ModalContext";
-import heroBg from "https://webstepdev.com/demo/syncoWebsiteImages/birthday-party/herobanner.png";
+import heroBg from "https://webstepdev.com/demo/syncoWebsiteImages/birthday-party/herobg.svg";
 import heroBgMobile from "https://webstepdev.com/demo/syncoWebsiteImages/birthday-party/bannerMobile.png";
 import bannerMobile from "https://webstepdev.com/demo/syncoWebsiteImages/birthday-party/banner_mobile.png";
 import banderin from "https://webstepdev.com/demo/syncoWebsiteImages/birthday-party/banderin.png";

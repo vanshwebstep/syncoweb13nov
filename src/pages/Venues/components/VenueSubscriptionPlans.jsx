@@ -133,12 +133,21 @@ export function VenueSubscriptionPlans() {
   const venueIdVal = venue?.venueId || venue?.id || '5';
 
   const handleBookTrial = () => {
-    navigate(`/book-trial?venue=${venueIdVal}`);
+    const el = document.getElementById('class-times') || document.querySelector('[data-section="classes"]');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      navigate(`/venues/${venueIdVal}#class-times`);
+    }
   };
 
   const handleBookMembership = (plan) => {
-    const planIdParam = plan?.raw?.id ? `&planId=${plan.raw.id}` : '';
-    navigate(`/book-membership?venue=${venueIdVal}${planIdParam}&students=${studentCount}`);
+    const el = document.getElementById('class-times') || document.querySelector('[data-section="classes"]');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      navigate(`/venues/${venueIdVal}#class-times`);
+    }
   };
 
   const featuresFor = (plan, isFeatured) => {

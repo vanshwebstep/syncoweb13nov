@@ -4,12 +4,12 @@ import { KitSizeGuideModal } from './KitSizeGuideModal';
 import { ChildAvatar } from './ChildAvatar';
 
 const YELLOW_SPLASH = 'https://webstepdev.com/demo/syncoWebsiteImages/find-a-class/yellow.png';
-const STARTER_BOX_IMG = '/images/find-a-class/starter-box.png';
+const STARTER_BOX_IMG = 'https://webstepdev.com/demo/syncoWebsiteImages/starter-box.svg';
 
 const Tick = () => (
-  <span className="w-4 h-4 rounded-full bg-[#00D084] flex items-center justify-center shrink-0 mt-0.5">
-    <Check className="w-2.5 h-2.5 text-white" strokeWidth={3.5} />
-  </span>
+  
+    <Check className="w-4 h-4 text-[#0DD180]" strokeWidth={3.5} />
+  
 );
 
 const SIZES = [
@@ -50,10 +50,12 @@ export function Step6StarterPack({
 }) {
   const [activeChildIdx, setActiveChildIdx] = useState(0);
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
-  const [isEditingAddress, setIsEditingAddress] = useState(false);
-  const [postcodeInput, setPostcodeInput] = useState(deliveryAddress?.postcode || 'SW19 1AB');
-  const [addressLine, setAddressLine] = useState(deliveryAddress?.street || '12 Merton Road');
-  const [cityLine, setCityLine] = useState(deliveryAddress?.city || 'London SW19 1AB');
+  const [isEditingAddress, setIsEditingAddress] = useState(
+    !deliveryAddress?.postcode && !deliveryAddress?.street
+  );
+  const [postcodeInput, setPostcodeInput] = useState(deliveryAddress?.postcode || '');
+  const [addressLine, setAddressLine] = useState(deliveryAddress?.street || '');
+  const [cityLine, setCityLine] = useState(deliveryAddress?.city || '');
 
   const totalChildren = childrenData.length || 1;
 
@@ -145,7 +147,7 @@ export function Step6StarterPack({
         </h1>
 
         <p className="text-[#797A88] font-bold text-[14px] sm:text-[16px] mt-4 sm:mt-5">
-          We aim to deliver all kit boxes before {totalChildren > 1 ? 'their' : pronoun} first session.
+          We aim to deliver it before  {totalChildren > 1 ? 'their' : pronoun} first session.
         </p>
       </div>
 
@@ -222,30 +224,30 @@ export function Step6StarterPack({
 
           {/* Checklist */}
           <div className="flex-1 w-full space-y-3 pt-1">
-            <div className="flex items-center justify-between pb-1">
-              <span className="text-xs font-extrabold uppercase tracking-wider text-[#002B9A] bg-[#EBF7FC] px-2.5 py-1 rounded-full">
+           {/* <div className="flex items-center justify-between pb-1">
+               <span className="text-xs font-extrabold uppercase tracking-wider text-[#002B9A] bg-[#EBF7FC] px-2.5 py-1 rounded-full">
                 For {currentName} (Age {currentAge})
-              </span>
-            </div>
+              </span> 
+            </div>*/}
 
-            <div className="flex items-start gap-3 text-[14px] sm:text-[15px] font-bold text-[#0B2A8A]">
+            <div className="flex items-center gap-3 text-[14px] sm:text-[15px] font-bold text-[#34353B]">
               <Tick />
               <span>Full kit: shirt, shorts, socks</span>
             </div>
-            <div className="flex items-start gap-3 text-[14px] sm:text-[15px] font-bold text-[#0B2A8A]">
+            <div className="flex items-center gap-3 text-[14px] sm:text-[15px] font-bold text-[#34353B]">
               <Tick />
               <span>Samba skills ball</span>
             </div>
-            <div className="flex items-start gap-3 text-[14px] sm:text-[15px] font-bold text-[#0B2A8A]">
+            <div className="flex items-center gap-3 text-[14px] sm:text-[15px] font-bold text-[#34353B]">
               <Tick />
               <span>
                 Skills Tracker book:{' '}
-                <strong className="text-[#00D084]">{bookInfo.level}</strong>
+               <span className="text-[#00A6E3]"> {bookInfo.level}</span>
               </span>
             </div>
-            <div className="flex items-start gap-3 text-[14px] sm:text-[15px] font-bold text-[#0B2A8A]">
+            <div className="flex items-center gap-3 text-[14px] sm:text-[15px] font-bold text-[#34353B]">
               <Tick />
-              <span>Samba string bag (one size)</span>
+              <span>Samba string bag</span>
             </div>
           </div>
         </div>
@@ -298,8 +300,8 @@ export function Step6StarterPack({
         </div>
 
         {/* Recommended note */}
-        <p className="text-[12px] sm:text-[13px] font-bold text-[#0D7A4A] mt-1.5 flex items-center gap-1.5">
-          <Sparkles className="w-3.5 h-3.5 text-[#00D084]" />
+        <p className="text-[12px] sm:text-[13px] font-bold text-[#067A4B] mt-1.5 flex items-center gap-1.5">
+         
           <span>Recommended for {currentName} (age {currentAge}): {recSizeObj.name} ({recSize}).</span>
         </p>
       </div>
@@ -346,7 +348,7 @@ export function Step6StarterPack({
                   value={addressLine}
                   onChange={(e) => setAddressLine(e.target.value)}
                   placeholder="e.g. 12 Merton Road"
-                  className="w-full h-11 px-3 rounded-xl border border-slate-300 text-sm font-medium outline-none focus:border-[#0B2A8A]"
+                  className="w-full h-11 px-3 rounded-xl border border-slate-300 text-sm font-medium outline-none focus:border-[#0B2A8A] placeholder:text-[#94A3B8]"
                 />
               </div>
               <div>
@@ -356,7 +358,7 @@ export function Step6StarterPack({
                   value={postcodeInput}
                   onChange={(e) => setPostcodeInput(e.target.value)}
                   placeholder="e.g. SW19 1AB"
-                  className="w-full h-11 px-3 rounded-xl border border-slate-300 text-sm font-medium outline-none focus:border-[#0B2A8A]"
+                  className="w-full h-11 px-3 rounded-xl border border-slate-300 text-sm font-medium outline-none focus:border-[#0B2A8A] placeholder:text-[#94A3B8]"
                 />
               </div>
             </div>
@@ -406,7 +408,7 @@ export function Step6StarterPack({
         {/* Royal Mail Delivery badge */}
         <div className="flex items-center gap-2 text-[12px] sm:text-[13px] font-bold text-[#00A3E0] pt-1">
           <Truck className="w-4 h-4 shrink-0" />
-          <span>
+          <span className="text-[#34353B]">
             Delivery by Royal Mail · £{deliveryCharge} {totalChildren > 1 && `(combined for ${totalChildren} children)`} · 3–5 working days
           </span>
         </div>

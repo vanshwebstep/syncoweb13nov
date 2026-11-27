@@ -32,6 +32,13 @@ function calcAge(day, month, year) {
 
 const digitsOnly = (v) => v.replace(/\D/g, '');
 
+function parseAgeRange(ageStr = '') {
+  const nums = (String(ageStr).match(/\d+/g) || []).map(Number);
+  if (!nums.length) return { min: 4, max: 12 };
+  if (nums.length === 1) return { min: nums[0], max: nums[0] };
+  return { min: Math.min(nums[0], nums[1]), max: Math.max(nums[0], nums[1]) };
+}
+
 export function Step4ChildDetails({
   childIndex = 0,
   totalChildren = 1,
@@ -39,6 +46,8 @@ export function Step4ChildDetails({
   defaultLastName = '',
   updateChildData,
   selectedClass,
+  venue = null,
+  onSelectClass = null,
   onContinue,
   onBack
 }) {
@@ -50,6 +59,7 @@ export function Step4ChildDetails({
   const [gender, setGender] = useState(childData?.gender || 'Boy');
   const [hasMedical, setHasMedical] = useState(childData?.hasMedical || 'No');
   const [medicalDetails, setMedicalDetails] = useState(childData?.medicalDetails || '');
+  const [allowAgeOverride, setAllowAgeOverride] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   const monthRef = useRef(null);
@@ -110,10 +120,39 @@ export function Step4ChildDetails({
   const classDay = selectedClass?.day ? selectedClass.day.charAt(0).toUpperCase() + selectedClass.day.slice(1).slice(0, 3) : 'Tue';
   const classStartTime = selectedClass?.startTime || '4:00pm';
 
+  const ageRange = useMemo(() => parseAgeRange(classAge), [classAge]);
+  const isAgeMatch = useMemo(() => {
+    if (age == null) return true;
+    return age >= ageRange.min && age <= ageRange.max;
+  }, [age, ageRange]);
+
+  // Find a matching class in venue if age doesn't match
+  const suggestedClass = useMemo(() => {
+    if (isAgeMatch || age == null || !venue) return null;
+    const allVenueClasses = [];
+    if (venue.classes && typeof venue.classes === 'object') {
+      Object.entries(venue.classes).forEach(([day, list]) => {
+        if (Array.isArray(list)) {
+          list.forEach((cls) => allVenueClasses.push({ ...cls, day }));
+        }
+      });
+    } else if (Array.isArray(venue.schedule?.classes)) {
+      allVenueClasses.push(...venue.schedule.classes);
+    }
+
+    return allVenueClasses.find((cls) => {
+      const r = parseAgeRange(cls.className || cls.ageGroup);
+      return age >= r.min && age <= r.max;
+    });
+  }, [isAgeMatch, age, venue]);
+
   const errors = {
     firstName: !firstName.trim() ? 'Please enter first name' : '',
     lastName: !lastName.trim() ? 'Please enter last name' : '',
-    dob: age == null ? 'Please enter a valid date of birth' : ''
+    dob: age == null ? 'Please enter a valid date of birth' : '',
+    ageMismatch: (age != null && !isAgeMatch && !allowAgeOverride)
+      ? `${nameDisplay} is ${age} years old. This class is for ${classAge} (${ageRange.min}–${ageRange.max} years).`
+      : ''
   };
 
   const isValid = Object.values(errors).every((e) => !e);
@@ -174,7 +213,7 @@ export function Step4ChildDetails({
               value={firstName}
               placeholder="e.g. Leo"
               onChange={(e) => setFirstName(e.target.value)}
-              className={`w-full h-[52px] px-4 rounded-[16px] bg-white border text-[14px] sm:text-[15px] font-medium outline-none transition-all ${
+              className={`w-full h-[52px] px-4 rounded-[16px] bg-white border text-[14px] sm:text-[15px] font-medium placeholder:text-[#94A3B8] outline-none transition-all ${
                 submitted && errors.firstName
                   ? 'border-red-400 focus:border-red-400'
                   : 'border-[#C9D3F0] focus:border-[#042C89]'
@@ -194,7 +233,7 @@ export function Step4ChildDetails({
               value={lastName}
               placeholder="e.g. Smith"
               onChange={(e) => setLastName(e.target.value)}
-              className={`w-full h-[52px] px-4 rounded-[16px] bg-white border text-[14px] sm:text-[15px] font-medium outline-none transition-all ${
+              className={`w-full h-[52px] px-4 rounded-[16px] bg-white border text-[14px] sm:text-[15px] font-medium placeholder:text-[#94A3B8] outline-none transition-all ${
                 submitted && errors.lastName
                   ? 'border-red-400 focus:border-red-400'
                   : 'border-[#C9D3F0] focus:border-[#042C89]'
@@ -219,7 +258,7 @@ export function Step4ChildDetails({
                 placeholder="DD"
                 value={dobDay}
                 onChange={handleDayChange}
-                className="h-[52px] text-center rounded-[16px] bg-white border border-[#C9D3F0] text-[15px] font-bold outline-none focus:border-[#042C89]"
+                className="h-[52px] text-center rounded-[16px] bg-white border border-[#C9D3F0] text-[15px] font-bold outline-none focus:border-[#042C89] placeholder:text-[#94A3B8]"
               />
               <input
                 ref={monthRef}
@@ -228,7 +267,7 @@ export function Step4ChildDetails({
                 placeholder="MM"
                 value={dobMonth}
                 onChange={handleMonthChange}
-                className="h-[52px] text-center rounded-[16px] bg-white border border-[#C9D3F0] text-[15px] font-bold outline-none focus:border-[#042C89]"
+                className="h-[52px] text-center rounded-[16px] bg-white border border-[#C9D3F0] text-[15px] font-bold outline-none focus:border-[#042C89] placeholder:text-[#94A3B8]"
               />
               <input
                 ref={yearRef}
@@ -237,7 +276,7 @@ export function Step4ChildDetails({
                 placeholder="YYYY"
                 value={dobYear}
                 onChange={handleYearChange}
-                className="h-[52px] text-center rounded-[16px] bg-white border border-[#C9D3F0] text-[15px] font-bold outline-none focus:border-[#042C89]"
+                className="h-[52px] text-center rounded-[16px] bg-white border border-[#C9D3F0] text-[15px] font-bold outline-none focus:border-[#042C89] placeholder:text-[#94A3B8]"
               />
             </div>
             {submitted && errors.dob && (
@@ -245,21 +284,63 @@ export function Step4ChildDetails({
             )}
           </div>
 
-          {/* Green Right-Class Status Banner */}
-          <div className="bg-[#ECFDF5] border border-[#A7F3D0] rounded-[18px] p-3.5 flex items-start gap-3 h-[52px] sm:h-auto overflow-hidden">
-            <div className="w-5 h-5 rounded-full bg-[#10B981] text-white flex items-center justify-center shrink-0 mt-0.5">
-              <Check className="w-3 h-3 stroke-[3.5]" />
+          {/* Class Age Status Banner */}
+          {isAgeMatch ? (
+            <div className="bg-[#ECFDF5] border border-[#A7F3D0] rounded-[18px] p-3.5 flex items-start gap-3 h-[52px] sm:h-auto overflow-hidden">
+              <div className="w-5 h-5 rounded-full bg-[#10B981] text-white flex items-center justify-center shrink-0 mt-0.5">
+                <Check className="w-3 h-3 stroke-[3.5]" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[12px] sm:text-[13px] font-bold text-[#065F46] leading-tight truncate">
+                  {age != null ? `${nameDisplay} is ${age}, so ${pronoun}'s in the right class` : `Matches class age criteria`}
+                </p>
+                <p className="text-[11px] text-[#047857] mt-0.5 leading-tight truncate">
+                  {classAge} · {classLevel} · {classDay} {classStartTime}
+                </p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <p className="text-[12px] sm:text-[13px] font-bold text-[#065F46] leading-tight truncate">
-                {age != null ? `${nameDisplay} is ${age}, so ${pronoun}'s in the right class` : `Matches class age criteria`}
-              </p>
-              <p className="text-[11px] text-[#047857] mt-0.5 leading-tight truncate">
-                {classAge} · {classLevel} · {classDay} {classStartTime}
-              </p>
+          ) : (
+            <div className="bg-[#FFFBEB] border border-[#FCD34D] rounded-[18px] p-3.5 flex flex-col gap-2">
+              <div className="flex items-start gap-2.5">
+                <span className="w-5 h-5 rounded-full bg-[#F59E0B] text-white flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">!</span>
+                <div className="min-w-0">
+                  <p className="text-[12px] sm:text-[13px] font-bold text-[#92400E] leading-tight">
+                    {nameDisplay} is {age} years old (Class is for {classAge})
+                  </p>
+                  <p className="text-[11px] text-[#B45309] mt-0.5 leading-tight">
+                    Children develop best with their peer age group.
+                  </p>
+                </div>
+              </div>
+
+              {suggestedClass && onSelectClass && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onSelectClass(suggestedClass);
+                    setAllowAgeOverride(false);
+                  }}
+                  className="self-start text-[11px] font-bold text-white bg-[#0B2A8A] hover:bg-[#08206b] px-3.5 py-1.5 rounded-full transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer"
+                >
+                  <span>Switch to {suggestedClass.className || suggestedClass.ageGroup} class</span>
+                  <ArrowRight className="w-3 h-3" />
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setAllowAgeOverride(true)}
+                className="text-[10px] text-[#92400E] hover:underline font-semibold self-start mt-0.5 cursor-pointer"
+              >
+                {allowAgeOverride ? '✓ Age override accepted' : 'Proceed anyway with this class'}
+              </button>
             </div>
-          </div>
+          )}
         </div>
+
+        {submitted && errors.ageMismatch && (
+          <p className="text-red-500 text-xs font-bold px-1">{errors.ageMismatch}</p>
+        )}
 
         {/* Gender & Medical Needs */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">

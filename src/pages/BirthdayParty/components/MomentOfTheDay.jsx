@@ -11,7 +11,7 @@ import momentMobile from 'https://webstepdev.com/demo/syncoWebsiteImages/birthda
 export function MomentOfTheDay() {
   return (
     <section
-      className="relative w-full overflow-hidden bg-[#042C89] py-14 pb-5 sm:py-18 lg:pt-20"
+      className="relative w-full overflow-hidden bg-[#042C89] py-14 pb-12 sm:py-18 lg:pt-26"
       style={{
         backgroundImage: `url(${momentBanner})`,
         backgroundSize: 'cover',

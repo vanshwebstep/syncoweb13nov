@@ -15,11 +15,13 @@ export function Header() {
   return (
     <>
       {/* Top utility bar - Normal document flow, NOT sticky (scrolls off-screen with page) */}
-      <TopBar />
+      <div className="print:hidden">
+        <TopBar />
+      </div>
 
       {/* Main navigation header - STICKY at top-0, stays pinned when scrolling across the entire page */}
       <header
-        className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+        className={`sticky top-0 z-50 w-full print:hidden transition-all duration-300 ${
           isScrolled ? 'shadow-xl' : ''
         }`}
         style={{

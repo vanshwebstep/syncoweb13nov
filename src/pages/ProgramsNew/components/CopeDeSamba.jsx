@@ -11,7 +11,7 @@ export function CopeDeSamba() {
     <section className="relative overflow-hidden bg-[#042C89] font-sans">
       {/* Background (blue + green wave) */}
       <img
-        src={img('everythingleadbg')}
+        src={'https://webstepdev.com/demo/syncoWebsiteImages/roadtorio/everythingleadbg.svg?v=232'}
         alt=""
         aria-hidden="true"
         className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none z-0"

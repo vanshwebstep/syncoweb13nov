@@ -114,18 +114,29 @@ export function Step3StartDate({
   // Calculate payment breakdown based on selected plan and start date
   const paymentBreakdown = useMemo(() => {
     const activeDate = selectedDate || availableDates[0];
-    if (!activeDate) return null;
+    if (!activeDate || !activeDate.dateObj) return null;
 
     const monthlyPrice = Number(selectedPlan?.monthlyPrice || 51.99);
     const duration = selectedPlan?.duration || 12;
 
-    // Determine how many sessions remain in the starting month
-    const startMonth = activeDate.dateObj.getMonth();
-    const sessionsThisMonth = availableDates.filter(
-      (d) => d.dateObj.getMonth() === startMonth
-    ).length || 2;
+    const d = activeDate.dateObj;
+    const year = d.getFullYear();
+    const startMonth = d.getMonth();
+    const currentDay = d.getDate();
+    const lastDayOfMonth = new Date(year, startMonth + 1, 0).getDate();
+    const targetWeekday = d.getDay();
 
-    // Session price
+    // Accurately count how many occurrences of targetWeekday remain in this calendar month from activeDate onwards
+    let remainingSessions = 0;
+    for (let day = currentDay; day <= lastDayOfMonth; day++) {
+      const cur = new Date(year, startMonth, day);
+      if (cur.getDay() === targetWeekday) {
+        remainingSessions++;
+      }
+    }
+    const sessionsThisMonth = Math.max(1, remainingSessions);
+
+    // Session lesson price
     const perSession = Number(
       selectedPlan?.priceLesson || (monthlyPrice / 4)
     );
@@ -244,7 +255,7 @@ export function Step3StartDate({
                   Today
                 </p>
                 <p className="text-[#797A88] text-[9px] sm:text-[10px] mt-0.5 leading-tight">
-                  {paymentBreakdown.sessionsLeft} sessions left in {paymentBreakdown.monthName} ({paymentBreakdown.sessionsLeft} × £{paymentBreakdown.perSession})
+                  {paymentBreakdown.sessionsLeft} sessions left in {paymentBreakdown.monthName} (pro-rata)
                 </p>
               </div>
               <span className="font-bold text-[11px] sm:text-[12px] text-[#042C89] shrink-0">

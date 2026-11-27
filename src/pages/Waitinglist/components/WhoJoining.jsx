@@ -518,10 +518,22 @@ function StepParent({ venue, parent, update, childName, onNext, onBack, isChecki
         </div>
         <div>
           <label className={labelClass}>Mobile number</label>
-          <div className="flex items-center h-[50px] bg-white border border-[#C9D3F0] rounded-[14px] focus-within:border-[#042C89] transition-colors">
-            <span className="poppins font-bold text-[#34353B] text-[14px] pl-4 pr-3 border-r border-[#C9D3F0] h-[24px] flex items-center">
-              +44
-            </span>
+          <div className="flex items-center h-[50px] bg-white border border-[#C9D3F0] rounded-[14px] focus-within:border-[#042C89] transition-colors overflow-hidden">
+            <div className="relative flex items-center pl-3.5 pr-2 border-r border-[#C9D3F0] h-[24px]">
+              <select
+                value={parent.dialCode || '44'}
+                onChange={(e) => update({ dialCode: e.target.value })}
+                className="appearance-none bg-transparent pr-4 text-[13px] font-bold text-[#34353B] poppins outline-none cursor-pointer"
+              >
+                <option value="44">+44 (UK)</option>
+                <option value="91">+91 (IN)</option>
+                <option value="1">+1 (US)</option>
+                <option value="61">+61 (AU)</option>
+                <option value="353">+353 (IE)</option>
+                <option value="971">+971 (AE)</option>
+              </select>
+              <svg className="w-3 h-3 text-[#34353B] absolute right-0.5 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
             <input
               type="tel"
               placeholder="07700 900123"
@@ -1218,17 +1230,15 @@ const WhoJoining = ({ venue = DEFAULT_VENUE, selectedClass = null, onExit, onTri
       });
 
       let phone = (parent.phone || '').trim();
+      const dial = parent.dialCode || '44';
       if (!phone.startsWith('+')) {
-        const digits = phone.replace(/\D/g, '');
+        let digits = phone.replace(/\D/g, '');
         if (digits.startsWith('0')) {
-          phone = '+44' + digits.slice(1);
-        } else if (digits.startsWith('44')) {
-          phone = '+' + digits;
-        } else if (digits.length >= 10) {
-          phone = '+44' + digits;
-        } else {
-          phone = '+44' + digits;
+          digits = digits.slice(1);
+        } else if (digits.startsWith(dial) && digits.length > 10) {
+          digits = digits.slice(dial.length);
         }
+        phone = `+${dial}${digits}`;
       }
 
       let relation = parent.relation || 'Father';
@@ -1246,6 +1256,7 @@ const WhoJoining = ({ venue = DEFAULT_VENUE, selectedClass = null, onExit, onTri
           parentLastName: resolvedLastName,
           parentEmail: resolvedEmail,
           parentPhoneNumber: phone,
+          dialCode: phone.startsWith('+91') ? '91' : '44',
           relationToChild: relation,
           interestReason: "To build my child's confidence",
           interestReasonOther: "NA",

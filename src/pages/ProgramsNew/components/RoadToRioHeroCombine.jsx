@@ -6,6 +6,17 @@ import { Container } from '../../../components/common/Container';
 const BASE = 'https://webstepdev.com/demo/syncoWebsiteImages/roadtorio';
 const img = (name, ext = 'png') => `${BASE}/${encodeURIComponent(name)}.${ext}`;
 
+/* Legend cards: coachesimg/{Level}/legendCard/{file} */
+const LEGEND_BASE = `${BASE}/coachesimg`;
+const LEVEL_FOLDER = {
+  beginner: 'Beginner',
+  intermediate: 'Intermediate',
+  advanced: 'Advanced',
+  pro: 'Pro',
+};
+const legendImg = (level, file) =>
+  `${LEGEND_BASE}/${LEVEL_FOLDER[level]}/legendCard/${encodeURIComponent(file)}`;
+
 /* ================= DATA ================= */
 const HERO_PILLS = ['38 weeks', '6 cities', '4 levels', '1 finale'];
 
@@ -27,36 +38,36 @@ const CITIES = ['Manaus', 'Brasília', 'Recife', 'São Paulo', 'Porto Alegre', '
 
 const PLAYERS = {
   beginner: [
-    { name: 'Gabriel Jesus', file: 'GabrielJesus' },
-    { name: 'Roberto Carlos', file: 'RobertoCarlos' },
-    { name: 'Marcelo', file: 'Marcelo' },
-    { name: 'Willian', file: 'Willian' },
-    { name: 'Romário', file: 'Romário' },
-    { name: 'Rivaldo', file: 'Rivaldo' },
+    { name: 'Gabriel Jesus', file: 'gabriel_jesus_illustration.svg' },
+    { name: 'Roberto Carlos', file: 'roberto_carlos_illustration.svg' },
+    { name: 'Marcelo', file: 'marcelo_illustration.svg' },
+    { name: 'Willian', file: 'willian_illustration.svg' },
+    { name: 'Romário', file: 'romário_illustration.svg' },
+    { name: 'Rivaldo', file: 'rivaldo_illustration.svg' },
   ],
   intermediate: [
-    { name: 'Philippe Coutinho', file: 'PhilippeCoutinho' },
-    { name: 'Mané Garrincha', file: 'ManeGarrincha' },
-    { name: 'Raphinha', file: 'Raphinha' },
-    { name: 'Denilson', file: 'Denilson' },
-    { name: 'Juninho', file: 'Juninho' },
-    { name: 'Ronaldo', file: 'Ronaldo' },
+    { name: 'Philippe Coutinho', file: 'philippe_coutinho_illustration.svg' },
+    { name: 'Mané Garrincha', file: 'mané_garrincha_illustration.svg' },
+    { name: 'Raphinha', file: 'raphinha_illustration.svg' },
+    { name: 'Denilson', file: 'denílson_illustration.svg' },
+    { name: 'Juninho', file: 'juninho_illustration.svg' },
+    { name: 'Ronaldo', file: 'ronaldo_illustration.svg' },
   ],
   advanced: [
-    { name: 'Ronaldinho', file: 'Ronaldinho' },
-    { name: 'Rivelino', file: 'Rivelino' },
-    { name: 'Firmino', file: 'Firmino' },
-    { name: 'Zico', file: 'Zico' },
-    { name: 'Cafu', file: 'Cafu' },
-    { name: 'Neymar Jr.', file: 'NeymarJr' },
+    { name: 'Ronaldinho', file: 'ronaldinho_illustration.svg' },
+    { name: 'Rivelino', file: 'rivelino_illustration.svg' },
+    { name: 'Firmino', file: 'firmino_illustration.svg' },
+    { name: 'Zico', file: 'zico_illustration.svg' },
+    { name: 'Cafu', file: 'cafu_illustration.svg' },
+    { name: 'Neymar Jr.', file: 'neymar_Jr_illustration.svg' },
   ],
   pro: [
-    { name: 'Kaká', file: 'Kaka' },
-    { name: 'Jairzinho', file: 'Jairzinho' },
-    { name: 'Vini Jr.', file: 'ViniJr' },
-    { name: 'Rodrygo', file: 'Rodrygo' },
-    { name: 'Douglas Costa', file: 'DouglasCosta' },
-    { name: 'Pelé', file: 'Pele' },
+    { name: 'Kaká', file: 'kaká_illustration.svg' },
+    { name: 'Jairzinho', file: 'jairzinho_illustration.svg' },
+    { name: 'Vini Jr.', file: 'vini_jr_illustration.svg' },
+    { name: 'Rodrygo', file: 'rodrygo_illustration.svg' },
+    { name: 'Douglas Costa', file: 'douglas_costa_illustration.svg' },
+    { name: 'Pelé', file: 'pelé_illustration.svg' },
   ],
 };
 
@@ -77,12 +88,28 @@ export function RioHero() {
   return (
     <>
       <section className="relative bg-[#0A9BE5] overflow-hidden">
-        {/* Desktop bg */}
-        <img
-          src={img('HeroRio')}
-          alt="Samba kids at the stadium"
-          className="hidden md:block absolute right-0 top-0 h-full w-[100%] object-cover object-right pointer-events-none"
-        />
+        {/* Desktop bg (Ultra High-Resolution 4K/Retina with WebP & PNG fallback) */}
+        <picture className="hidden md:block absolute right-0 top-0 h-full w-[100%] pointer-events-none">
+          <source
+            type="image/webp"
+            srcSet="/images/roadtorio/Hero.webp 1x, /images/roadtorio/Hero-ultra.webp 2x"
+          />
+          <source
+            type="image/png"
+            srcSet="/images/roadtorio/Hero.png"
+          />
+          <img
+            src="/images/roadtorio/Hero.webp"
+            alt="Samba kids at the stadium"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+            className="h-full w-[100%] object-cover object-right pointer-events-none"
+            onError={(e) => {
+              e.currentTarget.src = img('Hero');
+            }}
+          />
+        </picture>
         {/* Mobile bg (bottom anchored: kids neeche) */}
         <img
           src={img('heromobile')}
@@ -94,14 +121,14 @@ export function RioHero() {
         <Container className="relative z-10 pt-8 pb-[480px] md:pt-20 md:pb-36 lg:pt-24 lg:pb-44">
           <div className="max-w-[600px] flex flex-col">
             {/* Rating badge: mobile white, desktop blue */}
-            <span className="order-1 self-start inline-flex items-center gap-1.5 bg-white text-[#042C89] md:bg-[#042C89] md:text-white font-['Poppins',sans-serif] text-[12px] md:text-[13px] font-semibold px-3.5 py-1.5 rounded-full shadow-sm md:shadow-none">
+            <a  href="https://www.google.com/maps/place/?q=place_id:ChIJafINar4PdkgRiqEM52XuP-I" className="order-1 self-start inline-flex items-center gap-1.5 bg-white text-[#042C89] md:bg-[#042C89] md:text-white font-['Poppins',sans-serif] text-[12px] md:text-[13px] font-semibold px-3.5 py-1.5 rounded-full shadow-sm md:shadow-none">
               <span className="flex text-[#FFDE14]">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="w-3 h-3 fill-current" />
                 ))}
               </span>
               4.8 on Google
-            </span>
+            </a>
 
             <h1 className="order-2 mt-5 leading-[1.1]">
               <span className="block font-['Recline',sans-serif] font-bold text-white text-[36px] sm:text-[44px] lg:text-[52px]">
@@ -144,7 +171,7 @@ export function RioHero() {
                 to="/find-a-class"
                 className="inline-flex w-full md:w-auto items-center justify-center border-[1.5px] border-white text-[#042C89] md:text-white bg-white/10 md:bg-transparent hover:bg-white hover:text-[#042C89] font-['Poppins',sans-serif] font-bold text-[15px] lg:text-[16px] px-6 lg:px-8 py-4 md:py-3 lg:py-3.5 rounded-full transition-all duration-300 whitespace-nowrap"
               >
-                Find a class
+                Our Venues
               </Link>
             </div>
           </div>
@@ -249,6 +276,8 @@ export function RioLegends() {
   const current = players[active];
   const levelLabel = LEVELS.find((l) => l.id === level)?.label;
 
+  const GAP = 12; // gap-3 (mobile)
+
   const changeLevel = (id) => {
     setLevel(id);
     setActive(0);
@@ -261,7 +290,7 @@ export function RioLegends() {
     if (!el || window.innerWidth >= 1024) return;
     const card = el.children[0];
     if (!card) return;
-    const step = card.offsetWidth + 16;
+    const step = card.offsetWidth + GAP;
     const idx = Math.round(el.scrollLeft / step);
     if (idx !== active && idx >= 0 && idx < players.length) setActive(idx);
   };
@@ -271,7 +300,7 @@ export function RioLegends() {
     const el = scrollRef.current;
     if (el && window.innerWidth < 1024) {
       const card = el.children[0];
-      el.scrollTo({ left: i * (card.offsetWidth + 16), behavior: 'smooth' });
+      el.scrollTo({ left: i * (card.offsetWidth + GAP), behavior: 'smooth' });
     }
   };
 
@@ -280,18 +309,18 @@ export function RioLegends() {
       <Container>
         {/* Heading */}
         <div className="text-center">
-          <p className="font-['Poppins',sans-serif] font-bold text-[#FFDE14] text-[10px] lg:text-[12px] tracking-[0.08em] uppercase">
+          <p className="font-['Poppins',sans-serif] font-bold text-[#FFDE14] text-[11.5px] lg:text-[12px] tracking-[0.08em] uppercase">
             Meet the legends
           </p>
-          <h2 className="mt-3 font-['Recline',sans-serif] font-bold text-[26px] sm:text-[34px] lg:text-[40px] leading-[1.1]">
+          <h2 className="mt-3 font-['Recline',sans-serif] font-bold text-[28px] sm:text-[34px] lg:text-[40px] leading-[1.1]">
             New city. New player.
           </h2>
-          <span className="relative inline-block font-['Gasoek_One',sans-serif] text-[#FFDE14] text-[32px] sm:text-[42px] lg:text-[50px] leading-[1.15] mt-1">
+          <span className="relative inline-block font-['Gasoek_One',sans-serif] text-[#FFDE14] text-[38px] sm:text-[42px] lg:text-[50px] leading-[1.15] mt-1">
             New challenge.
             <img src={img('whiteline')} alt="" className="absolute left-0 -bottom-1 w-full h-auto pointer-events-none" />
           </span>
-          <p className="mt-4 font-['Poppins',sans-serif] text-white text-[13px] lg:text-[17px] max-w-[260px] mx-auto lg:max-w-none">
-            Pick a level to meet the legends behind every stop.
+          <p className="mt-4 font-['Poppins',sans-serif] font-regular text-white text-[14.5px] lg:text-[17px] max-w-[270px] mx-auto lg:max-w-none">
+            Pick a level to see the skills your child will master at each stop.
           </p>
 
           {/* Tabs */}
@@ -302,7 +331,7 @@ export function RioLegends() {
                   key={l.id}
                   type="button"
                   onClick={() => changeLevel(l.id)}
-                  className={`font-['Poppins',sans-serif] font-bold text-[11px] sm:text-[12px] lg:text-[14px] px-3 sm:px-4 lg:px-6 py-2 lg:py-2.5 rounded-full whitespace-nowrap transition-all duration-300 cursor-pointer ${
+                  className={`font-['Poppins',sans-serif] font-bold text-[12.5px] sm:text-[12px] lg:text-[14px] px-3 sm:px-4 lg:px-6 py-2 lg:py-2.5 rounded-full whitespace-nowrap transition-all duration-300 cursor-pointer ${
                     level === l.id ? 'bg-[#FFDE14] text-[#042C89]' : 'bg-transparent text-white hover:bg-[#FFFFFF1A]'
                   }`}
                 >
@@ -313,11 +342,11 @@ export function RioLegends() {
           </div>
         </div>
 
-        {/* Player cards: mobile = swipe carousel, desktop = 6 col grid */}
+        {/* Player cards: mobile = center-snap carousel (side cards peek), desktop = 6 col grid */}
         <div
           ref={scrollRef}
           onScroll={onScroll}
-          className="mt-8 flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-4 px-4 lg:mx-0 lg:px-0 lg:grid lg:grid-cols-6 lg:gap-4 lg:overflow-visible [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="mt-8 flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 -mx-4 px-[11%] lg:mx-0 lg:px-0 lg:gap-4 lg:grid lg:grid-cols-6 lg:overflow-visible [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {players.map((p, i) => {
             const isActive = i === active;
@@ -326,22 +355,26 @@ export function RioLegends() {
                 key={`${level}-${p.name}`}
                 type="button"
                 onClick={() => goTo(i)}
-                className={`relative snap-center shrink-0 w-[84%] sm:w-[60%] lg:w-auto rounded-[24px] lg:rounded-[18px] pt-5 pb-6 lg:pt-4 lg:pb-4 px-2 flex flex-col items-center cursor-pointer transition-all duration-300 lg:hover:-translate-y-1 ${
-                  isActive ? 'bg-[#FFDE14]' : 'bg-white lg:bg-white'
-                } ${!isActive ? 'max-lg:bg-[#FFDE14]' : ''}`}
+                className={`relative snap-center shrink-0 w-[78%] sm:w-[60%] lg:w-auto rounded-[24px] lg:rounded-[18px] pt-5 pb-6 lg:pt-4 lg:pb-4 px-2 flex flex-col items-center cursor-pointer transition-all duration-300 lg:hover:-translate-y-1 ${
+                  isActive ? 'bg-[#FFDE14]' : 'bg-white'
+                }`}
               >
                 <span className="absolute top-4 left-4 w-7 h-7 rounded-full bg-[#042C89] text-white text-[12px] font-bold font-['Poppins',sans-serif] flex items-center justify-center z-10">
                   {i + 1}
                 </span>
 
-                {/* Mobile: light circle behind player */}
-                <div className="relative flex items-center justify-center">
-                  <span className="lg:hidden absolute h-[190px] w-[190px] rounded-full bg-white/40" />
+                {/* Circle behind player: yellow card -> #FFE97A, white card -> #EEF3FB */}
+                <div className="relative flex items-center justify-center mt-2">
+                  <span
+                    className={`absolute h-[190px] w-[190px] lg:h-[120px] lg:w-[120px] rounded-full transition-colors duration-300 ${
+                      isActive ? 'bg-[#FFE97A]' : 'bg-[#EEF3FB]'
+                    }`}
+                  />
                   <img
-                    src={img(p.file)}
+                    src={legendImg(level, p.file)}
                     alt={p.name}
                     onError={(e) => (e.currentTarget.style.visibility = 'hidden')}
-                    className="relative h-[230px] lg:h-[190px] w-auto object-contain mt-2"
+                    className="relative h-[230px] lg:h-[190px] w-auto object-contain"
                   />
                 </div>
 
@@ -356,27 +389,33 @@ export function RioLegends() {
           })}
         </div>
 
-        {/* Dots + hint (mobile only) */}
+        {/* Progress dots + hint (mobile only) */}
         <div className="lg:hidden mt-4 flex flex-col items-center gap-3">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center">
             {players.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                aria-label={`Go to stop ${i + 1}`}
-                onClick={() => goTo(i)}
-                className={`rounded-full transition-all ${
-                  i === active
-                    ? 'h-5 w-5 bg-[#FFDE14] text-[#042C89] text-[10px] font-bold flex items-center justify-center'
-                    : 'h-2 w-2 bg-white/40'
-                }`}
-              >
-                {i === active ? i + 1 : ''}
-              </button>
+              <React.Fragment key={i}>
+                {i > 0 && (
+                  <span className={`h-[2px] w-3 ${i <= active ? 'bg-[#FFDE14]' : 'bg-white/30'}`} />
+                )}
+                <button
+                  type="button"
+                  aria-label={`Go to stop ${i + 1}`}
+                  onClick={() => goTo(i)}
+                  className={`rounded-full transition-all flex items-center justify-center ${
+                    i === active
+                      ? 'h-6 w-6 bg-[#FFDE14] text-[#042C89] text-[11px] font-bold font-["Poppins",sans-serif]'
+                      : i < active
+                      ? 'h-4 w-4 bg-[#FFDE14]'
+                      : 'h-4 w-4 bg-white/40'
+                  }`}
+                >
+                  {i === active ? i + 1 : ''}
+                </button>
+              </React.Fragment>
             ))}
           </div>
-          <p className="font-['Poppins',sans-serif] text-[11px] font-medium text-white/80">
-            Stop {active + 1} of {players.length} · Swipe to meet all {players.length} →
+          <p className="font-['Poppins',sans-serif] text-[12.5px] font-medium text-white/80">
+            Step {active + 1} of {players.length} · Swipe to meet all {players.length} →
           </p>
         </div>
 
@@ -394,17 +433,17 @@ export function RioLegends() {
             {[1, 2, 3, 4, 5].map((n) => (
               <span
                 key={n}
-                className="flex flex-col items-center gap-1.5 lg:flex-row lg:gap-2 lg:bg-white/10 lg:rounded-full lg:pl-1.5 lg:pr-5 lg:py-1.5 font-['Poppins',sans-serif] font-semibold text-[10px] lg:text-[14px]"
+                className="flex flex-col items-center gap-1.5 lg:flex-row lg:gap-2 lg:bg-white/10 lg:rounded-full lg:pl-1.5 lg:pr-5 lg:py-1.5 font-['Poppins',sans-serif] font-semibold text-[11.5px] lg:text-[14px]"
               >
                 <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#FFDE14] lg:h-7 lg:w-7 lg:bg-transparent">
-                  <img src={img('starimg')} alt="" className="h-5 w-5 lg:h-7 lg:w-7 object-contain" />
+                  <img src={img('starimg')} alt="" className="h-10 w-10 lg:h-7 lg:w-7 object-contain" />
                 </span>
                 Skill {n}
               </span>
             ))}
           </div>
 
-          <p className="mt-5 font-['Poppins',sans-serif] text-white/80 text-[11px] lg:text-[14px] max-w-[280px] mx-auto lg:max-w-none">
+          <p className="mt-5 font-['Poppins',sans-serif] text-white/80 text-[13px] lg:text-[14px] max-w-[280px] mx-auto lg:max-w-none">
             5 signature moves inspired by {current.name}. Revealed in class and in their Skills Tracker.
           </p>
         </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container } from '../../../components/common/Container';
-import textureBg from 'https://webstepdev.com/demo/syncoWebsiteImages/bluetexturebg.png';
+import textureBg from 'https://webstepdev.com/demo/syncoWebsiteImages/bluetexturebg.svg';
 import { useVenue } from '../../Venues/VenueContext';
 
 import blobHeroPhoto from 'https://webstepdev.com/demo/syncoWebsiteImages/programs/kit-image.png';

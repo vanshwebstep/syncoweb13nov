@@ -4,7 +4,17 @@ import { Container } from '../../../components/common/Container';
 import waveBg from 'https://webstepdev.com/demo/syncoWebsiteImages/final-bg-yellow-green-texture.svg';
 import expPhoto from 'https://webstepdev.com/demo/syncoWebsiteImages/why-samba/exp_it.png';
 import kidsPhoto from 'https://webstepdev.com/demo/syncoWebsiteImages/why-samba/experienceboys.png';
-
+import { 
+  ChevronDown, 
+  Menu, 
+  ArrowRight, 
+  MapPin, 
+  Calendar, 
+  Sun, 
+  Gift, 
+  User, 
+  Compass 
+} from 'lucide-react';
 const stats = [
   { value: '2009', label: 'Year we started', bg: '#FFDE14' },
   { value: '15+', label: 'Years of Samba', bg: '#E7FAF2' },
@@ -103,13 +113,13 @@ export function CopeDeSamba() {
                   to="/book-trial"
                   className="inline-flex items-center justify-center gap-2 bg-[#042C89] hover:bg-[#032066] text-white font-['Poppins',sans-serif] font-semibold text-[13px] lg:text-[16px] px-6 lg:px-12 py-3 lg:py-3.5 rounded-full shadow-md transition-all duration-300 hover:scale-[1.03] active:scale-95 whitespace-nowrap"
                 >
-                  Book a FREE trial <span aria-hidden>→</span>
+                  Book a FREE trial <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
                   to="/find-a-class"
                   className="inline-flex items-center justify-center bg-white border-[1.5px] border-[#042C89] text-[#042C89] hover:bg-[#042C89] hover:text-white font-['Poppins',sans-serif] font-semibold text-[13px] lg:text-[16px] px-6 lg:px-12 py-3 lg:py-3.5 rounded-full transition-all duration-300 whitespace-nowrap"
                 >
-                  Find a class
+                  Our Venues
                 </Link>
               </div>
             </div>

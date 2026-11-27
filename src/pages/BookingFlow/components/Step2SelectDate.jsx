@@ -71,9 +71,14 @@ export function extractDynamicDates(cls, venue) {
     : 'From 7:15am';
 
   // Capacity calculation
-  const cap = Number(cls?.capacity) || 0;
   const total = Number(cls?.totalCapacity) || 20;
-  const spotsLeft = Math.max(0, total - cap);
+  const spotsLeft = cls?.spacesLeft != null
+    ? Math.max(0, Number(cls.spacesLeft))
+    : (cls?.spotsLeft != null
+        ? Math.max(0, Number(cls.spotsLeft))
+        : (cls?.capacity != null
+            ? Math.max(0, Number(cls.capacity))
+            : 0));
 
   let statusType = 'available';
   let statusText = 'Spaces available';

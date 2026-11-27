@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Container } from '../../../components/common/Container';
 import { useModal } from '../../../context/ModalContext';
-import playBg from 'https://webstepdev.com/demo/syncoWebsiteImages/programs/10. Final Trial bg-yellow-green-texture.svg';
+import playBg from 'https://webstepdev.com/demo/syncoWebsiteImages/programs/10. Final Trial CTA.png';
 import playImgLeft from 'https://webstepdev.com/demo/syncoWebsiteImages/programs/picture_blue.png';
 import playImgRight from 'https://webstepdev.com/demo/syncoWebsiteImages/programs/picture_blue2.png';
 
@@ -78,7 +78,7 @@ export function ReadyToStart() {
               {/* Dark Blue CTA Button */}
               <div className="pt-2 md:pt-2">
                 <Link
-                  to="/book-trial"
+                  to="/find-a-class"
                   className="bg-[#042C89] hover:bg-[#021840] poppins text-white font-bold text-[14px] sm:text-[16px] md:text-[14px] min-[900px]:text-[16px] lg:text-[17px] xl:text-[19px] 2xl:text-[20px] px-7 sm:px-8 lg:px-9 py-3 sm:py-3.5 lg:py-4 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer inline-block"
                 >
                   Book a FREE trial

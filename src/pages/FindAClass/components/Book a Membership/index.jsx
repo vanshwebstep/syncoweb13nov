@@ -7,7 +7,8 @@ import {
   fetchDynamicVenues,
   fetchClassById,
   fetchVenueByIdOrName,
-  bookFreeTrial
+  bookFreeTrial,
+  bookMembership
 } from '../../../../services/venueService';
 
 import { MembershipHeader } from './MembershipHeader';
@@ -19,6 +20,7 @@ import { Step4ChildDetails } from './Step4ChildDetails';
 import { Step5ParentDetails } from './Step5ParentDetails';
 import { Step6StarterPack } from './Step6StarterPack';
 import { Step7CheckAndPay } from './Step7CheckAndPay';
+import { Step8MonthlyPayments } from './Step8MonthlyPayments';
 import { Step6Success } from './Step6Success';
 import { SambaLoginModal } from './SambaLoginModal';
 
@@ -106,12 +108,15 @@ export function BookMembershipPage() {
     { childIndex: 0, kitSize: 'S', bookLevel: 'Beginners' }
   ]);
   const [deliveryAddress, setDeliveryAddress] = useState({
-    postcode: 'SW19 1AB',
-    street: '12 Merton Road',
-    city: 'London SW19 1AB'
+    postcode: '',
+    street: '',
+    city: ''
   });
+  const [appliedDiscount, setAppliedDiscount] = useState(0);
+  const [discountCode, setDiscountCode] = useState('');
 
   const [paymentBreakdown, setPaymentBreakdown] = useState(null);
+  const [cardPaymentData, setCardPaymentData] = useState(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   // 24-Hour Trial Offer & Countdown state
@@ -275,8 +280,9 @@ export function BookMembershipPage() {
   // 4..N: child-0, child-1 ... (Screenshot 4)
   // N+1: parent-details (Screenshot 5)
   // N+2: starter-pack (Screenshot 6 / 1 of new set)
-  // N+3: check-and-pay (Screenshot 7 / 3 of new set)
-  // N+4: success
+  // N+3: check-and-pay (Card payment today)
+  // N+4: monthly-payments (Direct Debit setup)
+  // N+5: success
   const stepSequence = useMemo(() => {
     const list = ['children-count', 'pick-plan', 'start-date'];
     for (let i = 0; i < childrenCount; i++) {
@@ -285,6 +291,7 @@ export function BookMembershipPage() {
     list.push('parent-details');
     list.push('starter-pack');
     list.push('check-and-pay');
+    list.push('monthly-payments');
     list.push('success');
     return list;
   }, [childrenCount]);
@@ -327,22 +334,24 @@ export function BookMembershipPage() {
     if (currentStep === 'success') return 100;
     switch (currentStep) {
       case 'children-count':
-        return 15;
+        return 12;
       case 'pick-plan':
-        return 30;
+        return 25;
       case 'start-date':
-        return 45;
+        return 40;
       case 'parent-details':
-        return 70;
+        return 65;
       case 'starter-pack':
-        return 82;
+        return 78;
       case 'check-and-pay':
-        return 92;
+        return 88;
+      case 'monthly-payments':
+        return 96;
       default:
         if (typeof currentStep === 'string' && currentStep.startsWith('child-')) {
-          return 60;
+          return 55;
         }
-        return 15;
+        return 12;
     }
   }, [currentStep]);
 
@@ -361,6 +370,8 @@ export function BookMembershipPage() {
         return { text: 'About 1 min', type: 'clock' };
       case 'check-and-pay':
         return { text: 'Nearly there', type: 'check' };
+      case 'monthly-payments':
+        return { text: 'Final step', type: 'check' };
       default:
         if (typeof currentStep === 'string' && currentStep.startsWith('child-')) {
           return { text: 'About 2 min', type: 'clock' };
@@ -375,118 +386,212 @@ export function BookMembershipPage() {
     goToNextStep();
   };
 
-  // Final Submit Handler (from PaymentModal in Step 7)
-  const handleFinalPaymentSubmit = async (paymentDetails) => {
+  // Card Payment Handler from Step 7 (saves card payment data and moves to Step 8: Monthly payments)
+  const handleCardPaymentSubmit = (paymentDetails) => {
+    setCardPaymentData(paymentDetails);
+    setSubmitError('');
+    goToNextStep();
+  };
+
+  // Final Direct Debit & Membership Booking Submission Handler (from Step 8)
+  const handleMonthlyPaymentsSubmit = async (directDebitDetails) => {
     setIsSubmitting(true);
     setSubmitError('');
 
     try {
-      const venueId = Number(venue?.venueId || venue?.id) || 5;
-      const trialDate = selectedDate?.isoDate || '2026-11-17';
-      const totalStudents = childrenCount || 1;
+      const venueId = Number(
+        venue?.venueId ||
+        venue?.id ||
+        selectedClass?.venueId ||
+        4
+      );
+
+      const paymentPlanId = Number(
+        selectedPlan?.id ||
+        selectedPlan?.paymentPlanId ||
+        1
+      );
+
+      // Start Date: must be YYYY-MM-DD
+      let startDate = '2027-01-09';
+      if (selectedDate?.isoDate) {
+        startDate = selectedDate.isoDate.split('T')[0];
+      } else if (selectedDate?.dateObj) {
+        const d = new Date(selectedDate.dateObj);
+        if (!isNaN(d.getTime())) {
+          startDate = d.toISOString().split('T')[0];
+        }
+      } else if (selectedDate?.formattedDate) {
+        startDate = selectedDate.formattedDate;
+      }
+
+      const totalStudents = Number(childrenCount) || 1;
+      const password = parentData.password || 'Password@123';
+
+      const GOAL_MAP = {
+        confidence: 'Improve confidence',
+        skills: 'Develop football skills',
+        friends: 'Make new friends',
+        active: 'Get active and fit'
+      };
+      const mainGoal = GOAL_MAP[parentData.goal] || parentData.goal || 'Improve confidence';
+
+      const starterPack = isTransfer ? 0 : 25;
+
+      const starterPackDeliveryAddress = {
+        buildingNumber: deliveryAddress?.buildingNumber || (deliveryAddress?.street ? deliveryAddress.street.split(' ')[0] : '10'),
+        line1: deliveryAddress?.street || deliveryAddress?.line1 || 'Downing Street',
+        city: deliveryAddress?.city || 'London',
+        postcode: deliveryAddress?.postcode || 'SW1A 2AA'
+      };
+
+      const defaultScheduleId = Number(
+        selectedClass?.classId ||
+        selectedClass?.id ||
+        selectedClass?.classScheduleId ||
+        venue?.classes?.[selectedClass?.day]?.[0]?.classId ||
+        venue?.schedule?.classes?.[0]?.classId ||
+        14
+      );
 
       const students = childrenData.slice(0, childrenCount).map((c, idx) => {
-        const y = c.dobYear || '2021';
-        const m = String(c.dobMonth || '03').padStart(2, '0');
-        const d = String(c.dobDay || '14').padStart(2, '0');
+        const y = c.dobYear || '2019';
+        const m = String(c.dobMonth || '05').padStart(2, '0');
+        const d = String(c.dobDay || '10').padStart(2, '0');
         const dateOfBirth = `${y}-${m}-${d}`;
 
-        let gender = 'male';
+        let gender = 'Male';
         if (c.gender) {
           const gLower = c.gender.toLowerCase();
-          if (gLower.includes('girl') || gLower.includes('female')) gender = 'female';
+          if (gLower.includes('girl') || gLower.includes('female')) gender = 'Female';
         }
 
         const medicalInformation =
-          c.hasMedical === 'Yes' && c.medicalDetails ? c.medicalDetails : 'NA';
-        const classScheduleId = Number(
-          selectedClass?.id || selectedClass?.classScheduleId || venue?.schedule?.classes?.[0]?.classId || 12
-        );
+          c.hasMedical === 'Yes' && c.medicalDetails ? c.medicalDetails : 'None';
+
+        const rawKit = kitsData?.[idx]?.kitSize || kitSize || 'Small';
+        const sizeMap = {
+          'XXS': 'Extra Extra Small',
+          'XS': 'Extra Small',
+          'S': 'Small',
+          'M': 'Medium',
+          'L': 'Large',
+          'XL': 'Extra Large'
+        };
+        const size = sizeMap[rawKit] || rawKit || 'Small';
 
         return {
-          studentFirstName: c.firstName || `Child ${idx + 1}`,
-          studentLastName: c.lastName || parentData.lastName || 'Student',
+          classScheduleId: defaultScheduleId,
+          studentFirstName: c.firstName?.trim() || `Child ${idx + 1}`,
+          studentLastName: c.lastName?.trim() || parentData.lastName?.trim() || 'Sharma',
           dateOfBirth,
-          age: Number(c.age) || 5,
+          age: Number(c.age) || 7,
           gender,
           medicalInformation,
-          classScheduleId
+          size
         };
       });
 
-      let phone = (parentData.phone || '').trim();
-      let dialCode = '44';
-      if (phone.startsWith('+')) {
-        if (phone.startsWith('+91')) {
+      let rawPhone = (parentData.phone || '').trim();
+      let dialCode = parentData.dialCode || '44';
+      let cleanPhone = rawPhone;
+      if (cleanPhone.startsWith('+')) {
+        if (cleanPhone.startsWith('+91')) {
           dialCode = '91';
-          phone = phone.slice(3);
-        } else if (phone.startsWith('+44')) {
+          cleanPhone = cleanPhone.slice(3).trim();
+        } else if (cleanPhone.startsWith('+44')) {
           dialCode = '44';
-          phone = phone.slice(3);
+          cleanPhone = cleanPhone.slice(3).trim();
+        } else {
+          cleanPhone = cleanPhone.replace(/^\+/, '').trim();
         }
       }
 
-      let relation = (parentData.relationship || 'mother').toLowerCase();
-      if (relation.includes('mum') || relation.includes('mom')) relation = 'mother';
-      else if (relation.includes('dad')) relation = 'father';
-      else if (!['mother', 'father', 'guardian'].includes(relation)) relation = 'guardian';
+      const digits = cleanPhone.replace(/\D/g, '');
+      let localDigits = digits;
+      if (localDigits.startsWith('0')) {
+        localDigits = localDigits.slice(1);
+      } else if (localDigits.startsWith(dialCode) && localDigits.length > 10) {
+        localDigits = localDigits.slice(dialCode.length);
+      }
+      const formattedPhoneNumber = localDigits ? `+${dialCode}${localDigits}` : `+${dialCode}7700900123`;
 
-      const REASON_MAP = {
-        confidence: 'To build their confidence',
-        skills: 'To improve their technical football skills',
-        friends: 'To make new friends',
-        active: 'To get active and exercise'
-      };
-      const interestReason = REASON_MAP[parentData.goal] || 'To build their confidence';
+      let relation = parentData.relationship || 'Father';
+      if (relation.toLowerCase().includes('mum') || relation.toLowerCase().includes('mom')) {
+        relation = 'Mother';
+      } else if (relation.toLowerCase().includes('dad')) {
+        relation = 'Father';
+      }
 
       const parents = [
         {
-          parentFirstName: parentData.firstName,
-          parentLastName: parentData.lastName,
-          parentEmail: parentData.email,
-          parentPhoneNumber: phone || '07700900123',
-          dialCode,
+          parentFirstName: parentData.firstName?.trim() || 'Parent',
+          parentLastName: parentData.lastName?.trim() || 'User',
+          parentEmail: parentData.email?.trim() || 'parent@example.com',
+          parentPhoneNumber: formattedPhoneNumber,
           relationToChild: relation,
-          howDidYouHear: parentData.hearAbout || 'Friend or family',
-          interestReason,
-          interestReasonOther: 'NA',
-          password: parentData.password || '123456'
+          howDidYouHear: parentData.hearAbout || 'Google'
         }
       ];
 
-      const payload = {
-        venueId,
-        trialDate,
-        totalStudents,
-        students,
-        password: parentData.password || '123456',
-        parents,
-        kitSize,
-        kitsData: kitsData.slice(0, childrenCount),
-        deliveryAddress,
-        paymentDetails,
-        selectedPlan: {
-          id: selectedPlan?.id,
-          duration: selectedPlan?.duration,
-          monthlyPrice: selectedPlan?.monthlyPrice
-        },
-        paymentBreakdown,
-        isTrialOffer
+      const emergency = {
+        emergencyFirstName: parentData.emergencyFirstName?.trim() || (relation === 'Father' ? 'Priya' : 'Rahul'),
+        emergencyLastName: parentData.emergencyLastName?.trim() || parentData.lastName?.trim() || 'Sharma',
+        emergencyPhoneNumber: formattedPhoneNumber,
+        emergencyRelation: parentData.emergencyRelation || (relation === 'Father' ? 'Mother' : 'Father')
       };
 
-      console.log('Submitting Book Membership payload:', payload);
-      const result = await bookFreeTrial(payload);
+      const paymentType = directDebitDetails?.paymentType || cardPaymentData?.paymentType || 'gocardless';
+      const defaultFullName = `${parentData.firstName || ''} ${parentData.lastName || ''}`.trim() || 'Parent User';
+
+      const payment = {
+        paymentType,
+        price: Number(cardPaymentData?.totalPaid || selectedPlan?.price || 39.99),
+        proRataAmount: 0,
+        firstName: parentData.firstName?.trim() || 'Parent',
+        lastName: parentData.lastName?.trim() || 'User',
+        email: parentData.email?.trim() || 'parent@example.com',
+        line1: starterPackDeliveryAddress.line1,
+        address_line1: starterPackDeliveryAddress.line1,
+        city: starterPackDeliveryAddress.city,
+        postcode: starterPackDeliveryAddress.postcode,
+        countryCode: 'GB',
+        account_holder_name: directDebitDetails?.account_holder_name || cardPaymentData?.account_holder_name || defaultFullName,
+        account_number: directDebitDetails?.account_number || cardPaymentData?.account_number || '55779911',
+        branch_code: directDebitDetails?.branch_code || cardPaymentData?.branch_code || '200000',
+        nameOnCard: cardPaymentData?.nameOnCard || defaultFullName,
+        cardNumber: (cardPaymentData?.cardNumber || '4242424242424242').replace(/\s/g, ''),
+        expiryDate: (cardPaymentData?.expiryDate || '12/28').replace(/\s/g, ''),
+        cvc: cardPaymentData?.cvc || '123'
+      };
+
+      const payload = {
+        venueId,
+        paymentPlanId,
+        startDate,
+        totalStudents,
+        password,
+        mainGoal,
+        starterPack,
+        starterPackDeliveryAddress,
+        students,
+        parents,
+        emergency,
+        payment,
+        ...(appliedDiscount > 0 && {
+          discountCode: discountCode || cardPaymentData?.discountCode,
+          discountAmount: appliedDiscount
+        })
+      };
+
+      console.log('Submitting Book Membership payload with Card + Direct Debit:', payload);
+      const result = await bookMembership(payload);
       console.log('Membership booked successfully:', result);
       setBookingResult(result);
       goToNextStep();
     } catch (err) {
       console.error('Error booking membership:', err);
-      // Fallback: Proceed to success screen if network fails in local dev
-      setBookingResult({
-        status: true,
-        message: 'Membership registered successfully'
-      });
-      goToNextStep();
+      setSubmitError(err?.message || 'Membership booking failed. Please check your bank details.');
     } finally {
       setIsSubmitting(false);
     }
@@ -607,6 +712,8 @@ export function BookMembershipPage() {
                       defaultLastName={parentData.lastName}
                       updateChildData={updateChildData}
                       selectedClass={selectedClass}
+                      venue={venue}
+                      onSelectClass={setSelectedClass}
                       onContinue={goToNextStep}
                       onBack={goToPrevStep}
                     />
@@ -652,8 +759,29 @@ export function BookMembershipPage() {
                     isTransfer={isTransfer}
                     kitsData={kitsData}
                     onBack={goToPrevStep}
-                    onFinalSubmit={handleFinalPaymentSubmit}
+                    onFinalSubmit={handleCardPaymentSubmit}
                     isSubmitting={isSubmitting}
+                    parentData={parentData}
+                    deliveryAddress={deliveryAddress}
+                    submitError={submitError}
+                    appliedDiscount={appliedDiscount}
+                    setAppliedDiscount={setAppliedDiscount}
+                    discountCode={discountCode}
+                    setDiscountCode={setDiscountCode}
+                  />
+                )}
+
+                {/* Step 8: Monthly payments (Direct Debit setup) */}
+                {currentStep === 'monthly-payments' && (
+                  <Step8MonthlyPayments
+                    selectedPlan={selectedPlan}
+                    paymentBreakdown={paymentBreakdown}
+                    parentData={parentData}
+                    totalChildren={childrenCount}
+                    onSubmitDirectDebit={handleMonthlyPaymentsSubmit}
+                    onBack={goToPrevStep}
+                    isSubmitting={isSubmitting}
+                    submitError={submitError}
                   />
                 )}
               </div>
@@ -672,7 +800,9 @@ export function BookMembershipPage() {
                   paymentBreakdown={paymentBreakdown}
                   isTrialOffer={isTrialOffer}
                   isTransfer={isTransfer}
-                  showPaymentSummary={currentStep === 'check-and-pay'}
+                  currentStep={currentStep}
+                  showPaymentSummary={currentStep === 'check-and-pay' || currentStep === 'monthly-payments'}
+                  appliedDiscount={appliedDiscount}
                 />
               </div>
             </div>

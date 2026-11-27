@@ -273,17 +273,29 @@ export function BookingFlowPage() {
         };
       });
 
-      let phone = (parentData.phone || '').trim();
-      let dialCode = '44';
-      if (phone.startsWith('+')) {
-        if (phone.startsWith('+91')) {
+      let rawPhone = (parentData.phone || '').trim();
+      let dialCode = parentData.dialCode || '44';
+      let cleanPhone = rawPhone;
+      if (cleanPhone.startsWith('+')) {
+        if (cleanPhone.startsWith('+91')) {
           dialCode = '91';
-          phone = phone.slice(3);
-        } else if (phone.startsWith('+44')) {
+          cleanPhone = cleanPhone.slice(3).trim();
+        } else if (cleanPhone.startsWith('+44')) {
           dialCode = '44';
-          phone = phone.slice(3);
+          cleanPhone = cleanPhone.slice(3).trim();
+        } else {
+          cleanPhone = cleanPhone.replace(/^\+/, '').trim();
         }
       }
+
+      const digits = cleanPhone.replace(/\D/g, '');
+      let localDigits = digits;
+      if (localDigits.startsWith('0')) {
+        localDigits = localDigits.slice(1);
+      } else if (localDigits.startsWith(dialCode) && localDigits.length > 10) {
+        localDigits = localDigits.slice(dialCode.length);
+      }
+      const formattedPhoneNumber = localDigits ? `+${dialCode}${localDigits}` : `+${dialCode}7700900123`;
 
       let relation = (parentData.relationship || 'mother').toLowerCase();
       if (relation.includes('mum') || relation.includes('mom')) relation = 'mother';
@@ -319,7 +331,7 @@ export function BookingFlowPage() {
           parentFirstName: resolvedFirstName,
           parentLastName: resolvedLastName,
           parentEmail: resolvedEmail,
-          parentPhoneNumber: phone || '07700900123',
+          parentPhoneNumber: formattedPhoneNumber,
           dialCode,
           relationToChild: relation,
           howDidYouHear: parentData.hearAbout || 'Other',

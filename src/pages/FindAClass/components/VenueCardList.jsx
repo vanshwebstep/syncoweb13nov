@@ -27,6 +27,13 @@ const Vector = `${IMG_BASE}/Vector.png`;
 /* Helpers                                                             */
 /* ------------------------------------------------------------------ */
 
+// Helper to title case strings
+const toTitleCase = (str = '') =>
+  String(str)
+    .trim()
+    .toLowerCase()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+
 // "Saturday 7:15 AM - 8:15 AM" -> "Saturday 7:15 - 8:15 am"
 const formatTimeRange = (range = '') => {
   if (typeof range !== 'string') return range || '-';
@@ -114,59 +121,108 @@ const groupByDay = (classes = [], fallbackDay = '-') => {
   return order.map((day) => ({ day, classes: groups[day] }));
 };
 
-const isFullClass = (c) => c.statusType === 'full' || c.status?.toLowerCase?.().includes('full');
+const isFullClass = (c) =>
+  c.statusType === 'full' ||
+  c.status?.toLowerCase?.().includes('full') ||
+  (c.spacesLeft != null && Number(c.spacesLeft) === 0) ||
+  (c.spotsLeft != null && Number(c.spotsLeft) === 0);
+
 const isLimitedClass = (c) =>
-  c.statusType === 'few_left' ||
-  c.statusType === 'limited' ||
-  c.status?.toLowerCase?.().includes('left');
+  !isFullClass(c) &&
+  (c.statusType === 'few_left' ||
+    c.statusType === 'limited' ||
+    c.status?.toLowerCase?.().includes('left') ||
+    (c.spacesLeft != null && Number(c.spacesLeft) <= 5 && Number(c.spacesLeft) > 0) ||
+    (c.spotsLeft != null && Number(c.spotsLeft) <= 5 && Number(c.spotsLeft) > 0));
 
 /* ------------------------------------------------------------------ */
 /* Small components                                                    */
 /* ------------------------------------------------------------------ */
 
 function DesktopStatusBadge({ c }) {
-  if (isLimitedClass(c)) {
-    return (
-      <span className="bg-[#FFF4E0] text-[#9A5B00] text-[12px] min-h-[28px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 whitespace-nowrap">
-        <span className="w-1.5 h-1.5 rounded-full bg-[#FCAB28]" />
-        <span>{c.statusText || c.status || (c.spacesLeft != null ? `${c.spacesLeft} left` : '-')}</span>
-      </span>
-    );
-  }
   if (isFullClass(c)) {
     return (
       <span className="bg-[#FDECEC] text-[#C2383D] text-[12px] min-h-[28px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 whitespace-nowrap">
         <span className="w-1.5 h-1.5 rounded-full bg-[#E5484D]" />
-        <span>{c.statusText || c.status || 'Full'}</span>
+        <span>{c.statusText || c.status || 'Fully booked'}</span>
       </span>
     );
   }
+  if (isLimitedClass(c)) {
+    const left = c.spacesLeft != null ? c.spacesLeft : c.spotsLeft;
+    return (
+      <span className="bg-[#FFF4E0] text-[#9A5B00] text-[12px] min-h-[28px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 whitespace-nowrap">
+        <span className="w-1.5 h-1.5 rounded-full bg-[#FCAB28]" />
+        <span>{c.statusText || c.status || (left != null ? `${left} left` : '-')}</span>
+      </span>
+    );
+  }
+  const spaces = c.spacesLeft != null ? c.spacesLeft : c.spotsLeft;
   return (
     <span className="bg-[#E7FAF2] text-[#067A4B] text-[12px] min-h-[28px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 whitespace-nowrap">
       <span className="w-1.5 h-1.5 rounded-full bg-[#0DD180]" />
       <span>
-        {c.spacesLeft != null ? `${c.spacesLeft} spaces` : c.statusText || c.status || 'Spaces'}
+        {spaces != null ? `${spaces} spaces` : c.statusText || c.status || 'Spaces'}
       </span>
     </span>
   );
 }
 
-function DesktopClassRow({ c }) {
+function DesktopClassRow({ c, venue, onBookTrial, onBookMembership, onJoinWaitingList }) {
+  const isFull = isFullClass(c);
+
   return (
-    <div className="bg-[#F6F8FC] rounded-[15px] px-5 py-5 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2.5">
-      <div className="flex items-center gap-2 text-[16px] font-bold text-[#042C89] sm:min-w-[230px]">
-        <img src={clock} className="w-4" alt="" />
-        <span>{formatTimeRange(c.time)}</span>
+    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+      {/* Left: Class info box */}
+      <div className="bg-[#F6F8FC] rounded-[15px] px-5 py-3 sm:py-3.5 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 sm:gap-4 flex-1 min-w-0">
+        <div className="flex items-center gap-2 text-[15px] sm:text-[16px] font-bold text-[#042C89] shrink-0 sm:min-w-[210px]">
+          <img src={clock} className="w-4" alt="" />
+          <span>{formatTimeRange(c.time)}</span>
+        </div>
+
+        <div className="flex items-center gap-2 text-[13px] sm:text-[14px] font-normal text-[#34353B] flex-1 truncate">
+          <img src={user} className="w-3" alt="" />
+          <span className="truncate">{c.ageGroup || c.className || '-'}</span>
+        </div>
+
+        <div className="shrink-0">
+          <DesktopStatusBadge c={c} />
+        </div>
       </div>
 
-      <div className="flex items-center gap-2 text-[14px] font-normal text-[#34353B] flex-1">
-        <img src={user} className="w-3" alt="" />
-        <span>{c.ageGroup || c.className || '-'}</span>
-      </div>
+      {/* Right: Individual Action Buttons for this class (matches Screenshot 2) */}
+      {isFull ? (
+        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+          <button
+            type="button"
+            onClick={() => onJoinWaitingList(venue, c)}
+            className="bg-[#E6F4FB] hover:bg-[#D2E7F8] text-[#0B2A8A] font-bold text-[13px] sm:text-[14px] h-[46px] px-6 rounded-full flex items-center justify-center transition-all cursor-pointer active:scale-95 whitespace-nowrap"
+          >
+            Join the waiting list
+          </button>
+        </div>
+      ) : (
+        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+          {c.allowFreeTrial && (
+            <button
+              type="button"
+              onClick={() => onBookTrial(venue, c)}
+              className="bg-[#0B2A8A] hover:bg-[#09226E] text-white font-bold text-[13px] sm:text-[14px] h-[46px] px-5 sm:px-6 rounded-full flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 whitespace-nowrap shadow-xs"
+            >
+              <span>Book a FREE trial</span>
+              <img src={Vector} className="w-3" alt="" />
+            </button>
+          )}
 
-      <div className="shrink-0">
-        <DesktopStatusBadge c={c} />
-      </div>
+          <button
+            type="button"
+            onClick={() => onBookMembership(venue, c)}
+            className="bg-white hover:bg-slate-50 text-[#0B2A8A] border border-[#0B2A8A] font-bold text-[13px] sm:text-[14px] h-[46px] px-5 sm:px-6 rounded-full flex items-center justify-center transition-all cursor-pointer active:scale-95 whitespace-nowrap"
+          >
+            Book a membership
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -238,6 +294,7 @@ export function VenueCardList({
   const fromPrice = useMemo(() => getFromPrice(venue), [venue]);
 
   const venueTitle = venue.venueName || venue.name || '-';
+  const displayTitle = venue.area && venue.area !== '-' ? toTitleCase(venue.area) : venueTitle;
   const distanceStr =
     venue.distanceDisplay && venue.distanceDisplay !== '-'
       ? venue.distanceDisplay
@@ -261,56 +318,42 @@ export function VenueCardList({
             <div className="flex items-center gap-2 flex-wrap">
               <h3
                 onClick={() => navigate(`/venues?id=${vId}`)}
-                className="poppins text-[18px] sm:text-[21px] font-bold text-white leading-tight cursor-pointer hover:underline hover:text-[#FFDE14] transition-colors"
+                className="poppins text-[19px] sm:text-[22px] font-bold text-white leading-tight cursor-pointer hover:underline hover:text-[#FFDE14] transition-colors"
                 title="Click to view venue page"
               >
-                {venueTitle}
+                {displayTitle}
               </h3>
               {distanceStr && (
-                <span className="bg-[#FFE600] text-[#042C89] font-bold text-[12px] px-2 h-[28px] flex items-center justify-center rounded-full leading-none py-1">
+                <span className="bg-[#FFE600] text-[#042C89] font-bold text-[12px] px-2.5 h-[26px] flex items-center justify-center rounded-full leading-none">
                   {distanceStr}
-                </span>
-              )}
-              {areaStr && (
-                <span className="bg-white/[0.14] text-white font-bold text-[12px] px-2.5 h-[28px] flex items-center justify-center rounded-full leading-none py-1">
-                  {areaStr}
                 </span>
               )}
             </div>
 
-            <div className="flex items-center gap-1.5 text-[#C9D3F0] text-[14px] mt-1">
-              <img src={map} alt="" className="w-3" />
+            <div className="flex items-center gap-1.5 text-white/90 text-[13.5px] mt-1">
+              <MapPin className="w-3.5 h-3.5 text-white/80 shrink-0" />
               <span>{addressStr}</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <button
-              type="button"
-              onClick={() => navigate(`/venues?id=${vId}`)}
-              className="bg-white/[0.14] hover:bg-white/20 text-[#FFDE14] font-bold text-[13px] px-3.5 py-1.5 rounded-full min-h-[40px] flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap"
-            >
-              <Compass className="w-3.5 h-3.5 text-[#FFDE14]" />
-              <span>View venue</span>
-            </button>
-
+          <div className="flex items-center gap-2 flex-wrap">
             <button type="button" onClick={() => onOpenPrices(venue)} className={pillBtn}>
-              <img src={pound} className="h-3" alt="" />
+              <span className="font-bold text-[14px] leading-none">£</span>
               <span>Prices</span>
             </button>
 
             <button type="button" onClick={() => onOpenTermDates(venue)} className={pillBtn}>
-              <img src={calc} className="w-3" alt="" />
+              <img src={calc} className="w-3.5 h-3.5 object-contain" alt="" />
               <span>Term dates</span>
             </button>
 
             <button type="button" onClick={() => onOpenDirections(venue)} className={pillBtn}>
-              <img src={dir_2} className="w-3" alt="" />
+              <img src={dir_2} className="w-3.5 h-3.5 object-contain" alt="" />
               <span>Directions</span>
             </button>
 
             <button type="button" onClick={() => onOpenParking(venue)} className={pillBtn}>
-              <img src={park} className="w-3" alt="" />
+              <img src={park} className="w-3.5 h-3.5 object-contain" alt="" />
               <span>Parking</span>
             </button>
           </div>
@@ -318,8 +361,6 @@ export function VenueCardList({
 
         {/* White Body */}
         <div className="px-4 py-4 md:pb-8 sm:px-8 sm:py-5 bg-white">
-          <InfoChips venue={venue} fromPrice={fromPrice} className="mb-3" />
-
           {noMatch && (
             <p className="text-[#797A88] text-[14px] py-4">
               No classes at this venue match the selected age groups.
@@ -345,74 +386,23 @@ export function VenueCardList({
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  {/* Bookable classes + buttons */}
-                  {dayBookable.length > 0 && (
-                    <div className="flex flex-col lg:flex-row justify-between gap-4 lg:gap-5 items-stretch">
-                      <div className="w-full lg:w-[70%] space-y-2">
-                        {dayBookable.map((c) => (
-                          <DesktopClassRow key={c.id} c={c} />
-                        ))}
-                      </div>
+                <div className="space-y-2.5">
+                  {dayClasses.map((c) => (
+                    <DesktopClassRow
+                      key={c.id}
+                      c={c}
+                      venue={venue}
+                      onBookTrial={onBookTrial}
+                      onBookMembership={onBookMembership}
+                      onJoinWaitingList={onJoinWaitingList}
+                    />
+                  ))}
 
-                      <div className="w-full lg:w-[30%] flex flex-col justify-center">
-                        <div className="space-y-2 w-full lg:w-[90%] ms-auto">
-                          {trialClass && (
-                            <button
-                              type="button"
-                              onClick={() => onBookTrial(venue, trialClass)}
-                              className="w-full bg-[#0B2A8A] hover:bg-[#09226E] text-white font-bold text-[14px] sm:text-[16px] h-[52px] px-6 rounded-full flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95"
-                            >
-                              <span>Book a FREE trial</span>
-                              <img src={Vector} className="w-3" alt="" />
-                            </button>
-                          )}
-
-                          <button
-                            type="button"
-                            onClick={() => onBookMembership(venue, dayBookable[0])}
-                            className="w-full bg-white hover:bg-slate-50 text-[#0B2A8A] border border-[#0B2A8A] font-bold text-[14px] sm:text-[16px] h-[52px] px-6 rounded-full flex items-center justify-center transition-all cursor-pointer active:scale-95"
-                          >
-                            Book a membership
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Full classes with waiting list */}
-                  {dayFull.length > 0 && (
-                    <div className="space-y-2">
-                      {dayFull.map((c) => (
-                        <div
-                          key={c.id}
-                          className="flex flex-col lg:flex-row justify-between gap-2 lg:gap-5 items-stretch lg:items-center"
-                        >
-                          <div className="w-full lg:w-[70%]">
-                            <DesktopClassRow c={c} />
-                          </div>
-
-                          <div className="w-full lg:w-[30%]">
-                            <div className="w-full lg:w-[80%] m-auto">
-                              <button
-                                type="button"
-                                onClick={() => onJoinWaitingList(venue, c)}
-                                className="w-full bg-[#E6F4FB] hover:bg-[#D2E7F8] text-[#0B2A8A] font-bold text-[14px] sm:text-[16px] h-[52px] px-6 rounded-full flex items-center justify-center transition-all cursor-pointer active:scale-95"
-                              >
-                                Join the waiting list
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-
-                      <div className="flex lg:justify-end">
-                        <div className="w-full lg:w-[30%]">
-                          <p className="w-full lg:w-[80%] m-auto text-[#797A88] text-[13px] font-regular text-left">
-                            We'll text you when a place opens up.
-                          </p>
-                        </div>
-                      </div>
+                  {dayClasses.some((c) => isFullClass(c)) && (
+                    <div className="flex justify-end pt-1">
+                      <p className="text-[#797A88] text-[12px] font-regular">
+                        We'll text you when a place opens up.
+                      </p>
                     </div>
                   )}
                 </div>
@@ -433,7 +423,7 @@ export function VenueCardList({
               onClick={() => navigate(`/venues?id=${vId}`)}
               className="poppins text-[19px] font-bold text-white leading-tight truncate cursor-pointer hover:underline hover:text-[#FFDE14] transition-colors"
             >
-              {venueTitle}
+              {displayTitle}
             </h3>
 
             <div className="flex items-center gap-1.5 text-[#C9D3F0] text-[13px] mt-1 truncate">
@@ -451,8 +441,6 @@ export function VenueCardList({
 
         {/* Body */}
         <div className="p-4 pt-3.5 bg-white">
-          <InfoChips venue={venue} fromPrice={fromPrice} className="mb-3" />
-
           {noMatch && (
             <p className="text-[#797A88] text-[13px] py-3">
               No classes at this venue match the selected age groups.
@@ -478,9 +466,9 @@ export function VenueCardList({
                 <div className="space-y-2.5">
                   {dayClasses.map((c) => {
                     const isFull = isFullClass(c);
-                    const isLimited = !isFull && (isLimitedClass(c) || (c.spacesLeft != null && Number(c.spacesLeft) <= 5 && Number(c.spacesLeft) > 0));
+                    const isLimited = !isFull && isLimitedClass(c);
                     const statusText = isFull
-                      ? 'full'
+                      ? (c.statusText || 'Fully booked')
                       : isLimited
                         ? (c.spacesLeft != null ? `${c.spacesLeft} left` : c.status || 'limited')
                         : c.spacesLeft != null
@@ -526,7 +514,7 @@ export function VenueCardList({
                           </div>
                         </div>
 
-                        {isFull && bookableClasses.length > 0 && (
+                        {isFull ? (
                           <button
                             type="button"
                             onClick={() => onJoinWaitingList(venue, c)}
@@ -540,6 +528,28 @@ export function VenueCardList({
                             </div>
                             <ChevronRight className="w-4 h-4 text-[#042C89] stroke-[2.5] shrink-0" />
                           </button>
+                        ) : (
+                          <div className="grid grid-cols-2 gap-2 pt-0.5">
+                            {c.allowFreeTrial && (
+                              <button
+                                type="button"
+                                onClick={() => onBookTrial(venue, c)}
+                                className="bg-[#0B2A8A] hover:bg-[#09226E] text-white font-bold text-[12px] h-[38px] px-2 rounded-full flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-2xs"
+                              >
+                                <span>Book a FREE trial</span>
+                                <ArrowRight className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => onBookMembership(venue, c)}
+                              className={`bg-white hover:bg-slate-50 text-[#0B2A8A] border border-[#0B2A8A] font-bold text-[12px] h-[38px] px-2 rounded-full flex items-center justify-center active:scale-95 transition-all ${
+                                !c.allowFreeTrial ? 'col-span-2' : ''
+                              }`}
+                            >
+                              Book a membership
+                            </button>
+                          </div>
                         )}
                       </div>
                     );

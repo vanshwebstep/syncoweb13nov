@@ -45,10 +45,23 @@ export function VenueCardCompact({
   const navigate = useNavigate();
   const schedule = venue.schedule || {};
   const classes = schedule.classes || [];
-  const isFullyBooked = classes.length > 0 && classes.every((c) => c.statusType === 'full');
+  const isFullyBooked =
+    classes.length > 0 &&
+    classes.every(
+      (c) =>
+        c.statusType === 'full' ||
+        c.status?.toLowerCase?.().includes('full') ||
+        (c.spacesLeft != null && Number(c.spacesLeft) === 0)
+    );
   const vId = venue.venueId || venue.id;
 
-  const trialClass = classes.find((c) => c.allowFreeTrial === true && c.statusType !== 'full');
+  const trialClass = classes.find(
+    (c) =>
+      c.allowFreeTrial === true &&
+      c.statusType !== 'full' &&
+      !c.status?.toLowerCase?.().includes('full') &&
+      (c.spacesLeft == null || Number(c.spacesLeft) > 0)
+  );
   const hasFreeTrial = Boolean(trialClass);
 
   const venueTitle = venue.venueName || venue.name || '-';

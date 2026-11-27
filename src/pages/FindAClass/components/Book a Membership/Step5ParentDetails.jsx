@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ArrowRight, ArrowLeft, Eye, EyeOff, Check, Loader2 } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Eye, EyeOff, Check, Loader2, ChevronDown } from 'lucide-react';
+import { COUNTRY_CODES } from './SambaLoginModal';
 
 const YELLOW_SPLASH = 'https://webstepdev.com/demo/syncoWebsiteImages/find-a-class/yellow.png';
 const sssLogo2 = 'https://webstepdev.com/demo/syncoWebsiteImages/find-a-class/Samba-Connect-logo.png';
@@ -24,7 +25,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const labelCls = 'block text-[14px] font-bold text-[#042C89] mb-1.5';
 const inputBase =
-  'w-full h-[54px] px-4 rounded-[16px] bg-white border text-[14px] sm:text-[15px] font-medium text-[#1E1E2E] placeholder:text-[#1E1E2E] outline-none transition-all';
+  'w-full h-[54px] px-4 rounded-[16px] bg-white border text-[14px] sm:text-[15px] font-medium text-[#1E1E2E] placeholder:text-[#94A3B8] outline-none transition-all';
 const chipOn = 'bg-[#E6F5FC] border-2 border-[#002B9A] text-[#042C89]';
 const chipOff = 'bg-white border border-[#C9D3F0] text-[#1E1E2E] hover:border-slate-300';
 
@@ -40,6 +41,7 @@ export function Step5ParentDetails({
   const [firstName, setFirstName] = useState(parentData?.firstName || '');
   const [lastName, setLastName] = useState(parentData?.lastName || '');
   const [email, setEmail] = useState(parentData?.email || '');
+  const [dialCode, setDialCode] = useState(parentData?.dialCode || '44');
   const [phone, setPhone] = useState(parentData?.phone || '');
   const [relationship, setRelationship] = useState(parentData?.relationship || 'Mum');
   const [hearAbout, setHearAbout] = useState(parentData?.hearAbout || 'Friend or family');
@@ -71,6 +73,7 @@ export function Step5ParentDetails({
       lastName,
       email,
       phone,
+      dialCode,
       relationship,
       hearAbout,
       goal,
@@ -172,15 +175,26 @@ export function Step5ParentDetails({
                 : 'border-[#C9D3F0] focus-within:border-[#042C89]'
             }`}
           >
-            <div className="bg-white px-3.5 h-full flex items-center justify-center border-r border-[#C9D3F0] text-xs sm:text-[13px] font-bold text-[#042C89]">
-              +44
+            <div className="relative bg-white px-3 h-full flex items-center justify-center border-r border-[#C9D3F0] shrink-0">
+              <select
+                value={dialCode}
+                onChange={(e) => setDialCode(e.target.value)}
+                className="appearance-none bg-transparent pr-4 text-xs sm:text-[13px] font-bold text-[#042C89] outline-none cursor-pointer"
+              >
+                {COUNTRY_CODES.map((c) => (
+                  <option key={c.code} value={c.code}>
+                    +{c.code}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="w-3 h-3 text-[#042C89] absolute right-1 pointer-events-none" />
             </div>
             <input
               type="tel"
               value={phone}
               placeholder="07700 900123"
               onChange={(e) => setPhone(e.target.value)}
-              className="flex-1 min-w-0 h-full px-4 text-[14px] sm:text-[15px] font-medium text-[#1E1E2E] placeholder:text-[#1E1E2E] outline-none bg-transparent"
+              className="flex-1 min-w-0 h-full px-4 text-[14px] sm:text-[15px] font-medium text-[#1E1E2E] placeholder:text-[#94A3B8] outline-none bg-transparent"
             />
           </div>
           {submitted && errors.phone && (
@@ -272,7 +286,7 @@ export function Step5ParentDetails({
                 value={email}
                 readOnly
                 placeholder="sarah@email.com"
-                className="w-full h-[54px] px-4 pr-10 rounded-[16px] bg-[#EEF1F8] border border-[#E2E4EC] text-[14px] sm:text-[15px] font-medium text-[#1E1E2E] placeholder:text-[#1E1E2E] outline-none"
+                className="w-full h-[54px] px-4 pr-10 rounded-[16px] bg-[#EEF1F8] border border-[#E2E4EC] text-[14px] sm:text-[15px] font-medium text-[#1E1E2E] placeholder:text-[#94A3B8] outline-none"
               />
               {EMAIL_RE.test(email.trim()) && (
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-[#0DD180] text-white flex items-center justify-center">

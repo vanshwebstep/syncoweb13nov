@@ -508,3 +508,102 @@ font:active {
 html, body {
   overflow-x: clip;
 }
+
+/* ==========================================================================
+   Print & PDF Export Styling (Global & Legal Pages)
+   ========================================================================== */
+@media print {
+  /* 1. Completely hide site chrome: header, footer, newsletter, popups, buttons */
+  header,
+  footer,
+  .site-header,
+  .site-footer,
+  nav:not(.document-nav),
+  aside,
+  #modal-root,
+  [role="dialog"],
+  button,
+  .no-print,
+  .print-hidden,
+  .mobile-nav-toggle {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border: none !important;
+  }
+
+  /* 2. Page & Body Setup */
+  @page {
+    margin: 12mm 12mm 14mm 12mm;
+    size: auto;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #1f2937 !important;
+    font-size: 11pt !important;
+    line-height: 1.55 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* 3. Force accurate color reproduction on background & borders, remove text-shadow */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+  }
+
+  /* 4. Ensure links appear cleanly without underlines or URLs */
+  a {
+    text-decoration: none !important;
+    color: inherit !important;
+  }
+
+  a[href^="http"]:after,
+  a[href^="/"]:after {
+    content: "" !important;
+  }
+
+  /* 5. Headings & Typography */
+  h1, h2, h3, h4 {
+    color: #042C89 !important;
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  p, li, tr, td, th {
+    color: #374151 !important;
+  }
+
+  /* 6. Page Break Management to prevent awkward slicing */
+  article,
+  blockquote,
+  table,
+  tr,
+  figure,
+  .print-avoid-break {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* 7. Ensure main wraps cleanly */
+  main {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+

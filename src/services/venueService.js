@@ -120,15 +120,21 @@ export function transformApiVenue(raw) {
       const dayClasses = Array.isArray(raw.classes[dayKey]) ? raw.classes[dayKey] : [];
 
       dayClasses.forEach((c) => {
-        const cap = Number(c.capacity) || 0;
         const total = Number(c.totalCapacity) || 20;
-        const spotsLeft = Math.max(0, total - cap);
+        // In the API, `capacity` is the number of available spaces left (0 means fully booked)
+        const spotsLeft = c.spacesLeft != null
+          ? Math.max(0, Number(c.spacesLeft))
+          : (c.spotsLeft != null
+              ? Math.max(0, Number(c.spotsLeft))
+              : (c.capacity != null
+                  ? Math.max(0, Number(c.capacity))
+                  : 0));
 
         let statusType = 'available';
         let statusText = 'Spaces available';
         if (spotsLeft === 0) {
           statusType = 'full';
-          statusText = 'Full';
+          statusText = 'Fully booked';
         } else if (spotsLeft <= 5) {
           statusType = 'few_left';
           statusText = `Only ${spotsLeft} place${spotsLeft === 1 ? '' : 's'} left`;
@@ -146,13 +152,13 @@ export function transformApiVenue(raw) {
           ageGroup: c.className ? `${c.className} · ${c.level || 'Beginner'}` : (c.level || '-'),
           ageSimple: c.className || '-',
           level: c.level || '-',
-          capacity: cap,
+          capacity: spotsLeft,
           totalCapacity: total,
           spacesLeft: spotsLeft,
           statusType,
           statusText,
           allowFreeTrial: c.allowFreeTrial === true,
-          canBookTrial: c.allowFreeTrial === true,
+          canBookTrial: c.allowFreeTrial === true && spotsLeft > 0,
           canBookMembership: true,
           rawClass: c
         });
@@ -554,9 +560,19 @@ export async function fetchVenueByIdOrName(venueId = null, venueName = '') {
 async function postJson(path, body) {
   const cleanBase = BASE_URL.replace(/\/+$/, '');
   const url = `${cleanBase}${path}`;
+  const headers = { 'Content-Type': 'application/json' };
+
+  const token =
+    (typeof localStorage !== 'undefined' &&
+      (localStorage.getItem('token') || localStorage.getItem('parentToken'))) ||
+    null;
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   const response = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(body),
     redirect: 'follow'
   });
@@ -590,6 +606,70 @@ export async function bookFreeTrial(payload) {
   }
 
   return result;
+}
+
+/**
+ * Book a membership: POST /api/open/book-membership/create
+ */
+export async function bookMembership(payload) {
+  const response = await fetch(`${BASE_URL}/api/open/book-membership/create`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+    redirect: 'follow'
+  });
+  const result = await response.json();
+
+  if (!response.ok || result?.status === false) {
+    throw new Error(result?.message || `Membership booking failed with status ${response.status}`);
+  }
+
+  // Store auth token in localStorage on successful registration
+  if (result?.token && typeof localStorage !== 'undefined') {
+    localStorage.setItem('authToken', result.token);
+    localStorage.setItem('parentToken', result.token);
+  }
+
+  return result;
+}
+
+/**
+ * Apply discount code: POST /api/open/discount/apply
+ * @param {Object} params { starterPack, code }
+ * @returns {Promise<Object>}
+ */
+export async function applyDiscountCode({ starterPack, code }) {
+  if (!code || !String(code).trim()) {
+    throw new Error('Please enter a discount code.');
+  }
+
+  const cleanBase = BASE_URL.replace(/\/+$/, '');
+  const url = `${cleanBase}/api/open/discount/apply`;
+
+  const payload = {
+    starterPack: Number(starterPack) || 89.99,
+    code: String(code).trim()
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      redirect: 'follow'
+    });
+
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok || result?.status === false) {
+      throw new Error(result?.message || 'Invalid discount code');
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Error in applyDiscountCode:', error);
+    throw error;
+  }
 }
 
 /**
@@ -641,9 +721,131 @@ export async function loginParent(email, password) {
       throw new Error(result?.message || 'Login failed. Please check your credentials.');
     }
 
+    if (result?.token && typeof localStorage !== 'undefined') {
+      localStorage.setItem('token', result.token);
+      localStorage.setItem('parentToken', result.token);
+    }
+
     return result;
   } catch (error) {
     console.error('Error in loginParent:', error);
+    throw error;
+  }
+}
+
+/**
+ * Send parent SMS login code: POST /api/parent/auth/send-login-code
+ */
+export async function sendParentLoginCode(phoneNumber) {
+  if (!phoneNumber || !String(phoneNumber).trim()) {
+    throw new Error('Please enter your mobile number.');
+  }
+
+  try {
+    const { response, result } = await postJson('/api/parent/auth/send-login-code', {
+      phoneNumber: String(phoneNumber).trim()
+    });
+
+    if (!response.ok || result?.status === false) {
+      throw new Error(result?.message || 'Failed to send login code. Please try again.');
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Error in sendParentLoginCode:', error);
+    throw error;
+  }
+}
+
+/**
+ * Verify parent SMS login code: POST /api/parent/auth/verify-login-code
+ */
+export async function verifyParentLoginCode(phoneNumber, code) {
+  if (!phoneNumber || !String(phoneNumber).trim()) {
+    throw new Error('Please enter your mobile number.');
+  }
+  if (!code || String(code).trim().length < 6) {
+    throw new Error('Please enter the 6-digit code.');
+  }
+
+  try {
+    const { response, result } = await postJson('/api/parent/auth/verify-login-code', {
+      phoneNumber: String(phoneNumber).trim(),
+      code: String(code).trim()
+    });
+
+    if (!response.ok || result?.status === false) {
+      throw new Error(result?.message || 'Invalid login code. Please check and try again.');
+    }
+
+    if (result?.token && typeof localStorage !== 'undefined') {
+      localStorage.setItem('token', result.token);
+      localStorage.setItem('parentToken', result.token);
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Error in verifyParentLoginCode:', error);
+    throw error;
+  }
+}
+
+/**
+ * Request password reset link: POST /api/parent/auth/password/forget
+ * @param {string} email
+ */
+export async function requestPasswordReset(email) {
+  if (!email || !String(email).trim()) {
+    throw new Error('Please enter your email address.');
+  }
+
+  try {
+    const { response, result } = await postJson('/api/parent/auth/password/forget', {
+      email: String(email).trim().toLowerCase()
+    });
+
+    if (!response.ok || result?.status === false) {
+      throw new Error(result?.message || 'Failed to send reset link. Please try again.');
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Error in requestPasswordReset:', error);
+    throw error;
+  }
+}
+
+/**
+ * Reset parent password: POST /api/parent/auth/password/reset
+ * @param {string} token
+ * @param {string} newPassword
+ * @param {string} confirmPassword
+ */
+export async function resetParentPassword(token, newPassword, confirmPassword) {
+  if (!token || !String(token).trim()) {
+    throw new Error('Reset token is required.');
+  }
+  if (!newPassword || newPassword.length < 6) {
+    throw new Error('Password must be at least 6 characters.');
+  }
+  if (newPassword !== confirmPassword) {
+    throw new Error('Passwords do not match.');
+  }
+
+  try {
+    const { response, result } = await postJson('/api/parent/auth/password/reset', {
+      token: String(token).trim(),
+      newPassword,
+      confirmPassword
+    });
+
+    if (!response.ok || result?.status === false) {
+      throw new Error(result?.message || 'Password reset failed. The link may have expired.');
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Error in resetParentPassword:', error);
     throw error;
   }
 }

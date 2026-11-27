@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { X, Phone, ChevronDown, ChevronRight, Check, MapPin, Star, User, CalendarDays, Sun, Gift } from 'lucide-react';
+import { X, Phone, ChevronDown, ChevronRight, Check, MapPin, Star, User, CalendarDays, Sun, Gift, MessageSquare, Store } from 'lucide-react';
 import { TOPBAR_CONFIG } from '../../../config/navigation';
 import { useLanguage } from '../../../context/LanguageContext';
 
@@ -17,6 +17,27 @@ const franchiseIcon = 'https://webstepdev.com/demo/syncoWebsiteImages/franchisee
 const contactIcon = 'https://webstepdev.com/demo/syncoWebsiteImages/contact.png';
 
 const GREEN = '#0DD180';
+
+function WhistleIcon({ className = "w-[15px] h-[15px]", ...props }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      <path d="M8 4.5h5" />
+      <path d="M10.5 4.5v3.5" />
+      <circle cx="10.5" cy="13.5" r="5.5" />
+      <path d="M10.5 13.5h3" />
+      <path d="M14.3 9.5h4.2a2 2 0 0 1 0 4h-2.5" />
+    </svg>
+  );
+}
 
 function NavIcon({ src, active = false }) {
   return (
@@ -44,6 +65,12 @@ const programmeItems = [
   { label: 'One-to-One Coaching', to: '/one-to-one-coaching', Icon: User },
 ];
 
+const contactItems = [
+  { label: 'General enquiries', to: '/contact', Icon: MessageSquare },
+  { label: 'Become a coach', to: '/coaches', Icon: WhistleIcon },
+  { label: 'Become a Venue Manager', to: '/venue-managers', Icon: Store },
+];
+
 export function MobileNav({ isOpen, onClose }) {
   const location = useLocation();
   const { selectedLanguage, setSelectedLanguage, availableLanguages } = useLanguage();
@@ -53,10 +80,13 @@ export function MobileNav({ isOpen, onClose }) {
   const isProgrammeRoute = ['/road-to-rio', '/programs', '/holiday-camps', '/birthday-parties', '/one-to-one-coaching'].includes(path);
   const [isProgOpen, setIsProgOpen] = useState(isProgrammeRoute);
 
+  const isContactRoute = ['/contact', '/coaches', '/venue-managers'].includes(path);
+  const [isContactOpen, setIsContactOpen] = useState(isContactRoute);
+
   if (!isOpen) return null;
 
-  const isFranchiseActive = path === '/contact' && location.search.includes('franchise');
-  const isContactActive = path === '/contact' && !location.search.includes('franchise');
+  const isFranchiseActive = (path === '/contact' && location.search.includes('franchise')) || path === '/franchise';
+  const contactActive = isContactOpen || isContactRoute;
 
   const rowBase = 'flex items-center gap-3.5 w-full py-[13px] font-bold text-[16.5px] recline tracking-wide transition-colors';
 
@@ -244,8 +274,58 @@ export function MobileNav({ isOpen, onClose }) {
                 icon={whySambaIcon}
                 active={path === '/why-samba' || path === '/about'}
               />
-              <NavLink label="Franchise" to="/contact?type=franchise" icon={franchiseIcon} active={isFranchiseActive} />
-              <NavLink label="Contact" to="/contact" icon={contactIcon} active={isContactActive} />
+              <NavLink label="Franchise" to="/franchise" icon={franchiseIcon} active={isFranchiseActive} />
+            </div>
+
+            {/* Contact accordion */}
+            <div className={`transition-colors ${isContactOpen ? 'bg-white/[0.08]' : ''}`}>
+              <button
+                type="button"
+                onClick={() => setIsContactOpen((p) => !p)}
+                aria-expanded={isContactOpen}
+                className={`${rowBase} px-5 cursor-pointer justify-between ${contactActive ? 'text-[#0DD180]' : 'text-white'}`}
+              >
+                <span className="flex items-center gap-3.5">
+                  <NavIcon src={contactIcon} active={contactActive} />
+                  <span>Contact</span>
+                </span>
+                <ChevronDown className={`w-4 h-4 transition-transform ${isContactOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {isContactOpen && (
+                <div className="bg-black/10 pb-1.5">
+                  {contactItems.map(({ label, to, Icon }) => {
+                    const active = path === to;
+                    return (
+                      <Link
+                        key={label}
+                        to={to}
+                        onClick={onClose}
+                        className="flex items-center justify-between px-5 py-2.5 group"
+                      >
+                        <span className="flex items-center gap-3">
+                          <span
+                            className="w-[30px] h-[30px] rounded-lg flex items-center justify-center shrink-0"
+                            style={{ backgroundColor: active ? GREEN : 'rgba(255,255,255,0.12)' }}
+                          >
+                            <Icon className="w-[15px] h-[15px]" style={{ color: active ? '#042C89' : '#fff' }} />
+                          </span>
+                          <span
+                            className="text-[14px] font-bold recline"
+                            style={{ color: active ? GREEN : '#fff' }}
+                          >
+                            {label}
+                          </span>
+                        </span>
+                        <ChevronRight className="w-4 h-4" style={{ color: active ? GREEN : 'rgba(255,255,255,0.6)' }} />
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <div className="px-5">
 
               {/* Phone */}
               <a

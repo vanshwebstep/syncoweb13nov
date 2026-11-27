@@ -39,9 +39,9 @@ export const RAW_VENUES_DATA = [
           "classId": 12,
           "className": "4-5 years",
           "time": "7:15 AM - 8:15 AM",
-          "capacity": 16,
+          "capacity": 0,
           "level": "Beginner",
-          "totalCapacity": 24,
+          "totalCapacity": 19,
           "allowFreeTrial": true
         }
       ]
@@ -2005,21 +2005,21 @@ export const VENUES_DATA = [
           "ageGroup": "4-5 years · Beginner",
           "ageSimple": "4-5 years",
           "level": "Beginner",
-          "capacity": 16,
-          "totalCapacity": 24,
-          "spacesLeft": 8,
-          "statusType": "available",
-          "statusText": "Spaces available",
+          "capacity": 0,
+          "totalCapacity": 19,
+          "spacesLeft": 0,
+          "statusType": "full",
+          "statusText": "Fully booked",
           "allowFreeTrial": true,
-          "canBookTrial": true,
+          "canBookTrial": false,
           "canBookMembership": true,
           "rawClass": {
             "classId": 12,
             "className": "4-5 years",
             "time": "7:15 AM - 8:15 AM",
-            "capacity": 16,
+            "capacity": 0,
             "level": "Beginner",
-            "totalCapacity": 24,
+            "totalCapacity": 19,
             "allowFreeTrial": true
           }
         }

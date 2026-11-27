@@ -9,7 +9,10 @@ import {
   Sun, 
   Gift, 
   User, 
-  Compass 
+  Compass,
+  MessageSquare,
+  Store,
+  Phone
 } from 'lucide-react';
 import { NAV_LINKS } from '../../../config/navigation';
 import { Container } from '../../common/Container';
@@ -18,6 +21,27 @@ import { useModal } from '../../../context/ModalContext';
 const sssLogo = 'https://webstepdev.com/demo/syncoWebsiteImages/samba-soccer-schools-logo.png';
 const sssLogo2 = 'https://webstepdev.com/demo/syncoWebsiteImages/sss-logo-2.png';
 const bg = 'https://webstepdev.com/demo/syncoWebsiteImages/bottomNav.png';
+
+function WhistleIcon({ className = "w-5 h-5", ...props }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      <path d="M8 4.5h5" />
+      <path d="M10.5 4.5v3.5" />
+      <circle cx="10.5" cy="13.5" r="5.5" />
+      <path d="M10.5 13.5h3" />
+      <path d="M14.3 9.5h4.2a2 2 0 0 1 0 4h-2.5" />
+    </svg>
+  );
+}
 
 const PROGRAMMES_MEGA_ITEMS = [
   {
@@ -54,10 +78,38 @@ const PROGRAMMES_MEGA_ITEMS = [
   }
 ];
 
+const CONTACT_MEGA_ITEMS = [
+  {
+    title: 'General enquiries',
+    desc: 'Classes, bookings, payments or anything else.',
+    action: 'Contact us',
+    path: '/contact',
+    icon: MessageSquare,
+    isPrimary: true
+  },
+  {
+    title: 'Become a coach',
+    desc: 'Paid coaching work across our venues.',
+    action: 'See coach roles',
+    path: '/coaches',
+    icon: WhistleIcon,
+    isPrimary: false
+  },
+  {
+    title: 'Become a Venue Manager',
+    desc: 'Manage one of our Samba venues.',
+    action: 'See manager roles',
+    path: '/venue-managers',
+    icon: Store,
+    isPrimary: false
+  }
+];
+
 export function Navbar({ onMobileMenuToggle }) {
   const location = useLocation();
   const { openModal } = useModal();
   const [isProgramsOpen, setIsProgramsOpen] = useState(false);
+  const [isContactOpen, setIsContactOpen] = useState(false);
   const navContainerRef = useRef(null);
   const hoverTimeoutRef = useRef(null);
 
@@ -66,11 +118,13 @@ export function Navbar({ onMobileMenuToggle }) {
     const handleClickOutside = (event) => {
       if (navContainerRef.current && !navContainerRef.current.contains(event.target)) {
         setIsProgramsOpen(false);
+        setIsContactOpen(false);
       }
     };
     const handleKeyDown = (event) => {
       if (event.key === 'Escape') {
         setIsProgramsOpen(false);
+        setIsContactOpen(false);
       }
     };
 
@@ -87,16 +141,31 @@ export function Navbar({ onMobileMenuToggle }) {
   // Close dropdown on route changes
   useEffect(() => {
     setIsProgramsOpen(false);
+    setIsContactOpen(false);
   }, [location.pathname]);
 
-  const handleMouseEnter = () => {
+  const handleProgramsMouseEnter = () => {
     if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    setIsContactOpen(false);
     setIsProgramsOpen(true);
+  };
+
+  const handleContactMouseEnter = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    setIsProgramsOpen(false);
+    setIsContactOpen(true);
+  };
+
+  const handleOtherMouseEnter = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    setIsProgramsOpen(false);
+    setIsContactOpen(false);
   };
 
   const handleMouseLeave = () => {
     hoverTimeoutRef.current = setTimeout(() => {
       setIsProgramsOpen(false);
+      setIsContactOpen(false);
     }, 200);
   };
 
@@ -126,7 +195,9 @@ export function Navbar({ onMobileMenuToggle }) {
           {/* Desktop Navigation Links with Green Dot Separators */}
           <div className="hidden lg:flex items-center space-x-0.5 xl:space-x-1 font-sans shrink min-w-0 main-nav-links">
             {NAV_LINKS.map((link, idx) => {
-              const isProgramsLink = link.label === "Programmes" || link.hasDropdown;
+              const isProgramsLink = link.label === "Programmes";
+              const isContactLink = link.label === "Contact";
+
               const isProgramsActive = 
                 location.pathname === '/road-to-rio' ||
                 location.pathname === '/programs' ||
@@ -134,9 +205,16 @@ export function Navbar({ onMobileMenuToggle }) {
                 location.pathname === '/birthday-party' ||
                 location.pathname === '/one-to-one';
 
+              const isContactActive = 
+                location.pathname === '/contact' ||
+                location.pathname === '/coaches' ||
+                location.pathname === '/venue-managers';
+
               const isActive = isProgramsLink 
                 ? isProgramsActive 
-                : (location.pathname === link.path || (link.path === '/' && location.pathname === '/'));
+                : isContactLink 
+                  ? isContactActive 
+                  : (location.pathname === link.path || (link.path === '/' && location.pathname === '/'));
               
               const isFirst = idx === 0;
 
@@ -150,12 +228,13 @@ export function Navbar({ onMobileMenuToggle }) {
                     /* Programmes Nav Item with Mega Menu Trigger */
                     <div 
                       className="relative py-1 flex flex-col items-center"
-                      onMouseEnter={handleMouseEnter}
+                      onMouseEnter={handleProgramsMouseEnter}
                     >
                       <button
                         type="button"
                         onClick={(e) => {
                           e.preventDefault();
+                          setIsContactOpen(false);
                           setIsProgramsOpen((prev) => !prev);
                         }}
                         aria-expanded={isProgramsOpen}
@@ -178,21 +257,56 @@ export function Navbar({ onMobileMenuToggle }) {
                         <span className="absolute -bottom-2.5 xl:-bottom-3.5 left-1/2 -translate-x-1/2 w-12 h-1 bg-[#0DD180] rounded-full animate-in fade-in zoom-in-75 duration-200 pointer-events-none" />
                       )}
                     </div>
+                  ) : isContactLink ? (
+                    /* Contact Nav Item with Mega Menu Trigger */
+                    <div 
+                      className="relative py-1 flex flex-col items-center"
+                      onMouseEnter={handleContactMouseEnter}
+                    >
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setIsProgramsOpen(false);
+                          setIsContactOpen((prev) => !prev);
+                        }}
+                        aria-expanded={isContactOpen}
+                        className={`px-0.5 xl:px-1.5 py-1 text-[11px] xl:text-[15px] 2xl:text-[17px] recline tracking-[0.1px] xl:tracking-[0.2px] font-extrabold transition-colors flex items-center gap-0.5 xl:gap-1 group whitespace-nowrap main-nav-link cursor-pointer ${
+                          isActive || isContactOpen
+                            ? 'text-[#0DD180]'
+                            : 'text-white hover:text-[#0DD180]'
+                        }`}
+                      >
+                        <span className="tracking-[0.1px] xl:tracking-[0.2px] transition-colors">{link.label}</span>
+                        <ChevronDown 
+                          className={`w-3 h-3 xl:w-3.5 xl:h-3.5 transition-transform duration-300 ${
+                            isContactOpen ? 'rotate-180 text-[#0DD180]' : 'text-slate-300 group-hover:text-[#0DD180]'
+                          }`} 
+                        />
+                      </button>
+
+                      {/* Green Horizontal Indicator Bar under Contact */}
+                      {isContactOpen && (
+                        <span className="absolute -bottom-2.5 xl:-bottom-3.5 left-1/2 -translate-x-1/2 w-12 h-1 bg-[#0DD180] rounded-full animate-in fade-in zoom-in-75 duration-200 pointer-events-none" />
+                      )}
+                    </div>
                   ) : (
                     /* Standard Nav Link */
-                    <Link
-                      to={link.path}
-                      className={`px-0.5 xl:px-1.5 py-1 text-[11px] xl:text-[15px] 2xl:text-[17px] recline tracking-[0.1px] xl:tracking-[0.2px] font-extrabold transition-colors flex items-center gap-0.5 xl:gap-1 group whitespace-nowrap main-nav-link ${
-                        isActive
-                          ? 'text-[#0DD180]'
-                          : 'text-white hover:text-[#0DD180]'
-                      }`}
-                    >
-                      <span className="tracking-[0.1px] xl:tracking-[0.2px]">{link.label}</span>
-                      {link.hasArrow && (
-                        <ChevronDown className="w-3 h-3 xl:w-3.5 xl:h-3.5 text-slate-300 group-hover:text-[#0DD180] transition-colors" />
-                      )}
-                    </Link>
+                    <div onMouseEnter={handleOtherMouseEnter}>
+                      <Link
+                        to={link.path}
+                        className={`px-0.5 xl:px-1.5 py-1 text-[11px] xl:text-[15px] 2xl:text-[17px] recline tracking-[0.1px] xl:tracking-[0.2px] font-extrabold transition-colors flex items-center gap-0.5 xl:gap-1 group whitespace-nowrap main-nav-link ${
+                          isActive
+                            ? 'text-[#0DD180]'
+                            : 'text-white hover:text-[#0DD180]'
+                        }`}
+                      >
+                        <span className="tracking-[0.1px] xl:tracking-[0.2px]">{link.label}</span>
+                        {link.hasArrow && (
+                          <ChevronDown className="w-3 h-3 xl:w-3.5 xl:h-3.5 text-slate-300 group-hover:text-[#0DD180] transition-colors" />
+                        )}
+                      </Link>
+                    </div>
                   )}
                 </React.Fragment>
               );
@@ -238,7 +352,7 @@ export function Navbar({ onMobileMenuToggle }) {
       {isProgramsOpen && (
         <div 
           className="absolute top-full left-0 w-full z-50 -pt-1 animate-in fade-in slide-in-from-top-0 duration-300"
-          onMouseEnter={handleMouseEnter}
+          onMouseEnter={handleProgramsMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
           <div 
@@ -350,6 +464,126 @@ export function Navbar({ onMobileMenuToggle }) {
                   >
                     <span>Book A FREE Trial</span>
                     <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+
+            </Container>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          CONTACT MEGA MENU DROPDOWN PANEL
+          Exact same design as Programmes dropdown and matching screenshot
+          ========================================================================= */}
+      {isContactOpen && (
+        <div 
+          className="absolute top-full left-0 w-full z-50 -pt-1 animate-in fade-in slide-in-from-top-0 duration-300"
+          onMouseEnter={handleContactMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          <div 
+            className="w-full border-t border-b border-white/[0.18] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] py-7 lg:py-8 backdrop-blur-xl"
+            style={{
+              backgroundImage: `linear-gradient(90deg, rgba(0, 50, 136, 0.96) 0%, rgba(0, 84, 152, 0.96) 100%), url(${bg})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat'
+            }}
+          >
+            <Container>
+              {/* 1. Header Tag: CONTACT • Ask us something, or come and work with us */}
+              <div className="flex items-center gap-2 mb-5">
+                <span className="text-[#9CC6EC] font-extrabold text-[11px] tracking-[0.1em] uppercase poppins">
+                  CONTACT
+                </span>
+                <span className="text-white/40 text-[10px]">•</span>
+                <span className="text-[#9CC6EC] text-[11.5px] poppins font-medium">
+                  Ask us something, or come and work with us
+                </span>
+              </div>
+
+              {/* 2. Three Interactive Cards Grid (18px radius, white 15% fill, white 26% border) */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 xl:gap-5">
+                {CONTACT_MEGA_ITEMS.map((item, idx) => {
+                  const Icon = item.icon;
+                  const isCurrent = location.pathname === item.path;
+
+                  return (
+                    <Link
+                      key={idx}
+                      to={item.path}
+                      onClick={() => setIsContactOpen(false)}
+                      className={`group relative bg-white/[0.15] hover:bg-white/[0.22] border rounded-[18px] p-[20px] pb-[18px] min-h-[180px] flex flex-col justify-between transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 cursor-pointer ${
+                        isCurrent 
+                          ? 'border-[#0DD180] shadow-lg' 
+                          : 'border-white/[0.26] hover:border-[#0DD180]/60'
+                      }`}
+                    >
+                      <div>
+                        {/* Icon Badge */}
+                        <div 
+                          className={`w-11 h-11 rounded-[12px] flex items-center justify-center mb-4 transition-transform group-hover:scale-105 ${
+                            item.isPrimary 
+                              ? 'bg-[#0DD180] text-[#042C89]' 
+                              : 'bg-white/[0.15] text-white group-hover:bg-[#0DD180]/20 group-hover:text-[#0DD180]'
+                          }`}
+                        >
+                          <Icon className="w-5 h-5" />
+                        </div>
+
+                        {/* Title: 17px */}
+                        <h3 className="text-white font-semibold text-[17px] poppins leading-snug group-hover:text-[#0DD180] transition-colors">
+                          {item.title}
+                        </h3>
+
+                        {/* Description: 12.5px, #9CC6EC */}
+                        <p className="text-[#9CC6EC] font-semibold text-[12.5px] poppins mt-1.5 leading-relaxed">
+                          {item.desc}
+                        </p>
+                      </div>
+
+                      {/* Action Link Footer: 11.5px */}
+                      <div className="mt-4 pt-2 flex items-center gap-1.5 text-[11.5px] font-medium poppins transition-colors">
+                        <span className={item.isPrimary ? 'text-[#0DD180]' : 'text-[#9CC6EC] group-hover:text-[#0DD180]'}>
+                          {item.action}
+                        </span>
+                        <ArrowRight 
+                          className={`w-3 h-3 group-hover:translate-x-1 transition-transform ${
+                            item.isPrimary ? 'text-[#0DD180]' : 'text-[#9CC6EC] group-hover:text-[#0DD180]'
+                          }`} 
+                        />
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+
+              {/* 3. Bottom Strip: Phone + Franchise enquiries Button */}
+              <div className="mt-7 pt-5 border-t border-white/[0.18] flex flex-col sm:flex-row items-center justify-between gap-4">
+                {/* Left: Phone */}
+                <div className="flex items-center gap-2 text-white text-[13.5px] poppins">
+                  <span className="w-6 h-6 rounded-full flex items-center justify-center shrink-0">
+                    <Phone className="w-4 h-4 text-[#0DD180]" />
+                  </span>
+                  <span>
+                    Prefer to talk? Call{' '}
+                    <a href="tel:02072052723" className="text-white hover:underline font-semibold">
+                      020 7205 2723
+                    </a>
+                    , weekdays 9am–6pm.
+                  </span>
+                </div>
+
+                {/* Right: Franchise enquiries Button */}
+                <div className="flex items-center gap-3 shrink-0">
+                  <Link
+                    to="/franchise"
+                    onClick={() => setIsContactOpen(false)}
+                    className="inline-flex items-center justify-center border-[1.5px] border-white bg-transparent hover:bg-white/10 text-white font-bold text-[12.5px] xl:text-[13.5px] px-6 py-2 rounded-full poppins transition-all duration-200 shadow-sm cursor-pointer whitespace-nowrap hover:scale-[1.02]"
+                  >
+                    Franchise enquiries
                   </Link>
                 </div>
               </div>

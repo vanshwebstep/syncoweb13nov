@@ -16,8 +16,8 @@ export const NAV_LINKS = [
   { label: "Find a Class", path: "/find-a-class" },
   { label: "Programmes", path: "/road-to-rio", hasArrow: true, hasDropdown: true },
   { label: "Why Samba", path: "/why-samba" },
-  { label: "Franchise", path: "/franchise" },
-  { label: "Contact", path: "/contact" }
+  { label: "Franchise", path: "/franchise"},
+  { label: "Contact", path: "/contact", hasArrow: true, hasDropdown: true }
 ];
 
 export const FOOTER_LINKS = {

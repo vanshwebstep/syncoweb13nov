@@ -30,15 +30,21 @@ function AppContent() {
       {!isBookingFlow && <Header />}
 
       {/* Dynamic Route Pages */}
-      <main className="flex-grow">
+      <main className="flex-grow print:w-full print:m-0 print:p-0">
         <AppRoutes />
       </main>
 
       {/* Global Modal Overlay Container */}
-      <ModalContainer />
+      <div className="print:hidden">
+        <ModalContainer />
+      </div>
 
       {/* Universal Footer (suppressed on dedicated booking flow) */}
-      {!isBookingFlow && <Footer />}
+      {!isBookingFlow && (
+        <div className="print:hidden">
+          <Footer />
+        </div>
+      )}
     </div>
   );
 }

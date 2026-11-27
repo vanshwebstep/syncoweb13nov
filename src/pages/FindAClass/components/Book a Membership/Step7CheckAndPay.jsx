@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { ArrowLeft, ArrowRight, Tag, List, BookOpen, Check, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Tag, List, BookOpen, Check, Sparkles, Loader2 } from 'lucide-react';
 import { TermsModal } from './TermsModal';
 import { PaymentModal } from './PaymentModal';
 import { ChildAvatar } from './ChildAvatar';
+import { applyDiscountCode } from '../../../../services/venueService';
 
 const YELLOW_SPLASH = 'https://webstepdev.com/demo/syncoWebsiteImages/find-a-class/yellow.png';
 
@@ -16,13 +17,29 @@ export function Step7CheckAndPay({
   kitsData = [],
   onBack,
   onFinalSubmit,
-  isSubmitting = false
+  isSubmitting = false,
+  parentData = {},
+  deliveryAddress = {},
+  submitError = '',
+  appliedDiscount: externalAppliedDiscount,
+  setAppliedDiscount: externalSetAppliedDiscount,
+  discountCode: externalDiscountCode,
+  setDiscountCode: externalSetDiscountCode
 }) {
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
-  const [discountCode, setDiscountCode] = useState('');
-  const [appliedDiscount, setAppliedDiscount] = useState(0);
+  const [internalDiscountCode, setInternalDiscountCode] = useState('');
+  const [internalAppliedDiscount, setInternalAppliedDiscount] = useState(0);
+
+  const discountCode = externalDiscountCode !== undefined ? externalDiscountCode : internalDiscountCode;
+  const setDiscountCode = externalSetDiscountCode || setInternalDiscountCode;
+
+  const appliedDiscount = externalAppliedDiscount !== undefined ? externalAppliedDiscount : internalAppliedDiscount;
+  const setAppliedDiscount = externalSetAppliedDiscount || setInternalAppliedDiscount;
+
   const [discountMessage, setDiscountMessage] = useState('');
+  const [isDiscountSuccess, setIsDiscountSuccess] = useState(false);
+  const [isApplyingDiscount, setIsApplyingDiscount] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(true);
   const [mediaConsent, setMediaConsent] = useState(false);
 
@@ -65,19 +82,65 @@ export function Step7CheckAndPay({
   const totalTodayNum = Math.max(0, sessionsTotal + starterPackTotal + deliveryFee - appliedDiscount);
   const totalTodayFormatted = totalTodayNum.toFixed(2);
 
-  const handleApplyDiscount = () => {
-    if (!discountCode.trim()) return;
-    const clean = discountCode.trim().toUpperCase();
-    if (clean === 'SAMBA10' || clean === 'SAVE10') {
-      const discountVal = 10;
-      setAppliedDiscount(discountVal);
-      setDiscountMessage('Code applied! £10 discount saved.');
-    } else if (clean === 'FREEDEL') {
-      setAppliedDiscount(deliveryFee);
-      setDiscountMessage(`Free delivery applied! Saved £${deliveryFee.toFixed(2)}.`);
-    } else {
-      setDiscountMessage('Invalid discount code.');
+  const handleApplyDiscount = async () => {
+    const cleanCode = discountCode.trim();
+    if (!cleanCode) {
+      setDiscountMessage('Please enter a discount code.');
+      setIsDiscountSuccess(false);
+      return;
     }
+
+    setIsApplyingDiscount(true);
+    setDiscountMessage('');
+
+    try {
+      const starterPackAmount = starterPackTotal > 0 ? Number(starterPackTotal.toFixed(2)) : 89.99;
+      const result = await applyDiscountCode({
+        starterPack: starterPackAmount,
+        code: cleanCode
+      });
+
+      console.log('Discount API response:', result);
+
+      // Extract discount amount from API response
+      const dataObj = result?.data || result;
+      let discountVal = 0;
+
+      if (dataObj?.discountAmount != null) {
+        discountVal = Number(dataObj.discountAmount);
+      } else if (dataObj?.discount != null) {
+        discountVal = Number(dataObj.discount);
+      } else if (dataObj?.amount != null) {
+        discountVal = Number(dataObj.amount);
+      } else if (dataObj?.discountedStarterPack != null) {
+        const newPrice = Number(dataObj.discountedStarterPack);
+        discountVal = Math.max(0, starterPackAmount - newPrice);
+      } else if (dataObj?.discountedPrice != null && dataObj?.originalPrice != null) {
+        discountVal = Math.max(0, Number(dataObj.originalPrice) - Number(dataObj.discountedPrice));
+      } else if (dataObj?.percentage != null || dataObj?.discountPercentage != null) {
+        const pct = Number(dataObj.percentage || dataObj.discountPercentage);
+        discountVal = (starterPackAmount * pct) / 100;
+      } else {
+        discountVal = 10;
+      }
+
+      setAppliedDiscount(discountVal);
+      setIsDiscountSuccess(true);
+      setDiscountMessage(result?.message || `Discount applied! Saved £${discountVal.toFixed(2)}.`);
+    } catch (error) {
+      setAppliedDiscount(0);
+      setIsDiscountSuccess(false);
+      setDiscountMessage(error?.message || 'Invalid discount code.');
+    } finally {
+      setIsApplyingDiscount(false);
+    }
+  };
+
+  const handleRemoveDiscount = () => {
+    setAppliedDiscount(0);
+    setDiscountCode('');
+    setDiscountMessage('');
+    setIsDiscountSuccess(false);
   };
 
   const handleOpenPayment = () => {
@@ -98,7 +161,8 @@ export function Step7CheckAndPay({
         totalChildren,
         starterPackTotal: starterPackTotal.toFixed(2),
         deliveryFee: deliveryFee.toFixed(2),
-        discountCode: appliedDiscount > 0 ? discountCode : null,
+        discountCode: appliedDiscount > 0 ? discountCode.trim().toUpperCase() : null,
+        appliedDiscount: appliedDiscount > 0 ? appliedDiscount : 0,
         isTrialOffer
       });
     }
@@ -172,8 +236,7 @@ export function Step7CheckAndPay({
           {/* Pro-rata sessions */}
           <div className="flex items-center justify-between text-[#334155]">
             <span>
-              {startMonthName} sessions ({sessionsCount} × £{pricePerSession.toFixed(2)}
-              {totalChildren > 1 ? ` × ${totalChildren} children` : ''})
+              {sessionsCount} sessions left in {startMonthName} (pro-rata)
             </span>
             <span className="font-bold text-[#0B2A8A]">
               £{sessionsTotal.toFixed(2)}
@@ -261,24 +324,57 @@ export function Step7CheckAndPay({
             <input
               type="text"
               value={discountCode}
-              onChange={(e) => setDiscountCode(e.target.value)}
-              placeholder="Discount code (e.g. SAMBA10)"
-              className="w-full h-[50px] pl-11 pr-4 rounded-full bg-white border border-[#CBD5E1] text-[14px] font-medium text-[#042C89] placeholder-[#94A3B8] outline-none focus:border-[#042C89]"
+              onChange={(e) => {
+                setDiscountCode(e.target.value);
+                if (discountMessage && !isDiscountSuccess) setDiscountMessage('');
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleApplyDiscount();
+                }
+              }}
+              placeholder="Discount code (e.g. HZWK5R)"
+              disabled={isApplyingDiscount || appliedDiscount > 0}
+              className="w-full h-[50px] pl-11 pr-4 rounded-full bg-white border border-[#CBD5E1] text-[14px] font-medium text-[#042C89] placeholder-[#94A3B8] outline-none focus:border-[#042C89] uppercase tracking-wider disabled:bg-[#F8FAFC]"
             />
           </div>
 
-          <button
-            type="button"
-            onClick={handleApplyDiscount}
-            className="h-[50px] px-6 sm:px-7 rounded-full bg-[#E8F3FA] hover:bg-[#d9ecf7] text-[#042C89] font-bold text-[14px] transition-all cursor-pointer active:scale-95"
-          >
-            Apply
-          </button>
+          {appliedDiscount > 0 ? (
+            <button
+              type="button"
+              onClick={handleRemoveDiscount}
+              className="h-[50px] px-6 sm:px-7 rounded-full bg-red-50 hover:bg-red-100 text-red-600 font-bold text-[14px] transition-all cursor-pointer active:scale-95"
+            >
+              Remove
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleApplyDiscount}
+              disabled={isApplyingDiscount || !discountCode.trim()}
+              className="h-[50px] px-6 sm:px-7 rounded-full bg-[#E8F3FA] hover:bg-[#d9ecf7] disabled:opacity-60 text-[#042C89] font-bold text-[14px] transition-all cursor-pointer active:scale-95 flex items-center justify-center gap-2"
+            >
+              {isApplyingDiscount ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Applying...</span>
+                </>
+              ) : (
+                <span>Apply</span>
+              )}
+            </button>
+          )}
         </div>
 
         {discountMessage && (
-          <p className={`text-xs px-2 ${appliedDiscount > 0 ? 'text-[#0D7A4A] font-bold' : 'text-red-500'}`}>
-            {discountMessage}
+          <p
+            className={`text-xs px-2 font-medium flex items-center gap-1.5 ${
+              isDiscountSuccess ? 'text-[#0D7A4A] font-bold' : 'text-red-500'
+            }`}
+          >
+            {isDiscountSuccess && <Sparkles className="w-3.5 h-3.5" />}
+            <span>{discountMessage}</span>
           </p>
         )}
 
@@ -393,6 +489,13 @@ export function Step7CheckAndPay({
         </label>
       </div>
 
+      {/* Submission Error Banner */}
+      {submitError && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold">
+          {submitError}
+        </div>
+      )}
+
       {/* Navigation Footer */}
       <div className="pt-6 border-t border-[#E2E8F0]">
         <div className="flex items-center justify-between">
@@ -411,13 +514,13 @@ export function Step7CheckAndPay({
             disabled={!agreedToTerms || isSubmitting}
             className="bg-[#00D084] hover:bg-[#00b875] disabled:opacity-50 text-white font-bold text-xs sm:text-[14px] px-8 sm:px-9 py-3.5 rounded-full flex items-center gap-2 shadow-sm transition-all cursor-pointer active:scale-95"
           >
-            <span>Pay £{totalTodayFormatted} by card</span>
+            <span>Pay £{totalTodayFormatted} today</span>
             <ArrowRight className="w-4 h-4 stroke-[2.5]" />
           </button>
         </div>
 
         <p className="text-center text-[11px] text-[#94A3B8] mt-3">
-          Secure card payment by Stripe
+          Secured with 256-bit encryption · AccessPaySuite & GoCardless
         </p>
       </div>
 
@@ -437,6 +540,9 @@ export function Step7CheckAndPay({
         totalToday={totalTodayFormatted}
         onPay={handleProcessPayment}
         isProcessing={isSubmitting}
+        parentData={parentData}
+        deliveryAddress={deliveryAddress}
+        submitError={submitError}
       />
     </div>
   );

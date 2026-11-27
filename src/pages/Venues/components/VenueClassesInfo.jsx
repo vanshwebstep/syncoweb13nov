@@ -52,7 +52,7 @@ const STATUS = {
 
 // Class object ko normalize karo (API ke alag field names ke liye)
 const normalizeClass = (c) => {
-  const spots = c.spotsLeft ?? c.placesLeft ?? c.spacesLeft ?? (c.totalCapacity != null && c.capacity != null ? Math.max(0, c.totalCapacity - c.capacity) : 10);
+  const spots = c.spotsLeft ?? c.placesLeft ?? c.spacesLeft ?? (c.capacity != null ? Math.max(0, Number(c.capacity)) : 0);
   const status = c.status || (spots === 0 ? 'full' : spots > 0 && spots <= 5 ? 'few' : 'available');
   const statusText =
     c.statusText || (status === 'few' ? `Only ${spots} place${spots === 1 ? '' : 's'} left` : status === 'full' ? 'Fully booked' : 'Spaces available');
@@ -63,7 +63,7 @@ const normalizeClass = (c) => {
     spotsLeft: spots,
     status,
     statusText,
-    allowFreeTrial: c.allowFreeTrial !== false,
+    allowFreeTrial: c.allowFreeTrial !== false && spots > 0,
     classId: c.classId || c.id,
     raw: c.rawClass || c.raw || c,
   };
@@ -100,9 +100,14 @@ export function VenueClassesInfo({ onBookMembership, onBookTrial, onJoinWaitingL
       Object.entries(venue.classes).forEach(([day, dayClasses]) => {
         if (Array.isArray(dayClasses)) {
           dayClasses.forEach((c) => {
-            const cap = Number(c.capacity) || 0;
             const total = Number(c.totalCapacity) || 20;
-            const spotsLeft = Math.max(0, total - cap);
+            const spotsLeft = c.spacesLeft != null
+              ? Math.max(0, Number(c.spacesLeft))
+              : (c.spotsLeft != null
+                  ? Math.max(0, Number(c.spotsLeft))
+                  : (c.capacity != null
+                      ? Math.max(0, Number(c.capacity))
+                      : 0));
             const status = spotsLeft === 0 ? 'full' : spotsLeft <= 5 ? 'few' : 'available';
             const statusText = spotsLeft === 0 ? 'Fully booked' : spotsLeft <= 5 ? `Only ${spotsLeft} place${spotsLeft === 1 ? '' : 's'} left` : 'Spaces available';
             list.push({
@@ -155,7 +160,7 @@ export function VenueClassesInfo({ onBookMembership, onBookTrial, onJoinWaitingL
     'poppins inline-flex items-center gap-1.5 lg:gap-2 rounded-full bg-white/15 hover:bg-white/25 text-white font-bold text-[11.5px] lg:text-[13px] px-3.5 lg:px-4 py-2 transition-colors cursor-pointer whitespace-nowrap';
 
   return (
-    <section id="class-times" className="mt-12 relative w-full bg-white py-12 sm:py-14 lg:py-16 overflow-hidden">
+    <section id="class-times" data-section="classes" className="mt-12 relative w-full bg-white py-12 sm:py-14 lg:py-16 overflow-hidden">
       <Container className="relative z-10">
         <div className="max-w-[1100px] mx-auto">
           {/* ===== Heading + trial dates ===== */}

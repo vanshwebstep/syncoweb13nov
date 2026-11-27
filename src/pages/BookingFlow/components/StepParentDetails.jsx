@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { ArrowRight, ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Loader2, ChevronDown } from 'lucide-react';
 import { checkParentEmail } from '../../../services/venueService';
+import { COUNTRY_CODES } from '../../FindAClass/components/Book a Membership/SambaLoginModal';
 
 const YELLOW_SPLASH = 'https://webstepdev.com/demo/syncoWebsiteImages/find-a-class/yellow.png';
 
@@ -54,6 +55,7 @@ export function StepParentDetails({
   const [firstName, setFirstName] = useState(parentData?.firstName || '');
   const [lastName, setLastName] = useState(parentData?.lastName || '');
   const [email, setEmail] = useState(parentData?.email || '');
+  const [dialCode, setDialCode] = useState(parentData?.dialCode || '44');
   const [phone, setPhone] = useState(parentData?.phone || '');
   const [relationship, setRelationship] = useState(parentData?.relationship || 'Mum');
   const [hearAbout, setHearAbout] = useState(parentData?.hearAbout || '');
@@ -135,6 +137,7 @@ export function StepParentDetails({
       firstName: firstName.trim(),
       lastName: lastName.trim(),
       email: trimmedEmail,
+      dialCode,
       phone: phone.trim(),
       relationship,
       hearAbout,
@@ -252,9 +255,20 @@ export function StepParentDetails({
               show('phone') ? 'border-rose-400' : 'border-[#C9D3F0] focus-within:border-[#002B9A]'
             }`}
           >
-            <span className="border-r border-[#C9D3F0] px-4 py-3.5 text-[15px] font-bold text-[#282829] flex items-center shrink-0">
-              +44
-            </span>
+            <div className="relative flex items-center border-r border-[#C9D3F0] px-3.5 py-3.5 bg-white shrink-0">
+              <select
+                value={dialCode}
+                onChange={(e) => setDialCode(e.target.value)}
+                className="appearance-none bg-transparent pr-4 text-[14px] sm:text-[15px] font-bold text-[#282829] outline-none cursor-pointer"
+              >
+                {COUNTRY_CODES.map((c) => (
+                  <option key={c.code} value={c.code}>
+                    +{c.code}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-1 pointer-events-none" />
+            </div>
             <input
               id="parent-phone"
               type="tel"

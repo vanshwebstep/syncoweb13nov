@@ -1,15 +1,8 @@
 import React from "react";
-import Banner from "./Components/hero.jsx";
-import Content from "./Components/content.jsx";
+import LegalPageView from "../../components/legal/LegalPageView.jsx";
+
 const Terms = () => {
-    return (
-        <div className="venue-managers-page-container">
-            <main className="w-full overflow-x-hidden">
-                <Banner />
-                <Content />
-            </main>
-        </div>
-    );
+    return <LegalPageView slug="terms-and-conditions" defaultTitle="Terms & Conditions" />;
 };
 
 export default Terms;
